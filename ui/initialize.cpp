@@ -3,6 +3,8 @@
 namespace celosia::resources { //ctodo: move to resources/ & make a fontstruct
     bool fonts::add(std::string resourcename, std::string fontname, int fontsize) {
         std::string fontpath = fontname; // "H:\\SRC\\fonts\\" + fontname;
+        if (GetFileAttributesA(fontpath.c_str()) == INVALID_FILE_ATTRIBUTES) // missing font falls back to the default one, AddFontFromFileTTF would assert
+            return false;
         fonts::map[resourcename] = render::io->Fonts->AddFontFromFileTTF(fontpath.c_str(), fontsize);
 
         return true;
@@ -14,6 +16,8 @@ namespace celosia::initialize {
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
         render::io = &ImGui::GetIO();
+        render::io->IniFilename = nullptr; // no imgui.ini / imgui_log.txt
+        render::io->LogFilename = nullptr;
 
         if (hwnd != nullptr)
             ImGui_ImplWin32_Init(hwnd);

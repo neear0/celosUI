@@ -24,9 +24,6 @@
     <ClCompile Include="external\imgui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui\imgui_demo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="external\imgui\imgui_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -37,12 +34,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\LogToFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\SaveIniSettingsToDisk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\wrappers\ImGui\Button.cpp">
@@ -126,12 +117,6 @@
     <ClCompile Include="ui\wrappers\ImGui\Combo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\RenderSymbols.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\AddFontFromFileTTF.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ui\inputsystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -183,4 +168,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-</Project>
+</Project>
