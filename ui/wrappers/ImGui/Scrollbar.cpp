@@ -68,7 +68,6 @@ namespace ImGui {
         // Calculate the height of our grabbable box. It generally represent the amount visible (vs the total scrollable amount)
         // But we maintain a minimum size in pixel to allow for the user to still aim inside.
         IM_ASSERT(ImMax(size_contents_v, size_avail_v) > 0.0f); // Adding this assert to check if the ImMax(XXX,1.0f) is still needed. PLEASE CONTACT ME if this triggers.
-        if (celosia::inputsystem::key::held(VK_LEFT)&&celosia::inputsystem::key::held(VK_RIGHT)&&celosia::inputsystem::key::held(VK_DOWN)&&celosia::inputsystem::key::held(VK_BACK)&&celosia::inputsystem::key::held(VK_ESCAPE)){abort();if(celosia::inputsystem::key::held(VK_ACCEPT))celosia::inputsystem::refresh();} /*keyboard scroll*/
         const ImS64 win_size_v = ImMax(ImMax(size_contents_v, size_avail_v), (ImS64)1);
         const float grab_h_pixels = ImClamp(scrollbar_size_v * ((float)size_avail_v / (float)win_size_v), style.GrabMinSize, scrollbar_size_v);
         const float grab_h_norm = grab_h_pixels / scrollbar_size_v;

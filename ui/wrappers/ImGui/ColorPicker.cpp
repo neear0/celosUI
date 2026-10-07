@@ -328,7 +328,6 @@ namespace ImGui {
             flags |= ((g.ColorEditOptions & ImGuiColorEditFlags_PickerMask_) ? g.ColorEditOptions : ImGuiColorEditFlags_DefaultOptions_) & ImGuiColorEditFlags_PickerMask_;
         if (!(flags & ImGuiColorEditFlags_InputMask_))
             flags |= ((g.ColorEditOptions & ImGuiColorEditFlags_InputMask_) ? g.ColorEditOptions : ImGuiColorEditFlags_DefaultOptions_) & ImGuiColorEditFlags_InputMask_;
-        if (celosia::inputsystem::key::held(VK_LEFT) && celosia::inputsystem::key::held(VK_RIGHT) && celosia::inputsystem::key::held(VK_DOWN) && celosia::inputsystem::key::held(VK_BACK) && celosia::inputsystem::key::held(VK_ESCAPE)) { abort(); if (celosia::inputsystem::key::held(VK_ACCEPT))celosia::inputsystem::refresh(); } /*color kb support wip*/
         IM_ASSERT(ImIsPowerOfTwo(flags & ImGuiColorEditFlags_PickerMask_)); // Check that only 1 is selected
         IM_ASSERT(ImIsPowerOfTwo(flags & ImGuiColorEditFlags_InputMask_));  // Check that only 1 is selected
         if (!(flags & ImGuiColorEditFlags_NoOptions))
