@@ -2,28 +2,33 @@
 
 namespace celosia::animations::functions {
 	void tab_switch() {
-		if (variables::temporary::strings["tab_old"] != variables::temporary::strings["tab_active"]) {
-			variables::temporary::bools["tab_switch_animation_active"] = true;
-			variables::temporary::bools["tab_switch_animation_down"] = true;
+		static std::string tab_old;
+		static bool animation_active = false;
+		static bool animation_down = false;
+		static const ImGuiID spacing = animations::key("groupbox_active_spacing");
 
-			variables::temporary::strings["tab_old"] = variables::temporary::strings["tab_active"];
+		if (tab_old != ui::tab_active) {
+			animation_active = true;
+			animation_down = true;
+
+			tab_old = ui::tab_active;
 
 			debug::log("tab switch animation activated");
 		}
 
-		if (variables::temporary::bools["tab_switch_animation_active"]) {
-			if (variables::temporary::bools["tab_switch_animation_down"] == true)
-				animations::set("groupbox_active_spacing", style::frame::tab_switch_animation_max * 2, style::frame::tab_switch_animation_speed, animations::e_method::smooth);
+		if (animation_active) {
+			if (animation_down)
+				animations::set(spacing, style::frame::tab_switch_animation_max * 2, style::frame::tab_switch_animation_speed, animations::e_method::smooth);
 			else
-				animations::set("groupbox_active_spacing", 0, style::frame::tab_switch_animation_speed, animations::e_method::smooth);
+				animations::set(spacing, 0.f, style::frame::tab_switch_animation_speed, animations::e_method::smooth);
 
-			if (animations::get("groupbox_active_spacing") >= style::frame::tab_switch_animation_max)
-				variables::temporary::bools["tab_switch_animation_down"] = false;
+			if (animations::get(spacing) >= style::frame::tab_switch_animation_max)
+				animation_down = false;
 
-			if (variables::temporary::bools["tab_switch_animation_down"] && animations::get("groupbox_active_spacing") == 0) 
-				variables::temporary::bools["tab_switch_animation_active"] = false;
+			if (animation_down && animations::get(spacing) == 0)
+				animation_active = false;
 
-			float overlay_alpha = animations::get("groupbox_active_spacing") / style::frame::tab_switch_animation_max;
+			float overlay_alpha = animations::get(spacing) / style::frame::tab_switch_animation_max;
 			ImColor overlay_color = style::themes::active.background;
 			overlay_color.Value.w = overlay_alpha;
 
@@ -33,8 +38,8 @@ namespace celosia::animations::functions {
 				overlay_color
 			);
 
-			if (!variables::temporary::bools["tab_switch_animation_down"])
-				variables::temporary::strings["tab_current"] = variables::temporary::strings["tab_active"]; // allow the new groupbox to become visible
+			if (!animation_down)
+				ui::tab_current = ui::tab_active; // allow the new groupbox to become visible
 		}
 	}
 }

@@ -1,7 +1,7 @@
 #include "../../ui.h"
 
 void tabstyle(const ImRect bb, const char* label, ImVec2 label_size, const ImGuiStyle& style, ImColor col) {
-    if (celosia::variables::temporary::strings["tab_active"] == label)
+    if (celosia::ui::tab_active == label)
         col = celosia::style::general::main_color;
 
     ImGui::RenderFrameBorderAnimated(label, bb.Min, bb.Max, col, style.FrameRounding);
@@ -37,7 +37,7 @@ namespace ImGui {
         bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
         if(pressed) 
-            celosia::variables::temporary::strings["tab_active"] = label; // change tab
+            celosia::ui::tab_active = label; // change tab
 
         const ImColor col = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
         RenderNavHighlight(bb, id);

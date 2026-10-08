@@ -106,6 +106,9 @@ namespace celosia {
 		inline ImVec2 size = { 800, 600 };
 		inline bool active = true;
 
+		inline std::string tab_active;  // last tab button pressed
+		inline std::string tab_current; // tab being drawn, follows tab_active once the switch animation hides the old one
+
 		void begin();
 		void end();
 		void render();
