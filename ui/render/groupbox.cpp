@@ -4,7 +4,7 @@ namespace celosia::render::groupbox {
 	void return_full(ImVec2* offset, ImVec2* offset_max, ImVec2* offset_size) {
 		*offset = {
 			style::sidebar::width + style::frame::size_padding.x,
-			style::titlebar::height + animations::str_map["groupbox_active_spacing"] + style::frame::size_padding.y
+			style::titlebar::height + animations::get("groupbox_active_spacing") + style::frame::size_padding.y
 		};
 		*offset_max = {
 			ui::size.x - style::frame::size_padding.x,
@@ -22,7 +22,7 @@ namespace celosia::render::groupbox {
 
 		*offset = {
 			style::sidebar::width + style::frame::size_padding.x,
-			style::titlebar::height + animations::str_map["groupbox_active_spacing"] + style::frame::size_padding.y + (size * variables::config::ints["groupbox_index"])
+			style::titlebar::height + animations::get("groupbox_active_spacing") + style::frame::size_padding.y + (size * variables::config::ints["groupbox_index"])
 		};
 		*offset_max = {
 			ui::size.x - style::frame::size_padding.x, 

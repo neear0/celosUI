@@ -40,80 +40,59 @@ namespace celosia::animations::functions {
         current_value += (goal_value - current_value) * io->DeltaTime * speed;
         return current_value;
     }
-
-    float linear(const std::string& value, const float goal_value, float speed) {
-        float res = calc_linear(str_map[value], goal_value, speed);
-        str_map[value] = res;
-        return res;
-    }
-
-    float smooth(const std::string& value, const float goal_value, float speed) {
-        float res = calc_smooth(str_map[value], goal_value, speed);
-        str_map[value] = res;
-        return res;
-    }
-
-    float linear(const int& value, const float goal_value, float speed) {
-        float res = calc_linear(int_map[value], goal_value, speed);
-        int_map[value] = res;
-        return res;
-    }
-
-    float smooth(const int& value, const float goal_value, float speed) {
-        float res = calc_smooth(int_map[value], goal_value, speed);
-        int_map[value] = res;
-        return res;
-    }
 }
 
 namespace celosia::animations {
-    float set(const std::string& value, const float goal_value, float speed, e_method method) {
-        if (method == e_method::smooth)
-            return functions::smooth(value, goal_value, speed);
+    ImGuiID key(std::string_view name, ImGuiID seed) {
+        return ImHashData(name.data(), name.size(), seed);
+    }
 
+    float get(ImGuiID id) {
+        auto it = values.find(id);
+        return it != values.end() ? it->second.x : 0.f;
+    }
+
+    float get(std::string_view name) {
+        return get(key(name));
+    }
+
+    static float step(float current_value, const float goal_value, float speed, e_method method) {
         if (method == e_method::linear)
-            return functions::linear(value, goal_value, speed);
+            return functions::calc_linear(current_value, goal_value, speed);
+        return functions::calc_smooth(current_value, goal_value, speed);
     }
 
-    ImVec2 set(const std::string& value, const ImVec2 goal_value, float speed, e_method method) {
-        if (method == e_method::smooth)
-            return ImVec2(functions::smooth(value + ", x", goal_value.x, speed), functions::smooth(value + ", y", goal_value.y, speed));
-
-        if (method == e_method::linear)
-            return ImVec2(functions::linear(value + ", x", goal_value.x, speed), functions::linear(value + ", y", goal_value.y, speed));
+    float set(ImGuiID id, const float goal_value, float speed, e_method method) {
+        ImVec4& v = values[id];
+        v.x = step(v.x, goal_value, speed, method);
+        return v.x;
     }
 
-    ImVec4 set(const std::string& value, const ImVec4 goal_value, float speed, e_method method) {
-        if (method == e_method::smooth)
-            return ImVec4(functions::smooth(value + ", x", goal_value.x, speed), functions::smooth(value + ", y", goal_value.y, speed), functions::smooth(value + ", z", goal_value.z, speed), functions::smooth(value + ", w", goal_value.w, speed));
-
-        if (method == e_method::linear)
-            return ImVec4(functions::linear(value + ", x", goal_value.x, speed), functions::linear(value + ", y", goal_value.y, speed), functions::linear(value + ", z", goal_value.z, speed), functions::linear(value + ", w", goal_value.w, speed));
+    ImVec2 set(ImGuiID id, const ImVec2 goal_value, float speed, e_method method) {
+        ImVec4& v = values[id];
+        v.x = step(v.x, goal_value.x, speed, method);
+        v.y = step(v.y, goal_value.y, speed, method);
+        return ImVec2(v.x, v.y);
     }
 
-/*
-    ImColor set(const std::string& value, const ImColor goal_value, float speed, e_method method) {
-        if (method == e_method::smooth)
-            return ImColor(functions::smooth(value + ", x", goal_value.Value.x, speed), functions::smooth(value + ", y", goal_value.Value.y, speed), functions::smooth(value + ", z", goal_value.Value.z, speed), functions::smooth(value + ", w", goal_value.Value.w, speed));
-
-        if (method == e_method::linear)
-            return ImColor(functions::linear(value + ", x", goal_value.Value.x, speed), functions::linear(value + ", y", goal_value.Value.y, speed), functions::linear(value + ", z", goal_value.Value.z, speed), functions::linear(value + ", w", goal_value.Value.w, speed));
-    }
-*/
-
-    float set(const int& value, const float goal_value, float speed, e_method method) {
-        if (method == e_method::smooth)
-            return functions::smooth(value, goal_value, speed);
-
-        if (method == e_method::linear)
-            return functions::linear(value, goal_value, speed);
+    ImVec4 set(ImGuiID id, const ImVec4 goal_value, float speed, e_method method) {
+        ImVec4& v = values[id];
+        v.x = step(v.x, goal_value.x, speed, method);
+        v.y = step(v.y, goal_value.y, speed, method);
+        v.z = step(v.z, goal_value.z, speed, method);
+        v.w = step(v.w, goal_value.w, speed, method);
+        return v;
     }
 
-    ImVec2 set(const int& value, const ImVec2 goal_value, float speed, e_method method) {
-        return set(std::to_string(value), goal_value, speed, method);
+    float set(std::string_view name, const float goal_value, float speed, e_method method) {
+        return set(key(name), goal_value, speed, method);
     }
 
-    ImVec4 set(const int& value, const ImVec4 goal_value, float speed, e_method method) {
-        return set(std::to_string(value), goal_value, speed, method);
+    ImVec2 set(std::string_view name, const ImVec2 goal_value, float speed, e_method method) {
+        return set(key(name), goal_value, speed, method);
+    }
+
+    ImVec4 set(std::string_view name, const ImVec4 goal_value, float speed, e_method method) {
+        return set(key(name), goal_value, speed, method);
     }
 }

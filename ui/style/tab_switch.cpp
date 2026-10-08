@@ -17,13 +17,13 @@ namespace celosia::animations::functions {
 			else
 				animations::set("groupbox_active_spacing", 0, style::frame::tab_switch_animation_speed, animations::e_method::smooth);
 
-			if (animations::str_map["groupbox_active_spacing"] >= style::frame::tab_switch_animation_max)
+			if (animations::get("groupbox_active_spacing") >= style::frame::tab_switch_animation_max)
 				variables::temporary::bools["tab_switch_animation_down"] = false;
 
-			if (variables::temporary::bools["tab_switch_animation_down"] && animations::str_map["groupbox_active_spacing"] == 0) 
+			if (variables::temporary::bools["tab_switch_animation_down"] && animations::get("groupbox_active_spacing") == 0) 
 				variables::temporary::bools["tab_switch_animation_active"] = false;
 
-			float overlay_alpha = animations::str_map["groupbox_active_spacing"] / style::frame::tab_switch_animation_max;
+			float overlay_alpha = animations::get("groupbox_active_spacing") / style::frame::tab_switch_animation_max;
 			ImColor overlay_color = style::themes::active.background;
 			overlay_color.Value.w = overlay_alpha;
 

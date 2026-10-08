@@ -7,9 +7,8 @@ void ImGui::RenderFrameBorderAnimated(const char* label, ImVec2 p_min, ImVec2 p_
     ImGuiWindow* window = g.CurrentWindow;
 
 
-    std::string std_label = (std::string)label;
-    std::string name = "RenderFrameBorderAnimated";
-    ImColor animated_color = celosia::animations::set(std_label + name, ImVec4(fill_col), 0.f, celosia::animations::e_method::linear);
+    const ImGuiID id = celosia::animations::key("RenderFrameBorderAnimated", celosia::animations::key(label));
+    ImColor animated_color = celosia::animations::set(id, ImVec4(fill_col), 0.f, celosia::animations::e_method::linear);
 
     int border_size = celosia::style::frame::border_size;
     //window->DrawList->AddRect(p_min + ImVec2(1, 1), p_max + ImVec2(1, 1), animated_color, rounding, 0, border_size);

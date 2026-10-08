@@ -12,6 +12,7 @@
 #include <iostream>
 #include <cmath>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <map>
 
@@ -76,8 +77,7 @@ namespace celosia {
 	}
 
 	namespace animations {
-		inline std::unordered_map<std::string, float> str_map;
-		inline std::unordered_map<int, float> int_map;
+		inline std::unordered_map<ImGuiID, ImVec4> values; // one entry per animated value, floats use x and ImVec2 uses x, y
 		inline float base_speed = 2.f;
 
 		enum e_method{ smooth, linear };
@@ -86,22 +86,20 @@ namespace celosia {
 			float calc_linear(float current_value, const float goal_value, float speed);
 			float calc_smooth(float current_value, const float goal_value, float speed);
 
-			float linear(const std::string& value, const float goal_value, float speed);
-			float smooth(const std::string& value, const float goal_value, float speed);
-
-			float linear(const int& value, const float goal_value, float speed);
-			float smooth(const int& value, const float goal_value, float speed);
-
 			void tab_switch();
 		}
 
-		float set(const std::string& value, const float goal_value, float speed = 0, e_method method = e_method::smooth);
-		ImVec2 set(const std::string& value, const ImVec2 goal_value, float speed = 0, e_method method = e_method::smooth);
-		ImVec4 set(const std::string& value, const ImVec4 goal_value, float speed = 0, e_method method = e_method::smooth);
+		ImGuiID key(std::string_view name, ImGuiID seed = 0); // chain keys without building strings: key("suffix", key(label))
+		float get(ImGuiID id);
+		float get(std::string_view name);
 
-		float set(const int& value, const float goal_value, float speed = 0, e_method method = e_method::smooth);
-		ImVec2 set(const int& value, const ImVec2 goal_value, float speed = 0, e_method method = e_method::smooth);
-		ImVec4 set(const int& value, const ImVec4 goal_value, float speed = 0, e_method method = e_method::smooth);
+		float set(ImGuiID id, const float goal_value, float speed = 0, e_method method = e_method::smooth);
+		ImVec2 set(ImGuiID id, const ImVec2 goal_value, float speed = 0, e_method method = e_method::smooth);
+		ImVec4 set(ImGuiID id, const ImVec4 goal_value, float speed = 0, e_method method = e_method::smooth);
+
+		float set(std::string_view name, const float goal_value, float speed = 0, e_method method = e_method::smooth);
+		ImVec2 set(std::string_view name, const ImVec2 goal_value, float speed = 0, e_method method = e_method::smooth);
+		ImVec4 set(std::string_view name, const ImVec4 goal_value, float speed = 0, e_method method = e_method::smooth);
 	}
 
 	namespace ui {
