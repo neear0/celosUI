@@ -3,56 +3,36 @@
 #include "ui.h"
 
 namespace celosia::inputsystem {
+	static bool pressed(BYTE key) { // watched keys use the state from refresh(), others are polled
+		return registry::watched[key] ? registry::state[key] : key::held(key);
+	}
+
 	bool key::down(const DWORD& key) {
-		if (!(registry::watched.find(key) == registry::watched.end())) { // this really does not seem efficient at all i'm gonna be completely honest CTODO: Rewrite, inefficient
-			if (registry::watched[key] && !registry::down[key]) {
-				registry::down[key] = true;
-				return true;
-			}
-			else {
-				if (!registry::watched[key] && registry::down[key])
-					registry::down[key] = false;
-				return false;
-			}
+		const BYTE k = key & 0xFF;
+		const bool is_pressed = pressed(k);
+
+		if (is_pressed && !registry::down[k]) { // key has just went down
+			registry::down[k] = true;
+			return true;
 		}
-		else {
-			if (GetAsyncKeyState(key) && !registry::down[key]) { // key has just went down
-				registry::down[key] = true;
-				return true;
-			}
-			else {
-				if (!GetAsyncKeyState(key) && registry::down[key]) // reset
-					registry::down[key] = false;
-				return false;
-			}
-		}
+		if (!is_pressed && registry::down[k]) // reset
+			registry::down[k] = false;
+		return false;
 	}
 
 	bool key::up(const DWORD& key) {
-		if (!(registry::watched.find(key) == registry::watched.end())) {
-			if (registry::watched[key] && !registry::up[key]) {
-				registry::up[key] = true;
-				return false;
-			}
-			else {
-				if (!registry::watched[key] && registry::up[key])
-					registry::up[key] = false;
-				return true;
-			}
+		const BYTE k = key & 0xFF;
+		const bool is_pressed = pressed(k);
+
+		if (is_pressed && !registry::up[k]) {
+			registry::up[k] = true;
+			return false;
 		}
-		else {
-			if (GetAsyncKeyState(key) && !registry::up[key]) {
-				registry::up[key] = true;
-				return false;
-			}
-			else {
-				if (!GetAsyncKeyState(key) && registry::up[key]) {
-					registry::up[key] = false;
-					return true;
-				}
-				return false;
-			}
+		if (!is_pressed && registry::up[k]) {
+			registry::up[k] = false;
+			return true;
 		}
+		return registry::watched[k]; // CTODO: watched keys report up whenever they aren't pressed, unwatched keys only on release
 	}
 
 	bool key::held(const DWORD& key) { // key is currently down
@@ -60,15 +40,20 @@ namespace celosia::inputsystem {
 	}
 
 	void key::watch(const DWORD& key) { // add key to the watchlist
-		registry::watched.insert({ key, false });
+		const BYTE k = key & 0xFF;
+		if (!registry::watched[k]) {
+			registry::watched[k] = true;
+			registry::state[k] = false;
+		}
 	}
 
 	void key::unwatch(const DWORD& key) { // remove key from the watchlist
-		registry::watched.erase(key);
+		registry::watched[key & 0xFF] = false;
 	}
 
-	void refresh() { // loop through all of the keys in watchlist and validate them (this does not seem all that efficient either)
-		for (auto const& [key, val] : registry::watched)
-			registry::watched[key] = key::held(key);
+	void refresh() { // loop through all of the keys in watchlist and validate them
+		for (int k = 0; k < 256; k++)
+			if (registry::watched[k])
+				registry::state[k] = key::held(k);
 	}
 }

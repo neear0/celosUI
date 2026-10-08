@@ -10,6 +10,7 @@
 #include <dwmapi.h>
 
 #include <iostream>
+#include <array>
 #include <cmath>
 #include <string>
 #include <string_view>
@@ -129,10 +130,11 @@ namespace celosia {
 	}
 
 	namespace inputsystem {
-		namespace registry {
-			inline std::unordered_map<DWORD, bool> down; // should probably clear these occasionally
-			inline std::unordered_map<DWORD, bool> up;
-			inline std::unordered_map<DWORD, bool> watched; // keys that are actively being refreshed globally
+		namespace registry { // indexed by virtual key code
+			inline std::array<bool, 256> down{};
+			inline std::array<bool, 256> up{};
+			inline std::array<bool, 256> watched{}; // keys that are actively being refreshed globally
+			inline std::array<bool, 256> state{};   // held state of watched keys, updated by refresh()
 		}
 
 		namespace key {
@@ -147,9 +149,6 @@ namespace celosia {
 			void unwatch(const DWORD& key);
 		}
 
-		void refresh();		// any references such as watched[KEY] will end up creating the key
-							// unintended, CTODO: fix
-							// or use watched.find / watched.at as these won't create a reference
-							// this has to be ran every frame
+		void refresh();		// this has to be ran every frame
 	}
 }
