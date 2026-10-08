@@ -32,5 +32,6 @@ namespace celosia_Win32::D3D {
         celosia::D3D::swapchain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
         celosia::D3D::device->CreateRenderTargetView(pBackBuffer, nullptr, &celosia::D3D::render_target_view);
         pBackBuffer->Release();
+        return true;
     }
 }
