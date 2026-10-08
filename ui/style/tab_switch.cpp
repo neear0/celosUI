@@ -25,7 +25,7 @@ namespace celosia::animations::functions {
 			if (animations::get(spacing) >= style::frame::tab_switch_animation_max)
 				animation_down = false;
 
-			if (animation_down && animations::get(spacing) == 0)
+			if (!animation_down && animations::get(spacing) == 0)
 				animation_active = false;
 
 			float overlay_alpha = animations::get(spacing) / style::frame::tab_switch_animation_max;
