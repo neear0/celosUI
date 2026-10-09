@@ -43,7 +43,7 @@ namespace celosia::render::groupbox {
 		ImColor b = style::themes::rgb_accent(a);
 		ImColor text_color = style::themes::active.text;
 		
-		drawlist->AddRectFilled(ImVec2(offset.x, offset.y + style::groupbox::height / 2), offset_max, style::themes::active.background_darker, style::general::rounding);
+		render::panel(drawlist, ImVec2(offset.x, offset.y + style::groupbox::height / 2), offset_max, style::themes::active.background_darker, style::general::rounding);
 
 		switch (style::themes::active.tab_style) {
 		case style::themes::e_tab_title_style::minimal:
@@ -51,7 +51,7 @@ namespace celosia::render::groupbox {
 			drawlist->AddRectFilledMultiColor(ImVec2(offset.x, offset.y + (style::groupbox::height)-2), ImVec2(offset_max.x, offset.y + (style::groupbox::height)), a, b, b, a); // ctodo: make a func of this
 			break;
 		case style::themes::e_tab_title_style::full:
-			ImGui::add_rect_filled_multi_color_rounded(drawlist, offset, ImVec2(offset_max.x, offset.y + style::groupbox::height), a, b, style::general::rounding);
+			effects::gradient(drawlist, offset, ImVec2(offset_max.x, offset.y + style::groupbox::height), a, b, (float)style::general::rounding, 0.f, 0.15f); // slowly slides back and forth
 
 			const float combined_rgb = style::general::main_color.Value.x + style::general::main_color.Value.y + style::general::main_color.Value.z; // could be made into a function, i don't see the point though because i don't plan on using this any other place
 			float text_color_goal;

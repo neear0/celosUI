@@ -25,6 +25,23 @@
     <FxCompile Include="external\imgui\dx11\imgui_impl_dx11_ps.hlsl">
       <Filter>Shader Files</Filter>
     </FxCompile>
+    <FxCompile Include="ui\shaders\gradient.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="ui\shaders\glow.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="ui\shaders\blur.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="ui\shaders\background.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui\shaders\effect.hlsli">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="external\imgui\dx11\imgui_impl_dx11.cpp">
@@ -69,6 +86,12 @@
     <ClCompile Include="ui\resources\font_data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\effects\effects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\win32\effects_d3d11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ui\ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -100,6 +123,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\render\groupbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\render\panel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\style\tab_switch.cpp">

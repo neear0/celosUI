@@ -22,6 +22,12 @@ namespace celosia_win32 {
 		void report_debug_messages(); // debug builds: prints what the d3d11 debug layer reported since the last call
 	}
 
+	namespace effect_renderer { // d3d11 side of celosia::effects, see effects_d3d11.cpp
+		bool create();
+		void update_backdrop(); // before each frame, keeps the backdrop the size of the back buffer
+		void destroy();
+	}
+
 	namespace variables {
 		inline std::map<LPCWSTR, std::pair<WNDCLASSEXW, HWND>> windows;
 		inline long default_window_flags = WS_EX_TOPMOST | WS_EX_LAYERED; // WS_EX_TRANSPARENT to be able to click through

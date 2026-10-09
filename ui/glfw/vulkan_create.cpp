@@ -123,11 +123,11 @@ namespace celosia_glfw::vulkan {
         volkLoadDevice(device);
         vkGetDeviceQueue(device, queue_family, 0, &queue);
 
-        VkDescriptorPoolSize pool_sizes[] = { { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 } }; // the font texture
+        VkDescriptorPoolSize pool_sizes[] = { { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2 } }; // the font texture and the effects' backdrop
         VkDescriptorPoolCreateInfo pool_info = {};
         pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-        pool_info.maxSets = 1;
+        pool_info.maxSets = 2;
         pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
         pool_info.pPoolSizes = pool_sizes;
         return vkCreateDescriptorPool(device, &pool_info, nullptr, &descriptor_pool) == VK_SUCCESS;
@@ -178,6 +178,8 @@ namespace celosia_glfw::vulkan {
         window_data.FrameIndex = 0;
         window_data.SemaphoreIndex = 0;
         swapchain_rebuild = false;
+        effect_renderer::destroy_backdrop(); // the device is idle after the rebuild
+        effect_renderer::create_backdrop();
     }
 
     static bool frame_pending = false; // render() submitted a frame that present() still has to show
@@ -208,6 +210,7 @@ namespace celosia_glfw::vulkan {
         begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
         check_result(vkBeginCommandBuffer(fd->CommandBuffer, &begin_info));
+        effect_renderer::command_buffer = fd->CommandBuffer;
 
         VkRenderPassBeginInfo pass_info = {};
         pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

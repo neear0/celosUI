@@ -11,6 +11,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <map>
+#include <vector>
 #include <filesystem>
 
 #include "../external/imgui/imgui.h"
@@ -152,6 +153,33 @@ namespace celosia {
 		};
 	}
 
+	namespace effects { // shader effects (shaders/*.hlsl). each one is a draw list callback that swaps in its shader, so it lands in order between ImGui's own draws
+		enum class e_type { gradient, glow, blur, background, count };
+
+		struct t_constants { // matches effect_constants in shaders/effect.hlsli
+			ImVec4 reserved; // vulkan: ImGui's vertex shader keeps its push constants here
+			ImVec4 rect;     // min x, min y, max x, max y in framebuffer pixels
+			ImVec4 color_a;
+			ImVec4 color_b;
+			ImVec4 color_c;
+			ImVec4 params;   // x is the corner rounding in pixels, the rest depends on the effect
+		};
+
+		struct t_command {
+			e_type type;
+			t_constants constants;
+		};
+		inline std::vector<t_command> commands; // this frame's effects, the callbacks refer to them by index
+
+		void new_frame(); // forgets last frame's effects, called by ui::begin()
+
+		// positions, rounding and radius are in ImGui units like the rest of the draw list
+		void gradient(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor a, ImColor b, float rounding = 0.f, float angle = 0.f, float speed = 0.f); // a to b along angle (radians), speed > 0 slides it back and forth
+		void glow(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor color, float rounding = 0.f, float radius = 12.f); // around min-max, nothing inside it, draw it before the item
+		void blur(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor tint, float rounding = 0.f, float radius = 10.f); // frosted glass over what's already drawn there, tint alpha is how much tint
+		void background(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor base, ImColor one, ImColor two, float rounding = 0.f); // blobs of one and two drifting over base, their alpha is their strength
+	}
+
 	namespace platform { // one implementation per backend: win32/ (Win32 + D3D11) and glfw/ (GLFW + Vulkan)
 		bool create(const char* title, ImVec2 pos, ImVec2 size); // window, renderer and ImGui backends, call after initialize::context()
 		bool poll();         // handles window events, false once the window has been closed
@@ -165,6 +193,13 @@ namespace celosia {
 		ImVec2 screen_size();
 		void move(ImVec2 pos);
 		void bring_to_top();
+
+		bool blur_supported(); // the os can blur what's behind the window (windows), see style::window::background
+		void set_blur(bool enabled);
+
+		// renderer side of effects
+		void draw_effect(const ImDrawList* drawlist, const ImDrawCmd* command); // ImDrawCallback, switches to the shader of effects::commands[command->UserCallbackData]
+		ImTextureID backdrop_texture(); // copy of the frame drawn so far, refreshed by every blur. null when the renderer can't copy the frame
 	}
 
 	namespace window {

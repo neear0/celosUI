@@ -250,6 +250,21 @@
     <FxCompile Include="external\imgui\dx11\imgui_impl_dx11_ps.hlsl">
       <ShaderType>Pixel</ShaderType>
     </FxCompile>
+    <FxCompile Include="ui\shaders\gradient.hlsl">
+      <ShaderType>Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="ui\shaders\glow.hlsl">
+      <ShaderType>Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="ui\shaders\blur.hlsl">
+      <ShaderType>Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="ui\shaders\background.hlsl">
+      <ShaderType>Pixel</ShaderType>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui\shaders\effect.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="external\imgui\dx11\imgui_impl_dx11.cpp">
@@ -295,6 +310,7 @@
     <ClCompile Include="ui\wrappers\ImGui\Scrollbar.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\tab_button.cpp" />
     <ClCompile Include="ui\render\groupbox.cpp" />
+    <ClCompile Include="ui\render\panel.cpp" />
     <ClCompile Include="ui\render\sidebar.cpp" />
     <ClCompile Include="ui\render\titlebar.cpp" />
     <ClCompile Include="ui\resources\font_data.cpp">
@@ -308,7 +324,9 @@
     <ClCompile Include="ui\style\theme_setup.cpp" />
     <ClCompile Include="ui\ui.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\Button.cpp" />
+    <ClCompile Include="ui\effects\effects.cpp" />
     <ClCompile Include="ui\win32\d3d_create.cpp" />
+    <ClCompile Include="ui\win32\effects_d3d11.cpp" />
     <ClCompile Include="ui\win32\window_effects.cpp" />
     <ClCompile Include="ui\win32\window_functions.cpp" />
     <ClCompile Include="ui\win32\platform_win32.cpp" />

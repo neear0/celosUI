@@ -26,6 +26,9 @@ namespace celosia::initialize {
         style::themes::set(style::themes::dark);
 
         inputsystem::key::watch(keys::mouse_left);
+
+        if (!platform::blur_supported()) // nothing to blur the desktop with, use the shader background
+            style::window::background = style::window::shader;
     }
 
     void fonts() {
@@ -42,6 +45,7 @@ namespace celosia::initialize {
 
 namespace celosia::ui {
     void begin() {
+        effects::new_frame();
         inputsystem::refresh();
 
         platform::new_frame();

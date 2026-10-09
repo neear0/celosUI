@@ -53,12 +53,14 @@ set(imgui_sources
 set(celos_ui_sources
     main.cpp
     ui/debug/debug.cpp
+    ui/effects/effects.cpp
     ui/functions.cpp
     ui/initialize.cpp
     ui/inputsystem.cpp
     ui/ui.cpp
     ui/window_drag.cpp
     ui/render/groupbox.cpp
+    ui/render/panel.cpp
     ui/render/sidebar.cpp
     ui/render/text.cpp
     ui/render/titlebar.cpp
@@ -87,6 +89,7 @@ if(CELOSUI_PLATFORM STREQUAL "win32")
 
     list(APPEND celos_ui_sources
         ui/win32/d3d_create.cpp
+        ui/win32/effects_d3d11.cpp
         ui/win32/platform_win32.cpp
         ui/win32/window_effects.cpp
         ui/win32/window_functions.cpp
@@ -127,7 +130,11 @@ elseif(CELOSUI_PLATFORM STREQUAL "glfw")
     )
     FetchContent_MakeAvailable(glfw vulkan_headers volk)
 
+    # shaders are compiled at build time to spir-v by glslangValidator (glslang-tools package, or the vulkan sdk on windows)
+    find_program(CELOSUI_GLSLANG glslangValidator HINTS $ENV{VULKAN_SDK}/bin REQUIRED)
+
     list(APPEND celos_ui_sources
+        ui/glfw/effects_vulkan.cpp
         ui/glfw/platform_glfw.cpp
         ui/glfw/vulkan_create.cpp
     )
@@ -146,26 +153,43 @@ add_executable(celos_ui ${celos_ui_sources} ${imgui_sources} ${backend_sources})
 target_precompile_headers(celos_ui PRIVATE ui/pch.h)
 set_source_files_properties(${imgui_sources} ${backend_sources} ui/resources/font_data.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
-# compiles an hlsl shader at build time into shaders/<name>_dxbc.h, a byte array named <name>_dxbc
+# compiles an hlsl shader at build time into a header holding it as an array:
+# win32: shaders/<name>_dxbc.h with <name>_dxbc for d3d11 (fxc), glfw: shaders/<name>_spirv.h with <name>_spirv for vulkan (glslangValidator)
 # usage: celos_ui_shader(<source> vertex|pixel [extra files it depends on])
 target_include_directories(celos_ui PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 function(celos_ui_shader source stage)
     get_filename_component(name ${source} NAME_WE)
-    if(stage STREQUAL "vertex")
-        set(profile vs_4_0)
+    if(CELOSUI_PLATFORM STREQUAL "win32")
+        if(stage STREQUAL "vertex")
+            set(profile vs_4_0)
+        else()
+            set(profile ps_4_0)
+        endif()
+        set(output ${CMAKE_CURRENT_BINARY_DIR}/shaders/${name}_dxbc.h)
+        set(command ${CELOSUI_FXC} /nologo /T ${profile} /E main /Fh ${output} /Vn ${name}_dxbc ${CMAKE_CURRENT_SOURCE_DIR}/${source})
     else()
-        set(profile ps_4_0)
+        if(stage STREQUAL "vertex")
+            set(glslang_stage vert)
+        else()
+            set(glslang_stage frag)
+        endif()
+        # -D: the source is hlsl, --auto-sampled-textures: texture + sampler pairs become the combined image samplers ImGui binds
+        set(output ${CMAKE_CURRENT_BINARY_DIR}/shaders/${name}_spirv.h)
+        set(command ${CELOSUI_GLSLANG} -D -V -S ${glslang_stage} -e main --auto-sampled-textures --vn ${name}_spirv -o ${output} ${CMAKE_CURRENT_SOURCE_DIR}/${source})
     endif()
-    set(output ${CMAKE_CURRENT_BINARY_DIR}/shaders/${name}_dxbc.h)
     add_custom_command(OUTPUT ${output}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/shaders
-        COMMAND ${CELOSUI_FXC} /nologo /T ${profile} /E main /Fh ${output} /Vn ${name}_dxbc ${CMAKE_CURRENT_SOURCE_DIR}/${source}
+        COMMAND ${command}
         DEPENDS ${source} ${ARGN}
         COMMENT "Compiling shader ${source}"
         VERBATIM
     )
     target_sources(celos_ui PRIVATE ${output})
 endfunction()
+
+foreach(effect gradient glow blur background)
+    celos_ui_shader(ui/shaders/${effect}.hlsl pixel ui/shaders/effect.hlsli)
+endforeach()
 
 if(CELOSUI_PLATFORM STREQUAL "win32")
     celos_ui_shader(external/imgui/dx11/imgui_impl_dx11_vs.hlsl vertex)

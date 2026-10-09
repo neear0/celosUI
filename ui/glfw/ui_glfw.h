@@ -29,4 +29,13 @@ namespace celosia_glfw {
 		void present();
 		void destroy();
 	}
+
+	namespace effect_renderer { // vulkan side of celosia::effects, see effects_vulkan.cpp
+		inline VkCommandBuffer command_buffer = VK_NULL_HANDLE; // the frame being recorded, set by vulkan::render()
+
+		bool create();           // after ImGui_ImplVulkan_Init()
+		bool create_backdrop();  // sized like the swapchain, call again after it's rebuilt
+		void destroy_backdrop();
+		void destroy();
+	}
 }

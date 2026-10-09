@@ -50,6 +50,8 @@ namespace celosia::platform {
         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
         init_info.CheckVkResultFn = celosia_glfw::vulkan::check_result;
         ImGui_ImplVulkan_Init(&init_info, celosia_glfw::vulkan::window_data.RenderPass);
+        if (!celosia_glfw::effect_renderer::create())
+            return false;
 
         glfwShowWindow(window);
         return true;
@@ -77,6 +79,7 @@ namespace celosia::platform {
 
     void destroy() {
         vkDeviceWaitIdle(celosia_glfw::vulkan::device);
+        celosia_glfw::effect_renderer::destroy();
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         celosia_glfw::vulkan::destroy();
@@ -148,4 +151,10 @@ namespace celosia::platform {
     void bring_to_top() {
         // GLFW_FLOATING already keeps the window above others, raising it every frame would steal focus
     }
+
+    bool blur_supported() { // no compositor blur through glfw, the shader background is used instead
+        return false;
+    }
+
+    void set_blur(bool) {}
 }

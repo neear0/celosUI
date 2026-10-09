@@ -7,8 +7,21 @@ namespace celosia::ui { // ctodo: move this to render
         ImGui::Begin(variables::title, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
         ImGui::SetWindowSize(celosia::ui::size);
         ImGui::SetWindowPos(ImVec2(0, 0));
+
+        ImDrawList* drawlist = ImGui::GetWindowDrawList();
+        const ImVec2 pos = ImGui::GetWindowPos();
+        drawlist->PushClipRect(pos, pos + celosia::ui::size); // ImGui clips a window's contents one pixel in from its edges, the background, titlebar and sidebar go all the way
+        if (style::window::background == style::window::shader) {
+            const ImVec4 main = style::general::main_color.Value;
+            const ImVec4 accent = style::themes::rgb_accent(style::general::main_color).Value;
+            ImVec4 base = style::themes::active.background.Value;
+            base.w = 1.f; // the window is opaque with the shader background, only the rounded corners let the desktop through
+            effects::background(drawlist, pos, pos + celosia::ui::size,
+                base, ImColor(main.x, main.y, main.z, 0.55f), ImColor(accent.x, accent.y, accent.z, 0.45f), (float)style::general::rounding_window);
+        }
         render::titlebar();
         render::sidebar();
+        drawlist->PopClipRect();
 
         if (tab_current == "tab1") { // --> visible tab
             render::groupbox::begin("Groupbox A");

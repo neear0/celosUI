@@ -10,6 +10,10 @@ namespace celosia::style {
 		inline static ImVec2 padding = {10, 10};
 		inline static ImVec2 spacing = {0, 4};
 	}
+	namespace window {
+		enum e_background { blur, shader };
+		inline e_background background = blur; // blur: the os blurs the desktop behind the window (windows only), shader: effects::background with glass panels
+	}
 	namespace titlebar {
 		inline static float height = 45;
 		inline static int padding = 2;

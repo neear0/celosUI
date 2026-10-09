@@ -1,8 +1,15 @@
 #include "../../ui.h"
 
 void tab_style(const ImRect bb, const char* label, ImVec2 label_size, const ImGuiStyle& style, ImColor col) {
-    if (celosia::ui::tab_active == label)
+    const bool active = celosia::ui::tab_active == label;
+    if (active)
         col = celosia::style::general::main_color;
+
+    const float glow = celosia::animations::set(celosia::animations::key("tab_glow", celosia::animations::key(label)), active ? 1.f : 0.f);
+    if (glow > 0.01f) { // the active tab glows in the main color, fading in and out
+        const ImVec4 main = celosia::style::general::main_color.Value;
+        celosia::effects::glow(ImGui::GetWindowDrawList(), bb.Min, bb.Max, ImColor(main.x, main.y, main.z, 0.5f * glow), style.FrameRounding, 10.f);
+    }
 
     ImGui::render_frame_border_animated(label, bb.Min, bb.Max, col, style.FrameRounding);
     ImGui::RenderTextClipped(ImVec2(bb.Min.x + style.FramePadding.x, bb.Min.y + style.FramePadding.y), ImVec2(bb.Max.x - style.FramePadding.x, bb.Max.y - style.FramePadding.y), label, NULL, &label_size, style.ButtonTextAlign, &bb);

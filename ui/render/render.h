@@ -8,6 +8,7 @@ namespace celosia::render {
 
 	void titlebar();
 	void sidebar();
+	void panel(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor color, float rounding); // glass with the shader background, a flat fill otherwise
 
 	namespace text {
 		namespace calc {

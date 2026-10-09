@@ -16,9 +16,11 @@ namespace celosia::platform {
 
         ImGui_ImplWin32_Init(hwnd);
         ImGui_ImplDX11_Init(celosia_win32::d3d::device, celosia_win32::d3d::device_context);
+        if (!celosia_win32::effect_renderer::create())
+            return false;
 
         celosia_win32::window::enable_transparency(hwnd);
-        celosia_win32::window::enable_blur(hwnd, 4);
+        celosia_win32::window::enable_blur(hwnd, style::window::background == style::window::blur ? 4 : 0);
         celosia_win32::window::show(hwnd);
         return true;
     }
@@ -36,6 +38,7 @@ namespace celosia::platform {
     }
 
     void new_frame() {
+        celosia_win32::effect_renderer::update_backdrop();
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
     }
@@ -53,6 +56,7 @@ namespace celosia::platform {
     void destroy() {
         ImGui_ImplDX11_Shutdown();
         ImGui_ImplWin32_Shutdown();
+        celosia_win32::effect_renderer::destroy();
         celosia_win32::d3d::destroy_device();
         celosia_win32::window::destroy();
         hwnd = nullptr;
@@ -85,5 +89,13 @@ namespace celosia::platform {
 
     void bring_to_top() {
         BringWindowToTop(hwnd);
+    }
+
+    bool blur_supported() {
+        return true;
+    }
+
+    void set_blur(bool enabled) { // 4 is acrylic blur behind the window, 0 turns it off
+        celosia_win32::window::enable_blur(hwnd, enabled ? 4 : 0);
     }
 }

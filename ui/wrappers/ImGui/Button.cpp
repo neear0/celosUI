@@ -31,6 +31,12 @@ namespace ImGui {
         bool hovered, held;
         bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
+        const float glow = celosia::animations::set(celosia::animations::key("button_glow", id), hovered ? 1.f : 0.f);
+        if (glow > 0.01f) { // hovered buttons glow faintly in the main color
+            const ImVec4 main = celosia::style::general::main_color.Value;
+            celosia::effects::glow(window->DrawList, bb.Min, bb.Max, ImColor(main.x, main.y, main.z, 0.35f * glow), style.FrameRounding, 8.f);
+        }
+
         const ImColor col = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
         RenderNavHighlight(bb, id);
         style1(bb, label, label_size, style, col);

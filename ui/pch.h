@@ -18,6 +18,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <map>
+#include <vector>
 #include <filesystem>
 
 #include "../external/imgui/imgui.h"
