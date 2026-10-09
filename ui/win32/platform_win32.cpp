@@ -47,6 +47,7 @@ namespace celosia::platform {
 
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
         celosia_win32::d3d::swapchain->Present(1, 0); // Present with vsync, (use 0, 0 for no vsync, although unnecessary because I don't think I'll be needing 1000+ fps for this. Maybe limit it to 60 fps or something even.)
+        celosia_win32::d3d::report_debug_messages();
     }
 
     void destroy() {

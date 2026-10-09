@@ -19,6 +19,7 @@ namespace celosia_win32 {
 
 		bool create_device(HWND hwnd);
 		void destroy_device();
+		void report_debug_messages(); // debug builds: prints what the d3d11 debug layer reported since the last call
 	}
 
 	namespace variables {
