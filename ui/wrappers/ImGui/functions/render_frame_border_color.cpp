@@ -1,6 +1,6 @@
 #include "../../../ui.h"
 
-void ImGui::RenderFrameBorderColor(ImVec2 p_min, ImVec2 p_max, ImColor clr,float rounding)
+void ImGui::render_frame_border_color(ImVec2 p_min, ImVec2 p_max, ImColor clr,float rounding)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;

@@ -1,5 +1,5 @@
 #include "ui.h"
-#include "Win32/ui_Win32.h"
+#include "win32/ui_win32.h"
 
 float color[4] = { celosia::style::general::main_color.Value.x, celosia::style::general::main_color.Value.y, celosia::style::general::main_color.Value.z, celosia::style::general::main_color.Value.w};
 
@@ -20,7 +20,7 @@ namespace celosia::ui { // ctodo: move this to render
 
             render::groupbox::begin("Groupbox B", "Checkboxes");
             for (int i = 0; i < 20; i++)
-                ImGui::CheckboxMap(("Checkbox " + std::to_string(i)).c_str());
+                ImGui::checkbox_map(("Checkbox " + std::to_string(i)).c_str());
             render::groupbox::end();
         }
         else {

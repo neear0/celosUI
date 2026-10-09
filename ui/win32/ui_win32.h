@@ -3,9 +3,9 @@
 #include "../ui.h"
 #include <WinUser.h>
 
-namespace celosia_Win32 {
-	namespace D3D {
-		bool CreateDevice(HWND hwnd);
+namespace celosia_win32 {
+	namespace d3d {
+		bool create_device(HWND hwnd);
 	}
 
 	namespace variables {
@@ -15,7 +15,7 @@ namespace celosia_Win32 {
 	}
 
 	namespace window {
-		LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+		LRESULT WINAPI wnd_proc(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param);
 		HWND create(LPCWSTR window_title, ImVec2 pos, ImVec2 size, long window_flags = variables::default_window_flags);
 		void enable_transparency(HWND hwnd);
 		void enable_blur(HWND hwnd, int accent = 3);

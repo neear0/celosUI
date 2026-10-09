@@ -21,7 +21,7 @@ namespace celosia::initialize {
 
         if (hwnd != nullptr)
             ImGui_ImplWin32_Init(hwnd);
-        ImGui_ImplDX11_Init(D3D::device, D3D::device_context);
+        ImGui_ImplDX11_Init(d3d::device, d3d::device_context);
 
         style::themes::initialize();
         style::themes::set(style::themes::dark);
@@ -52,10 +52,10 @@ namespace celosia::ui {
     void end() {
         ImGui::Render();
         const float clear_color_with_alpha[4] = { 0,0,0,0 };
-        D3D::device_context->OMSetRenderTargets(1, &D3D::render_target_view, nullptr);
-        D3D::device_context->ClearRenderTargetView(D3D::render_target_view, clear_color_with_alpha);
+        d3d::device_context->OMSetRenderTargets(1, &d3d::render_target_view, nullptr);
+        d3d::device_context->ClearRenderTargetView(d3d::render_target_view, clear_color_with_alpha);
 
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-        D3D::swapchain->Present(1, 0); // Present with vsync, (use 0, 0 for no vsync, although unnecessary because I don't think I'll be needing 1000+ fps for this. Maybe limit it to 60 fps or something even.)
+        d3d::swapchain->Present(1, 0); // Present with vsync, (use 0, 0 for no vsync, although unnecessary because I don't think I'll be needing 1000+ fps for this. Maybe limit it to 60 fps or something even.)
     }
 }

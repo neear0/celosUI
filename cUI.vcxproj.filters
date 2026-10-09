@@ -42,13 +42,13 @@
     <ClCompile Include="ui\style\animations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\Win32\window_functions.cpp">
+    <ClCompile Include="ui\win32\window_functions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\Win32\window_effects.cpp">
+    <ClCompile Include="ui\win32\window_effects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\Win32\d3d_create.cpp">
+    <ClCompile Include="ui\win32\d3d_create.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\pch.cpp">
@@ -66,7 +66,7 @@
     <ClCompile Include="ui\debug\debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\Win32\window_move.cpp">
+    <ClCompile Include="ui\win32\window_move.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\render\titlebar.cpp">
@@ -78,7 +78,7 @@
     <ClCompile Include="ui\wrappers\ImGui\Scrollbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\RenderFrameBorderAnimated.cpp">
+    <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_border_animated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\render\groupbox.cpp">
@@ -87,13 +87,13 @@
     <ClCompile Include="ui\style\tab_switch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\TabButton.cpp">
+    <ClCompile Include="ui\wrappers\ImGui\tab_button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\AddRectFilledHalfRounded.cpp">
+    <ClCompile Include="ui\wrappers\ImGui\add_rect_filled_half_rounded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\AddRectFilledMultiColorRounded.cpp">
+    <ClCompile Include="ui\wrappers\ImGui\add_rect_filled_multi_color_rounded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\initialize.cpp">
@@ -105,13 +105,13 @@
     <ClCompile Include="ui\style\accents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\RenderFrameAnimated.cpp">
+    <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_animated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\wrappers\ImGui\Checkbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\RenderFrameBorderColor.cpp">
+    <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_border_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\wrappers\ImGui\ColorPicker.cpp">
@@ -155,7 +155,7 @@
     <ClInclude Include="ui\ui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ui\Win32\ui_Win32.h">
+    <ClInclude Include="ui\win32\ui_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ui\debug\debug.h">

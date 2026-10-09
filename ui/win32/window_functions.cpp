@@ -1,21 +1,21 @@
-#include "../Win32/ui_Win32.h"
+#include "../win32/ui_win32.h"
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param);
 
-namespace celosia_Win32::window {
-    LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+namespace celosia_win32::window {
+    LRESULT WINAPI wnd_proc(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param)
     {
-        if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+        if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, w_param, l_param))
             return true;
 
         switch (msg)
         {
         case WM_SIZE:
-            if (wParam == SIZE_MINIMIZED)
+            if (w_param == SIZE_MINIMIZED)
                 return 0;
             return 0;
         case WM_SYSCOMMAND:
-            if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+            if ((w_param & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
                 return 0;
             break;
         case WM_DISPLAYCHANGE: // screen resolution changed
@@ -27,7 +27,7 @@ namespace celosia_Win32::window {
             PostQuitMessage(0);
             return 0;
         }
-        return ::DefWindowProcW(hWnd, msg, wParam, lParam);
+        return ::DefWindowProcW(hwnd, msg, w_param, l_param);
     }
 
     HWND create(LPCWSTR window_title, ImVec2 pos, ImVec2 size, long window_flags) {
@@ -39,7 +39,7 @@ namespace celosia_Win32::window {
         WNDCLASSEXW wc = {
             sizeof(wc),
             CS_HREDRAW | CS_VREDRAW,
-            WndProc,
+            wnd_proc,
             0L, 0L,
             GetModuleHandle(nullptr),
             nullptr, nullptr, nullptr, nullptr,
@@ -85,7 +85,7 @@ namespace celosia_Win32::window {
     void destroy() { // ctodo: fix (this wont be necessary, there's only 1 window support)
         for (auto const& [key, val] : variables::windows)
         {
-            std::string converted = celosia::functions::ConvertLPCWSTRToString(key);
+            std::string converted = celosia::functions::convert_lpcwstr_to_string(key);
             std::cout << converted << std::endl;
         }
     }

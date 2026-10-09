@@ -255,16 +255,16 @@
     <ClCompile Include="ui\inputsystem.cpp" />
     <ClCompile Include="ui\render\text.cpp" />
     <ClCompile Include="ui\style\accents.cpp" />
-    <ClCompile Include="ui\wrappers\ImGui\AddRectFilledHalfRounded.cpp" />
-    <ClCompile Include="ui\wrappers\ImGui\AddRectFilledMultiColorRounded.cpp" />
+    <ClCompile Include="ui\wrappers\ImGui\add_rect_filled_half_rounded.cpp" />
+    <ClCompile Include="ui\wrappers\ImGui\add_rect_filled_multi_color_rounded.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\Checkbox.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\ColorPicker.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\Combo.cpp" />
-    <ClCompile Include="ui\wrappers\ImGui\functions\RenderFrameAnimated.cpp" />
-    <ClCompile Include="ui\wrappers\ImGui\functions\RenderFrameBorderAnimated.cpp" />
-    <ClCompile Include="ui\wrappers\ImGui\functions\RenderFrameBorderColor.cpp" />
+    <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_animated.cpp" />
+    <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_border_animated.cpp" />
+    <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_border_color.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\Scrollbar.cpp" />
-    <ClCompile Include="ui\wrappers\ImGui\TabButton.cpp" />
+    <ClCompile Include="ui\wrappers\ImGui\tab_button.cpp" />
     <ClCompile Include="ui\render\groupbox.cpp" />
     <ClCompile Include="ui\render\sidebar.cpp" />
     <ClCompile Include="ui\render\titlebar.cpp" />
@@ -275,10 +275,10 @@
     <ClCompile Include="ui\style\theme_setup.cpp" />
     <ClCompile Include="ui\ui.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\Button.cpp" />
-    <ClCompile Include="ui\Win32\d3d_create.cpp" />
-    <ClCompile Include="ui\Win32\window_effects.cpp" />
-    <ClCompile Include="ui\Win32\window_functions.cpp" />
-    <ClCompile Include="ui\Win32\window_move.cpp" />
+    <ClCompile Include="ui\win32\d3d_create.cpp" />
+    <ClCompile Include="ui\win32\window_effects.cpp" />
+    <ClCompile Include="ui\win32\window_functions.cpp" />
+    <ClCompile Include="ui\win32\window_move.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\imgui\dx11\imgui_impl_dx11.h" />
@@ -296,7 +296,7 @@
     <ClInclude Include="ui\style\style.h" />
     <ClInclude Include="ui\pch.h" />
     <ClInclude Include="ui\ui.h" />
-    <ClInclude Include="ui\Win32\ui_Win32.h" />
+    <ClInclude Include="ui\win32\ui_win32.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

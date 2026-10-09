@@ -1,7 +1,7 @@
 #include "../../ui.h"
 
 namespace ImGui {
-	void AddRectFilledMultiColorRounded(ImDrawList* drawlist, const ImVec2 min, const ImVec2 max, const ImColor one, const ImColor two, const int& rounding) { // improper way of doing it but works for now, rework later when i got time
+	void add_rect_filled_multi_color_rounded(ImDrawList* drawlist, const ImVec2 min, const ImVec2 max, const ImColor one, const ImColor two, const int& rounding) { // improper way of doing it but works for now, rework later when i got time
 		float size = celosia::functions::clamp((max.x - min.x) / 2.f, 0.f, 25.f);
 
 		drawlist->AddRectFilled(ImVec2(min.x, min.y), ImVec2(min.x + size, max.y), one, rounding);

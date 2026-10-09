@@ -8,11 +8,11 @@ namespace celosia::monitor {
 }
 
 namespace celosia::functions {
-	std::string ConvertLPCWSTRToString(LPCWSTR lpcwszStr)
+	std::string convert_lpcwstr_to_string(LPCWSTR wide_str)
 	{
-		int strLength = WideCharToMultiByte(CP_UTF8, 0, lpcwszStr, -1, nullptr, 0, nullptr, nullptr);
-		std::string str(strLength, 0);
-		WideCharToMultiByte(CP_UTF8, 0, lpcwszStr, -1, &str[0], strLength, nullptr, nullptr);
+		int str_length = WideCharToMultiByte(CP_UTF8, 0, wide_str, -1, nullptr, 0, nullptr, nullptr);
+		std::string str(str_length, 0);
+		WideCharToMultiByte(CP_UTF8, 0, wide_str, -1, &str[0], str_length, nullptr, nullptr);
 		return str;
 	} // https://www.geeksforgeeks.org/convert-lpcwstr-to-std_string-in-cpp/
 

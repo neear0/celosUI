@@ -135,7 +135,7 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
     if (hovered) col = GetColorU32(ImGuiCol_HeaderHovered);
     if (pressed || held) col = GetColorU32(ImGuiCol_HeaderActive);
     
-    RenderFrameAnimated(label, bb.Min, bb.Max, col, false, 0.0f);
+    render_frame_animated(label, bb.Min, bb.Max, col, false, 0.0f);
 
     // Render
     if (g.NavId == id)
@@ -229,7 +229,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
         if (value_x2 + arrow_size - style.FramePadding.x <= bb.Max.x)
             RenderArrow(window->DrawList, ImVec2(value_x2 + style.FramePadding.y, bb.Min.y + style.FramePadding.y), hover_col, ImGuiDir_Down, 1.0f);
     }
-    RenderFrameBorderAnimated(label, bb.Min, bb.Max, hover_col, style.FrameRounding);
+    render_frame_border_animated(label, bb.Min, bb.Max, hover_col, style.FrameRounding);
 
     // Custom preview
     if (flags & ImGuiComboFlags_CustomPreview)

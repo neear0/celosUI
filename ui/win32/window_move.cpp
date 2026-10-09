@@ -1,13 +1,13 @@
-#include "../Win32/ui_Win32.h"
+#include "../win32/ui_win32.h"
 
 bool dragging = false;
 bool ignore_click = false;
 
 ImVec2 offset;
 
-void celosia_Win32::window::drag() { // ctodo: make sure these aren't being handled when there's no ui visible, preferably in loop
+void celosia_win32::window::drag() { // ctodo: make sure these aren't being handled when there's no ui visible, preferably in loop
     RECT window_pos;
-    HWND hwnd = variables::windows[celosia_Win32::variables::main_window_title].second;
+    HWND hwnd = variables::windows[celosia_win32::variables::main_window_title].second;
     GetWindowRect(hwnd, &window_pos);
 
     ImVec2 mouse_pos = celosia::functions::mouse_vec2();

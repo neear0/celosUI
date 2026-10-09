@@ -1,6 +1,6 @@
 #include "../../ui.h"
 
-void RenderCheckMarkAnimated(bool active, const char* label, ImDrawList* drawlist, ImRect check_bb, float pad, float square_sz, ImColor clr) {
+void render_check_mark_animated(bool active, const char* label, ImDrawList* drawlist, ImRect check_bb, float pad, float square_sz, ImColor clr) {
     ImColor check_col = celosia::style::general::main_color;
 
     if (!active)
@@ -9,7 +9,7 @@ void RenderCheckMarkAnimated(bool active, const char* label, ImDrawList* drawlis
     ImColor animated = (ImColor)celosia::animations::set(label, (ImVec4)check_col, 0.f, celosia::animations::e_method::linear);
 
     ImGui::RenderCheckMark(drawlist, check_bb.Min + ImVec2(pad, pad), animated, square_sz - pad * 2.0f);
-    ImGui::RenderFrameBorderColor(check_bb.Min, check_bb.Max, animated,4.f);
+    ImGui::render_frame_border_color(check_bb.Min, check_bb.Max, animated,4.f);
     
 }
 
@@ -46,7 +46,7 @@ namespace ImGui {
         const ImRect check_bb(pos, pos + ImVec2(square_sz, square_sz));
         RenderNavHighlight(total_bb, id);
         //RenderFrame(check_bb.Min, check_bb.Max, , true, style.FrameRounding);
-        //RenderFrameBorderAnimated(label, check_bb.Min, check_bb.Max, clr, true, style.FrameRounding);
+        //render_frame_border_animated(label, check_bb.Min, check_bb.Max, clr, true, style.FrameRounding);
 
         bool mixed_value = (g.LastItemData.InFlags & ImGuiItemFlags_MixedValue) != 0;
         if (mixed_value)
@@ -59,7 +59,7 @@ namespace ImGui {
 
         ImColor clr = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
         const float pad = ImMax(1.0f, IM_TRUNC(square_sz / 6.0f));
-        RenderCheckMarkAnimated(*v, label, window->DrawList, check_bb, pad, square_sz, clr);
+        render_check_mark_animated(*v, label, window->DrawList, check_bb, pad, square_sz, clr);
 
         ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y /*+ style.FramePadding.y*/);
         if (g.LogEnabled)
@@ -73,5 +73,5 @@ namespace ImGui {
 }
 
 namespace ImGui {
-    bool CheckboxMap(const char* label) { return Checkbox(label, &celosia::variables::config::bools[label]); }
+    bool checkbox_map(const char* label) { return Checkbox(label, &celosia::variables::config::bools[label]); }
 }

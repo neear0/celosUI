@@ -43,7 +43,7 @@ namespace celosia {
 		}
 	}
 
-	namespace D3D {
+	namespace d3d {
 		inline ID3D11Device* device;
 		inline ID3D11DeviceContext* device_context;
 		inline IDXGISwapChain* swapchain;
@@ -116,7 +116,7 @@ namespace celosia {
 	}
 
 	namespace functions {
-		std::string ConvertLPCWSTRToString(LPCWSTR lpcwszStr);
+		std::string convert_lpcwstr_to_string(LPCWSTR wide_str);
 
 		ImVec2 mouse_vec2();
 		bool hovered(const ImVec2& pos1, const ImVec2& pos2);
