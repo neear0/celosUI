@@ -230,6 +230,27 @@
       <AdditionalOptions>/DEPENDENTLOADFLAG:0x800 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- the shaders below are compiled into headers in $(IntDir)shaders\ -->
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <FxCompile>
+      <EntryPointName>main</EntryPointName>
+      <ShaderModel>4.0</ShaderModel>
+      <HeaderFileOutput>$(IntDir)shaders\%(Filename)_dxbc.h</HeaderFileOutput>
+      <VariableName>%(Filename)_dxbc</VariableName>
+      <ObjectFileOutput></ObjectFileOutput>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <FxCompile Include="external\imgui\dx11\imgui_impl_dx11_vs.hlsl">
+      <ShaderType>Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="external\imgui\dx11\imgui_impl_dx11_ps.hlsl">
+      <ShaderType>Pixel</ShaderType>
+    </FxCompile>
+  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="external\imgui\dx11\imgui_impl_dx11.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

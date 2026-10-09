@@ -95,6 +95,13 @@ if(CELOSUI_PLATFORM STREQUAL "win32")
         external/imgui/dx11/imgui_impl_dx11.cpp
         external/imgui/win32/imgui_impl_win32.cpp
     )
+
+    # shaders are compiled at build time by fxc from the windows sdk, preferably the sdk version this build targets
+    get_filename_component(windows_kits_root "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots;KitsRoot10]" ABSOLUTE)
+    file(GLOB windows_sdk_bin_dirs LIST_DIRECTORIES true "${windows_kits_root}/bin/10.*")
+    list(SORT windows_sdk_bin_dirs COMPARE NATURAL ORDER DESCENDING)
+    list(TRANSFORM windows_sdk_bin_dirs APPEND /x64)
+    find_program(CELOSUI_FXC fxc HINTS "${windows_kits_root}/bin/${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}/x64" ${windows_sdk_bin_dirs} REQUIRED)
 elseif(CELOSUI_PLATFORM STREQUAL "glfw")
     include(FetchContent)
 
@@ -139,9 +146,32 @@ add_executable(celos_ui ${celos_ui_sources} ${imgui_sources} ${backend_sources})
 target_precompile_headers(celos_ui PRIVATE ui/pch.h)
 set_source_files_properties(${imgui_sources} ${backend_sources} ui/resources/font_data.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
+# compiles an hlsl shader at build time into shaders/<name>_dxbc.h, a byte array named <name>_dxbc
+# usage: celos_ui_shader(<source> vertex|pixel [extra files it depends on])
+target_include_directories(celos_ui PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+function(celos_ui_shader source stage)
+    get_filename_component(name ${source} NAME_WE)
+    if(stage STREQUAL "vertex")
+        set(profile vs_4_0)
+    else()
+        set(profile ps_4_0)
+    endif()
+    set(output ${CMAKE_CURRENT_BINARY_DIR}/shaders/${name}_dxbc.h)
+    add_custom_command(OUTPUT ${output}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/shaders
+        COMMAND ${CELOSUI_FXC} /nologo /T ${profile} /E main /Fh ${output} /Vn ${name}_dxbc ${CMAKE_CURRENT_SOURCE_DIR}/${source}
+        DEPENDS ${source} ${ARGN}
+        COMMENT "Compiling shader ${source}"
+        VERBATIM
+    )
+    target_sources(celos_ui PRIVATE ${output})
+endfunction()
+
 if(CELOSUI_PLATFORM STREQUAL "win32")
+    celos_ui_shader(external/imgui/dx11/imgui_impl_dx11_vs.hlsl vertex)
+    celos_ui_shader(external/imgui/dx11/imgui_impl_dx11_ps.hlsl pixel)
     target_compile_definitions(celos_ui PRIVATE UNICODE _UNICODE) # same character set as the vcxproj
-    target_link_libraries(celos_ui PRIVATE d3d11 d3dcompiler dwmapi)
+    target_link_libraries(celos_ui PRIVATE d3d11 dwmapi)
 else()
     target_include_directories(celos_ui PRIVATE ${vulkan_headers_SOURCE_DIR}/include ${volk_SOURCE_DIR})
     target_compile_definitions(celos_ui PRIVATE IMGUI_IMPL_VULKAN_NO_PROTOTYPES)
