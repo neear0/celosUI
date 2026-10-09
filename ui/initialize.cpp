@@ -1,11 +1,14 @@
 #include "ui.h"
 
 namespace celosia::resources { //ctodo: move to resources/ & make a fontstruct
-    bool fonts::add(std::string resourcename, std::string fontname, int fontsize) {
-        std::string fontpath = fontname; // "H:\\SRC\\fonts\\" + fontname;
-        if (!std::filesystem::exists(fontpath)) // missing font falls back to the default one, AddFontFromFileTTF would assert
+    bool fonts::add(std::string resourcename, const unsigned char* data, int data_size, int fontsize) {
+        // fonts only come from memory compiled into the binary, the font parser isn't safe to run on files someone else could have placed
+        ImFontConfig config;
+        config.FontDataOwnedByAtlas = false; // static data, the atlas only reads it and must not free it
+        ImFont* font = render::io->Fonts->AddFontFromMemoryTTF(const_cast<unsigned char*>(data), data_size, (float)fontsize, &config);
+        if (!font)
             return false;
-        fonts::map[resourcename] = render::io->Fonts->AddFontFromFileTTF(fontpath.c_str(), fontsize);
+        fonts::map[resourcename] = font;
 
         return true;
     }
@@ -25,12 +28,13 @@ namespace celosia::initialize {
         inputsystem::key::watch(keys::mouse_left);
     }
 
-    void fonts() { // ctodo: add bytes into a .h file so there's no need for external files
-        resources::fonts::add("default", "Poppins-Regular.ttf", 16);
-        resources::fonts::add("default_smaller", "Poppins-Regular.ttf", 14);
+    void fonts() {
+        using namespace resources::font_data;
+        resources::fonts::add("default", poppins_regular, poppins_regular_size, 16);
+        resources::fonts::add("default_smaller", poppins_regular, poppins_regular_size, 14);
 
-        resources::fonts::add("title", "Poppins-Bold.ttf", 24);
-    } 
+        resources::fonts::add("title", poppins_bold, poppins_bold_size, 24);
+    }
 
     // ctodo: freetype
     // ctodo: image loading (dx11)

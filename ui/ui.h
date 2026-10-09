@@ -30,8 +30,15 @@ namespace celosia {
 
 	namespace resources {
 		namespace fonts {
-			bool add(std::string resourcename, std::string fontname, int fontsize);
+			bool add(std::string resourcename, const unsigned char* data, int data_size, int fontsize);
 			inline std::unordered_map<std::string, ImFont*> map;
+		}
+
+		namespace font_data { // compiled into the binary, see resources/embed_fonts.cmake
+			extern const unsigned char poppins_regular[];
+			extern const int poppins_regular_size;
+			extern const unsigned char poppins_bold[];
+			extern const int poppins_bold_size;
 		}
 	}
 

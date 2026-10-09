@@ -34,6 +34,7 @@ set(celos_ui_sources
     ui/render/sidebar.cpp
     ui/render/text.cpp
     ui/render/titlebar.cpp
+    ui/resources/font_data.cpp
     ui/style/accents.cpp
     ui/style/animations.cpp
     ui/style/tab_switch.cpp
@@ -106,9 +107,9 @@ endif()
 
 add_executable(celos_ui ${celos_ui_sources} ${imgui_sources} ${backend_sources})
 
-# ui/pch.h is force-included into our sources (the vcxproj does the same), ImGui and the backends build without it
+# ui/pch.h is force-included into our sources (the vcxproj does the same), ImGui, the backends and the font data build without it
 target_precompile_headers(celos_ui PRIVATE ui/pch.h)
-set_source_files_properties(${imgui_sources} ${backend_sources} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+set_source_files_properties(${imgui_sources} ${backend_sources} ui/resources/font_data.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 if(CELOSUI_PLATFORM STREQUAL "win32")
     target_compile_definitions(celos_ui PRIVATE UNICODE _UNICODE) # same character set as the vcxproj
@@ -122,10 +123,3 @@ endif()
 if(MSVC)
     target_compile_options(celos_ui PRIVATE /MP)
 endif()
-
-# the fonts are loaded from the working directory, keep a copy next to the executable
-file(GLOB celos_ui_fonts ${CMAKE_CURRENT_SOURCE_DIR}/assets/*.ttf)
-add_custom_command(TARGET celos_ui POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${celos_ui_fonts} $<TARGET_FILE_DIR:celos_ui>
-)
-set_target_properties(celos_ui PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:celos_ui>)

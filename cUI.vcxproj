@@ -268,6 +268,10 @@
     <ClCompile Include="ui\render\groupbox.cpp" />
     <ClCompile Include="ui\render\sidebar.cpp" />
     <ClCompile Include="ui\render\titlebar.cpp" />
+    <ClCompile Include="ui\resources\font_data.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
     <ClCompile Include="ui\debug\debug.cpp" />
     <ClCompile Include="ui\style\animations.cpp" />
     <ClCompile Include="ui\functions.cpp" />

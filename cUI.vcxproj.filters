@@ -54,6 +54,9 @@
     <ClCompile Include="ui\pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\resources\font_data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ui\ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
