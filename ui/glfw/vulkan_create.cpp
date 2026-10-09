@@ -52,42 +52,48 @@ namespace celosia_glfw::vulkan {
         return true;
     }
 
-    static VkPhysicalDevice select_physical_device() { // first discrete gpu, otherwise whatever comes first
-        uint32_t gpu_count = 0;
-        vkEnumeratePhysicalDevices(instance, &gpu_count, nullptr);
-        if (gpu_count == 0)
-            return VK_NULL_HANDLE;
-
-        ImVector<VkPhysicalDevice> gpus;
-        gpus.resize(gpu_count);
-        check_result(vkEnumeratePhysicalDevices(instance, &gpu_count, gpus.Data));
-
-        for (VkPhysicalDevice& gpu : gpus) {
-            VkPhysicalDeviceProperties properties;
-            vkGetPhysicalDeviceProperties(gpu, &properties);
-            if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-                return gpu;
-        }
-        return gpus[0];
-    }
-
-    static bool create_logical_device(VkSurfaceKHR surface) {
+    static uint32_t draw_queue_family(VkPhysicalDevice gpu, VkSurfaceKHR surface) { // a queue that can both draw and present to the window, -1 if the gpu has none
         uint32_t count;
-        vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &count, nullptr);
+        vkGetPhysicalDeviceQueueFamilyProperties(gpu, &count, nullptr);
         ImVector<VkQueueFamilyProperties> queues;
         queues.resize(count);
-        vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &count, queues.Data);
-        for (uint32_t i = 0; i < count; i++) { // needs to draw and present to the window
+        vkGetPhysicalDeviceQueueFamilyProperties(gpu, &count, queues.Data);
+        for (uint32_t i = 0; i < count; i++) {
             VkBool32 can_present = VK_FALSE;
-            vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, i, surface, &can_present);
-            if ((queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) && can_present) {
-                queue_family = i;
-                break;
-            }
+            vkGetPhysicalDeviceSurfaceSupportKHR(gpu, i, surface, &can_present);
+            if ((queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) && can_present)
+                return i;
         }
-        if (queue_family == (uint32_t)-1)
+        return (uint32_t)-1;
+    }
+
+    static bool select_physical_device(VkSurfaceKHR surface) { // first discrete gpu that can draw to the window, otherwise the first other one that can
+        uint32_t gpu_count = 0;
+        vkEnumeratePhysicalDevices(instance, &gpu_count, nullptr);
+        ImVector<VkPhysicalDevice> gpus;
+        gpus.resize(gpu_count);
+        if (gpu_count == 0 || vkEnumeratePhysicalDevices(instance, &gpu_count, gpus.Data) < 0)
             return false;
 
+        bool found_discrete = false;
+        for (VkPhysicalDevice gpu : gpus) {
+            const uint32_t family = draw_queue_family(gpu, surface);
+            if (family == (uint32_t)-1) // e.g. a compute card or a gpu without the display attached
+                continue;
+
+            VkPhysicalDeviceProperties properties;
+            vkGetPhysicalDeviceProperties(gpu, &properties);
+            const bool discrete = properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+            if (physical_device == VK_NULL_HANDLE || (discrete && !found_discrete)) {
+                physical_device = gpu;
+                queue_family = family;
+                found_discrete = discrete;
+            }
+        }
+        return physical_device != VK_NULL_HANDLE;
+    }
+
+    static bool create_logical_device() {
         ImVector<const char*> device_extensions;
         device_extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
@@ -133,15 +139,19 @@ namespace celosia_glfw::vulkan {
             return false;
         }
 
-        physical_device = select_physical_device();
-        if (physical_device == VK_NULL_HANDLE) {
-            std::cerr << "[vulkan] no gpu found" << std::endl;
+        VkSurfaceKHR surface;
+        if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
+            std::cerr << "[vulkan] couldn't create a surface for the window" << std::endl;
             return false;
         }
 
-        VkSurfaceKHR surface;
-        if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS || !create_logical_device(surface)) {
-            std::cerr << "[vulkan] couldn't create a device that can draw to the window" << std::endl;
+        if (!select_physical_device(surface)) {
+            std::cerr << "[vulkan] no gpu can draw to the window" << std::endl;
+            return false;
+        }
+
+        if (!create_logical_device()) {
+            std::cerr << "[vulkan] couldn't create the device" << std::endl;
             return false;
         }
 
@@ -166,24 +176,32 @@ namespace celosia_glfw::vulkan {
         ImGui_ImplVulkan_SetMinImageCount(min_image_count);
         ImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, &window_data, queue_family, nullptr, width, height, min_image_count);
         window_data.FrameIndex = 0;
+        window_data.SemaphoreIndex = 0;
         swapchain_rebuild = false;
     }
 
+    static bool frame_pending = false; // render() submitted a frame that present() still has to show
+
+    // frames in flight cycle through slots (wd->SemaphoreIndex), each with its own command buffer, fence and acquire semaphore,
+    // and the slot's fence is waited on before any of them is reused. the framebuffer and the render complete semaphore belong
+    // to the swapchain image (wd->FrameIndex), since presenting that image is what waits on the semaphore
     void render(ImDrawData* draw_data) {
         ImGui_ImplVulkanH_Window* wd = &window_data;
+        ImGui_ImplVulkanH_Frame* fd = &wd->Frames[wd->SemaphoreIndex];
         VkSemaphore image_acquired = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
-        VkSemaphore render_complete = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
+        check_result(vkWaitForFences(device, 1, &fd->Fence, VK_TRUE, UINT64_MAX));
 
         VkResult err = vkAcquireNextImageKHR(device, wd->Swapchain, UINT64_MAX, image_acquired, VK_NULL_HANDLE, &wd->FrameIndex);
-        if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR) {
+        if (err == VK_ERROR_OUT_OF_DATE_KHR) { // no image, nothing was signaled
             swapchain_rebuild = true;
             return;
         }
-        check_result(err);
-
-        ImGui_ImplVulkanH_Frame* fd = &wd->Frames[wd->FrameIndex];
-        check_result(vkWaitForFences(device, 1, &fd->Fence, VK_TRUE, UINT64_MAX));
+        if (err == VK_SUBOPTIMAL_KHR) // an image was still acquired, draw and present it and rebuild afterwards
+            swapchain_rebuild = true;
+        else
+            check_result(err);
         check_result(vkResetFences(device, 1, &fd->Fence));
+        VkSemaphore render_complete = wd->FrameSemaphores[wd->FrameIndex].RenderCompleteSemaphore;
 
         check_result(vkResetCommandPool(device, fd->CommandPool, 0));
         VkCommandBufferBeginInfo begin_info = {};
@@ -194,7 +212,7 @@ namespace celosia_glfw::vulkan {
         VkRenderPassBeginInfo pass_info = {};
         pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         pass_info.renderPass = wd->RenderPass;
-        pass_info.framebuffer = fd->Framebuffer;
+        pass_info.framebuffer = wd->Frames[wd->FrameIndex].Framebuffer;
         pass_info.renderArea.extent.width = wd->Width;
         pass_info.renderArea.extent.height = wd->Height;
         pass_info.clearValueCount = 1;
@@ -217,13 +235,15 @@ namespace celosia_glfw::vulkan {
         submit_info.signalSemaphoreCount = 1;
         submit_info.pSignalSemaphores = &render_complete;
         check_result(vkQueueSubmit(queue, 1, &submit_info, fd->Fence));
+        frame_pending = true;
     }
 
     void present() {
-        if (swapchain_rebuild)
+        if (!frame_pending)
             return;
+        frame_pending = false;
         ImGui_ImplVulkanH_Window* wd = &window_data;
-        VkSemaphore render_complete = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
+        VkSemaphore render_complete = wd->FrameSemaphores[wd->FrameIndex].RenderCompleteSemaphore;
 
         VkPresentInfoKHR info = {};
         info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -233,12 +253,12 @@ namespace celosia_glfw::vulkan {
         info.pSwapchains = &wd->Swapchain;
         info.pImageIndices = &wd->FrameIndex;
         VkResult err = vkQueuePresentKHR(queue, &info);
+        wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // the slot was used either way
         if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR) {
             swapchain_rebuild = true;
             return;
         }
         check_result(err);
-        wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount;
     }
 
     void destroy() {
