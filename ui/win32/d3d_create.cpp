@@ -22,15 +22,15 @@ namespace celosia_win32::d3d {
         D3D_FEATURE_LEVEL feature_level;
         const D3D_FEATURE_LEVEL feature_level_array[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
 
-        HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, create_device_flags, feature_level_array, 2, D3D11_SDK_VERSION, &sd, &celosia::d3d::swapchain, &celosia::d3d::device, &feature_level, &celosia::d3d::device_context);
+        HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, create_device_flags, feature_level_array, 2, D3D11_SDK_VERSION, &sd, &d3d::swapchain, &d3d::device, &feature_level, &d3d::device_context);
         if (res == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
-            res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, create_device_flags, feature_level_array, 2, D3D11_SDK_VERSION, &sd, &celosia::d3d::swapchain, &celosia::d3d::device, &feature_level, &celosia::d3d::device_context);
+            res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, create_device_flags, feature_level_array, 2, D3D11_SDK_VERSION, &sd, &d3d::swapchain, &d3d::device, &feature_level, &d3d::device_context);
         if (res != S_OK)
             return false;
 
         ID3D11Texture2D* back_buffer;
-        celosia::d3d::swapchain->GetBuffer(0, IID_PPV_ARGS(&back_buffer));
-        celosia::d3d::device->CreateRenderTargetView(back_buffer, nullptr, &celosia::d3d::render_target_view);
+        d3d::swapchain->GetBuffer(0, IID_PPV_ARGS(&back_buffer));
+        d3d::device->CreateRenderTargetView(back_buffer, nullptr, &d3d::render_target_view);
         back_buffer->Release();
         return true;
     }

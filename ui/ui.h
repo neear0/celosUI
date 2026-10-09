@@ -4,11 +4,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <Windows.h>
-#include <d3d11.h>
-#include <tchar.h>
-#include <dwmapi.h>
-
 #include <iostream>
 #include <array>
 #include <cmath>
@@ -16,11 +11,10 @@
 #include <string_view>
 #include <unordered_map>
 #include <map>
+#include <filesystem>
 
 #include "../external/imgui/imgui.h"
 #include "../external/imgui/imgui_internal.h"
-#include "../external/imgui/dx11/imgui_impl_dx11.h"
-#include "../external/imgui/win32/imgui_impl_win32.h"
 
 #include "resources/resources.h"
 #include "style/style.h"
@@ -28,11 +22,9 @@
 #include "debug/debug.h"
 #include "wrappers/wrappers.h"
 
-#pragma comment(lib, "d3d11.lib")
-
 namespace celosia {
 	namespace initialize {
-		void context(HWND hwnd = nullptr);
+		void context();
 		void fonts();
 	}
 
@@ -41,13 +33,6 @@ namespace celosia {
 			bool add(std::string resourcename, std::string fontname, int fontsize);
 			inline std::unordered_map<std::string, ImFont*> map;
 		}
-	}
-
-	namespace d3d {
-		inline ID3D11Device* device;
-		inline ID3D11DeviceContext* device_context;
-		inline IDXGISwapChain* swapchain;
-		inline ID3D11RenderTargetView* render_target_view;
 	}
 
 	namespace variables {
@@ -116,8 +101,6 @@ namespace celosia {
 	}
 
 	namespace functions {
-		std::string convert_lpcwstr_to_string(LPCWSTR wide_str);
-
 		ImVec2 mouse_vec2();
 		bool hovered(const ImVec2& pos1, const ImVec2& pos2);
 		
@@ -138,17 +121,46 @@ namespace celosia {
 		}
 
 		namespace key {
-			bool down(const DWORD& key);
-			bool up(const DWORD& key);
-			bool held(const DWORD& key);
+			bool down(int key);
+			bool up(int key);
+			bool held(int key);
 
-			void watch(const DWORD& key);   // will add to an array that is constantly being checked, unlike others that depend on functions to watch for them
+			void watch(int key);   // will add to an array that is constantly being checked, unlike others that depend on functions to watch for them
 											// this is only efficient if you are trying to monitor the same key in multiple places and don't want to call getasynckeystate each time, or just for easier management of it
 											// it is also important to use for first calls on key::down as there's an issue where it detects a key being held down as just being pressed, which it wasn't
 											// this is due to the lack of data from not being watched
-			void unwatch(const DWORD& key);
+			void unwatch(int key);
 		}
 
 		void refresh();		// this has to be ran every frame
+	}
+
+	namespace keys { // key codes used by inputsystem, these match the windows virtual key codes and other platforms translate them
+		enum : int {
+			mouse_left = 0x01, mouse_right = 0x02, mouse_middle = 0x04,
+			backspace = 0x08, tab = 0x09, enter = 0x0D, shift = 0x10, control = 0x11, alt = 0x12, escape = 0x1B, space = 0x20,
+			left = 0x25, up = 0x26, right = 0x27, down = 0x28, insert = 0x2D, del = 0x2E, home = 0x24, end = 0x23,
+			// '0'-'9' and 'A'-'Z' are their ascii values
+			f1 = 0x70, // f1 + n for f(n + 1), up to f12
+		};
+	}
+
+	namespace platform { // one implementation per backend: win32/ (Win32 + D3D11) and glfw/ (GLFW + Vulkan)
+		bool create(const char* title, ImVec2 pos, ImVec2 size); // window, renderer and ImGui backends, call after initialize::context()
+		bool poll();         // handles window events, false once the window has been closed
+		void new_frame();
+		void present();      // renders ImGui's draw data and shows it
+		void destroy();
+
+		bool key_held(int key);  // celosia::keys code, works while the window isn't focused where the platform allows it
+		ImVec2 cursor_pos();     // screen coordinates
+		ImRect window_rect();    // screen coordinates
+		ImVec2 screen_size();
+		void move(ImVec2 pos);
+		void bring_to_top();
+	}
+
+	namespace window {
+		void drag(); // moves the window while the titlebar is held
 	}
 }

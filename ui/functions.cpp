@@ -2,27 +2,14 @@
 
 namespace celosia::monitor {
 	void update(){
-		size.x = GetSystemMetrics(SM_CXSCREEN);
-		size.y = GetSystemMetrics(SM_CYSCREEN);
+		size = platform::screen_size();
 	}
 }
 
 namespace celosia::functions {
-	std::string convert_lpcwstr_to_string(LPCWSTR wide_str)
-	{
-		int str_length = WideCharToMultiByte(CP_UTF8, 0, wide_str, -1, nullptr, 0, nullptr, nullptr);
-		std::string str(str_length, 0);
-		WideCharToMultiByte(CP_UTF8, 0, wide_str, -1, &str[0], str_length, nullptr, nullptr);
-		return str;
-	} // https://www.geeksforgeeks.org/convert-lpcwstr-to-std_string-in-cpp/
-
 	ImVec2 mouse_vec2() {
-		POINT p;
-		if (GetCursorPos(&p)) // ctodo: will only work on windows
-			return ImVec2(p.x, p.y);
-		else
-			return ImVec2(0, 0);
-	};
+		return platform::cursor_pos();
+	}
 
 	bool hovered(const ImVec2& pos1, const ImVec2& pos2) {
 		ImVec2 mouse_pos = ImGui::GetMousePos();

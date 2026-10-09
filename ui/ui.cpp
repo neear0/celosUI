@@ -1,5 +1,4 @@
 #include "ui.h"
-#include "win32/ui_win32.h"
 
 float color[4] = { celosia::style::general::main_color.Value.x, celosia::style::general::main_color.Value.y, celosia::style::general::main_color.Value.z, celosia::style::general::main_color.Value.w};
 

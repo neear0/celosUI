@@ -26,7 +26,7 @@ namespace celosia::resources {
         image_subresource_data.SysMemPitch = image_pitch;
 
 
-       // celosia::d3d::device->CreateTexture2D(&image_texture_desc, 0, &tex);
+       // celosia_win32::d3d::device->CreateTexture2D(&image_texture_desc, 0, &tex);
     }
 }
 */

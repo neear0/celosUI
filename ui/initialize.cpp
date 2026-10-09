@@ -3,7 +3,7 @@
 namespace celosia::resources { //ctodo: move to resources/ & make a fontstruct
     bool fonts::add(std::string resourcename, std::string fontname, int fontsize) {
         std::string fontpath = fontname; // "H:\\SRC\\fonts\\" + fontname;
-        if (GetFileAttributesA(fontpath.c_str()) == INVALID_FILE_ATTRIBUTES) // missing font falls back to the default one, AddFontFromFileTTF would assert
+        if (!std::filesystem::exists(fontpath)) // missing font falls back to the default one, AddFontFromFileTTF would assert
             return false;
         fonts::map[resourcename] = render::io->Fonts->AddFontFromFileTTF(fontpath.c_str(), fontsize);
 
@@ -12,21 +12,17 @@ namespace celosia::resources { //ctodo: move to resources/ & make a fontstruct
 }
 
 namespace celosia::initialize {
-    void context(HWND hwnd) {
+    void context() {
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
         render::io = &ImGui::GetIO();
         render::io->IniFilename = nullptr; // no imgui.ini / imgui_log.txt
         render::io->LogFilename = nullptr;
 
-        if (hwnd != nullptr)
-            ImGui_ImplWin32_Init(hwnd);
-        ImGui_ImplDX11_Init(d3d::device, d3d::device_context);
-
         style::themes::initialize();
         style::themes::set(style::themes::dark);
 
-        inputsystem::key::watch(VK_LBUTTON);
+        inputsystem::key::watch(keys::mouse_left);
     }
 
     void fonts() { // ctodo: add bytes into a .h file so there's no need for external files
@@ -44,18 +40,12 @@ namespace celosia::ui {
     void begin() {
         inputsystem::refresh();
 
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
+        platform::new_frame();
         ImGui::NewFrame();
     }
 
     void end() {
         ImGui::Render();
-        const float clear_color_with_alpha[4] = { 0,0,0,0 };
-        d3d::device_context->OMSetRenderTargets(1, &d3d::render_target_view, nullptr);
-        d3d::device_context->ClearRenderTargetView(d3d::render_target_view, clear_color_with_alpha);
-
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-        d3d::swapchain->Present(1, 0); // Present with vsync, (use 0, 0 for no vsync, although unnecessary because I don't think I'll be needing 1000+ fps for this. Maybe limit it to 60 fps or something even.)
+        platform::present();
     }
 }

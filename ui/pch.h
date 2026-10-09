@@ -5,10 +5,11 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #define _CRT_SECURE_NO_WARNINGS
 
+#ifdef _WIN32
 #include <Windows.h>
 #include <d3d11.h>
-#include <tchar.h>
 #include <dwmapi.h>
+#endif
 
 #include <iostream>
 #include <array>
@@ -17,8 +18,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <map>
+#include <filesystem>
 
 #include "../external/imgui/imgui.h"
 #include "../external/imgui/imgui_internal.h"
-#include "../external/imgui/dx11/imgui_impl_dx11.h"
-#include "../external/imgui/win32/imgui_impl_win32.h"

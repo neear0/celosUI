@@ -82,10 +82,18 @@ namespace celosia_win32::window {
         SetWindowPos(hwnd, 0, 0, 0, size.x, size.y, 0);
     }
 
+    static std::string convert_lpcwstr_to_string(LPCWSTR wide_str)
+    {
+        int str_length = WideCharToMultiByte(CP_UTF8, 0, wide_str, -1, nullptr, 0, nullptr, nullptr);
+        std::string str(str_length, 0);
+        WideCharToMultiByte(CP_UTF8, 0, wide_str, -1, &str[0], str_length, nullptr, nullptr);
+        return str;
+    } // https://www.geeksforgeeks.org/convert-lpcwstr-to-std_string-in-cpp/
+
     void destroy() { // ctodo: fix (this wont be necessary, there's only 1 window support)
         for (auto const& [key, val] : variables::windows)
         {
-            std::string converted = celosia::functions::convert_lpcwstr_to_string(key);
+            std::string converted = convert_lpcwstr_to_string(key);
             std::cout << converted << std::endl;
         }
     }
