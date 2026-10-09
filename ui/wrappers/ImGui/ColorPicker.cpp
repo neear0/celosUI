@@ -295,7 +295,7 @@ namespace ImGui {
         return value_changed;
     }
 
-    bool ImGui::ColorPicker4(const char* label, float col[4], ImGuiColorEditFlags flags, const float* ref_col)
+    bool ColorPicker4(const char* label, float col[4], ImGuiColorEditFlags flags, const float* ref_col)
     {
         ImGuiContext& g = *GImGui;
         ImGuiWindow* window = GetCurrentWindow();
