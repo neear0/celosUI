@@ -93,6 +93,12 @@ IMGUI_IMPL_API void            ImGui_ImplVulkan_RemoveTexture(VkDescriptorSet de
 // This is only useful with IMGUI_IMPL_VULKAN_NO_PROTOTYPES / VK_NO_PROTOTYPES
 IMGUI_IMPL_API bool         ImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data = nullptr);
 
+// celosia: custom fragment shaders on top of ImGui's pipeline (same vertex shader, vertex layout, blending and render pass).
+// The push constants are shared by both stages, 128 bytes: the first 16 hold the vertex shader's scale and translation,
+// the rest is free for the fragment shader. Bind the pipeline and push from a draw list callback.
+IMGUI_IMPL_API VkPipeline       ImGui_ImplVulkan_CreatePipelineWithFragmentShader(VkShaderModule fragment_shader);
+IMGUI_IMPL_API VkPipelineLayout ImGui_ImplVulkan_GetPipelineLayout();
+
 //-------------------------------------------------------------------------
 // Internal / Miscellaneous Vulkan Helpers
 // (Used by example's main.cpp. Used by multi-viewport features. PROBABLY NOT used by your own engine/app.)
@@ -118,6 +124,10 @@ IMGUI_IMPL_API void                 ImGui_ImplVulkanH_DestroyWindow(VkInstance i
 IMGUI_IMPL_API VkSurfaceFormatKHR   ImGui_ImplVulkanH_SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkFormat* request_formats, int request_formats_count, VkColorSpaceKHR request_color_space);
 IMGUI_IMPL_API VkPresentModeKHR     ImGui_ImplVulkanH_SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkPresentModeKHR* request_modes, int request_modes_count);
 IMGUI_IMPL_API int                  ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode);
+// celosia: the window's render pass. resume = true makes one that keeps what's already drawn, to continue a frame after
+// ending the pass mid-frame (e.g. to copy it). both are compatible with the window's framebuffers and pipelines,
+// and both hand the image over to transfer reads when they end
+IMGUI_IMPL_API VkRenderPass         ImGui_ImplVulkanH_CreateRenderPass(VkDevice device, VkFormat format, bool clear, bool resume, const VkAllocationCallbacks* allocator);
 
 // Helper structure to hold the data needed by one rendering frame
 // (Used by example's main.cpp. Used by multi-viewport features. Probably NOT used by your own engine/app.)
