@@ -15,6 +15,11 @@ option(CELOSUI_WAYLAND "Build GLFW with native Wayland support (needs the waylan
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(MSVC)
+    # the c runtime is linked statically, so the only dlls left to load are windows' own
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 set(imgui_sources
     external/imgui/imgui.cpp
     external/imgui/imgui_draw.cpp
@@ -122,4 +127,6 @@ endif()
 
 if(MSVC)
     target_compile_options(celos_ui PRIVATE /MP)
+    # imported dlls are only looked up in system32, never next to the executable
+    target_link_options(celos_ui PRIVATE $<$<NOT:$<CONFIG:Debug>>:/DEPENDENTLOADFLAG:0x800>)
 endif()

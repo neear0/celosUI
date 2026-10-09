@@ -1,6 +1,11 @@
 #include "ui/ui.h"
 
 int main() {
+#ifdef _WIN32
+    // dlls loaded at runtime only come from system32, never from next to the executable or the working directory
+    SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32);
+#endif
+
     celosia::initialize::context();
     celosia::initialize::fonts();
 

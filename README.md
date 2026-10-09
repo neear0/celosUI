@@ -52,6 +52,11 @@ The window runs through X11 (XWayland on Wayland desktops), because Wayland does
 
 The fonts in `assets/` are compiled into the executable through `ui/resources/font_data.cpp`, so nothing is loaded from disk. After changing a font, regenerate that file with `cmake -P ui/resources/embed_fonts.cmake`.
 
+## Using it in other software
+The demo's Windows release build doesn't load DLLs from next to the executable, so a DLL someone places there (e.g. in Downloads) can't run inside it. Software using the UI should do the same:
+* call `SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32)` first thing in `main`, see `main.cpp`
+* link the C runtime statically (`/MT`) and pass `/DEPENDENTLOADFLAG:0x800` to the linker, see `cUI.vcxproj` or `CMakeLists.txt`
+
 ## Known issues
 * Adding rounding to a Win32 window that has blur will result in weird looking edges (solution is to use an actual blur shader, which I have not added support for yet)
 * Selectable objects will not update colors as a result of the currently broken theme switcher. I've decided to ignore it for now as it will get overwritten regardless.
