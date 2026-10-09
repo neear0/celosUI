@@ -18,6 +18,7 @@ namespace celosia_win32 {
 		inline ID3D11RenderTargetView* render_target_view;
 
 		bool create_device(HWND hwnd);
+		void destroy_device();
 	}
 
 	namespace variables {

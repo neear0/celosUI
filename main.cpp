@@ -23,5 +23,6 @@ int main() {
 
     // unload everything
     celosia::platform::destroy();
+    ImGui::DestroyContext();
 	return 0;
 }

@@ -28,10 +28,18 @@ namespace celosia_win32::d3d {
         if (res != S_OK)
             return false;
 
-        ID3D11Texture2D* back_buffer;
-        d3d::swapchain->GetBuffer(0, IID_PPV_ARGS(&back_buffer));
-        d3d::device->CreateRenderTargetView(back_buffer, nullptr, &d3d::render_target_view);
+        ID3D11Texture2D* back_buffer = nullptr;
+        if (FAILED(d3d::swapchain->GetBuffer(0, IID_PPV_ARGS(&back_buffer))))
+            return false;
+        res = d3d::device->CreateRenderTargetView(back_buffer, nullptr, &d3d::render_target_view);
         back_buffer->Release();
-        return true;
+        return SUCCEEDED(res);
+    }
+
+    void destroy_device() {
+        if (d3d::render_target_view) { d3d::render_target_view->Release(); d3d::render_target_view = nullptr; }
+        if (d3d::swapchain) { d3d::swapchain->Release(); d3d::swapchain = nullptr; }
+        if (d3d::device_context) { d3d::device_context->Release(); d3d::device_context = nullptr; }
+        if (d3d::device) { d3d::device->Release(); d3d::device = nullptr; }
     }
 }

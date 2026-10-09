@@ -11,7 +11,7 @@ namespace celosia::platform {
         MultiByteToWideChar(CP_UTF8, 0, title, -1, title_wide.data(), (int)title_wide.size());
 
         hwnd = celosia_win32::window::create(title_wide.c_str(), pos, size, WS_EX_TOPMOST | WS_EX_LAYERED);
-        if (!celosia_win32::d3d::create_device(hwnd))
+        if (!hwnd || !celosia_win32::d3d::create_device(hwnd))
             return false;
 
         ImGui_ImplWin32_Init(hwnd);
@@ -50,7 +50,11 @@ namespace celosia::platform {
     }
 
     void destroy() {
+        ImGui_ImplDX11_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+        celosia_win32::d3d::destroy_device();
         celosia_win32::window::destroy();
+        hwnd = nullptr;
     }
 
     bool key_held(int key) {
