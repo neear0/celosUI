@@ -32,6 +32,24 @@ A heavily modified version of ImGui with added functionality.
 * RenderFrameFunctions
 * for animations using renderframeanimations, add an index that is reset on every frame to avoid mixing up
 
+## Building
+**Windows (Visual Studio):** open `cUI.sln` and build. This uses Win32 + DirectX 11.
+
+**CMake (Windows and Linux):**
+```
+cmake -S . -B build
+cmake --build build --config Release
+```
+The fonts are copied next to the executable, so run it from that folder. CMake picks the backend with `CELOSUI_PLATFORM`:
+* `win32`: Win32 + DirectX 11, the default on Windows. It's the only backend with the blurred window background.
+* `glfw`: GLFW + Vulkan, the default on Linux (it also builds on Windows). GLFW, the Vulkan headers and [volk](https://github.com/zeux/volk) are downloaded while configuring, so Vulkan only has to be installed as a driver.
+
+On Linux you need a compiler, CMake, the X11 development packages and a Vulkan driver. On Debian/Ubuntu:
+```
+sudo apt install build-essential cmake libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev mesa-vulkan-drivers
+```
+The window runs through X11 (XWayland on Wayland desktops), because Wayland doesn't let windows move themselves or stay on top. `-DCELOSUI_WAYLAND=ON` additionally builds GLFW's native Wayland support, which also needs `libwayland-dev libxkbcommon-dev wayland-protocols`.
+
 ## Known issues
 * Fonts are required to be in the same folder as the executable and can be found within the assets folder. They will not work if executed from Visual Studio.
 * Adding rounding to a Win32 window that has blur will result in weird looking edges (solution is to use an actual blur shader, which I have not added support for yet)

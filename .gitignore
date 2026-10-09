@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 /intermediate
 /output
+
+# CMake build folders
+/build*/
+CMakeUserPresets.json
