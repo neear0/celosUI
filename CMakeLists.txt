@@ -23,6 +23,26 @@ if(MSVC)
     add_link_options($<$<NOT:$<CONFIG:Debug>>:/guard:cf> $<$<NOT:$<CONFIG:Debug>>:/CETCOMPAT>)
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # some distributions' compilers add these on their own, others don't, so ask for them explicitly (dependencies included)
+    include(CheckCCompilerFlag)
+    include(CheckPIESupported)
+    check_pie_supported()
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+    add_compile_options(-fstack-protector-strong)
+    foreach(flag -fstack-clash-protection -fcf-protection)
+        string(MAKE_C_IDENTIFIER "celos_ui_has${flag}" has_flag)
+        check_c_compiler_flag(${flag} ${has_flag})
+        if(${has_flag})
+            add_compile_options(${flag})
+        endif()
+    endforeach()
+    # fortify needs optimization, so debug builds go without it
+    add_compile_options("$<$<CONFIG:Release,RelWithDebInfo,MinSizeRel>:-U_FORTIFY_SOURCE;-D_FORTIFY_SOURCE=3>")
+    add_link_options(-Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack)
+endif()
+
 set(imgui_sources
     external/imgui/imgui.cpp
     external/imgui/imgui_draw.cpp
