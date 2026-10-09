@@ -18,6 +18,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(MSVC)
     # the c runtime is linked statically, so the only dlls left to load are windows' own
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    # control flow guard and cet shadow stack support for release builds, set here so the downloaded dependencies get them too
+    add_compile_options($<$<NOT:$<CONFIG:Debug>>:/guard:cf>)
+    add_link_options($<$<NOT:$<CONFIG:Debug>>:/guard:cf> $<$<NOT:$<CONFIG:Debug>>:/CETCOMPAT>)
 endif()
 
 set(imgui_sources

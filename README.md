@@ -57,6 +57,8 @@ The demo's Windows release build doesn't load DLLs from next to the executable, 
 * call `SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32)` first thing in `main`, see `main.cpp`
 * link the C runtime statically (`/MT`) and pass `/DEPENDENTLOADFLAG:0x800` to the linker, see `cUI.vcxproj` or `CMakeLists.txt`
 
+Release builds also turn on Control Flow Guard (`/guard:cf`) and CET shadow stack support (`/CETCOMPAT`).
+
 ## Known issues
 * Adding rounding to a Win32 window that has blur will result in weird looking edges (solution is to use an actual blur shader, which I have not added support for yet)
 * Selectable objects will not update colors as a result of the currently broken theme switcher. I've decided to ignore it for now as it will get overwritten regardless.
