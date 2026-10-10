@@ -1,10 +1,17 @@
 #include "../../ui.h"
 
-// IMPORTANT: ImGui::UpdateMouseWheel, scroll is handled here. it's too complicated to move it here because it's using functions that are not defined in imgui.h, and i do not feel like pasting them in here
-// this means that updates will have to keep this in mind, as it will get overwritten.
-// CTODO: fix this later
+// smooth scrolling: the mouse wheel and the scrollbar set window->ScrollPending, Scrollbar() eases the scroll towards it.
+// ImGui::UpdateMouseWheel (imgui.cpp) calls scroll_wheel() for vertical wheel scrolling, keep that call when updating ImGui
 
 namespace ImGui {
+    void scroll_wheel(ImGuiWindow* window, float wheel) {
+        const float height = window->InnerRect.GetHeight();
+        const float scroll_step = ImTrunc(ImMin(5 * window->CalcFontSize(), height * 0.67f));
+
+        float offset = window->Scroll.y - wheel * scroll_step * celosia::style::general::scroll_multiplier;
+        celosia::functions::clamp(&offset, 0, window->ContentSize[ImGuiAxis_Y] - height);
+        window->ScrollPending = offset;
+    }
 
     void Scrollbar(ImGuiAxis axis)
     {

@@ -6154,7 +6154,7 @@ void ImGui::RenderWindowDecorations(ImGuiWindow* window, const ImRect& title_bar
         if (!(flags & ImGuiWindowFlags_NoTitleBar))
         {
             ImU32 title_bar_col = GetColorU32(title_bar_is_highlight ? ImGuiCol_TitleBgActive : ImGuiCol_TitleBg);
-            window->DrawList->AddRectFilled(title_bar_rect.Min, title_bar_rect.Max, title_bar_col, window_rounding, ImDrawFlags_RoundCornersTop); // ctodo: U32 to ImVec4
+            window->DrawList->AddRectFilled(title_bar_rect.Min, title_bar_rect.Max, title_bar_col, window_rounding, ImDrawFlags_RoundCornersTop);
         }
 
         // Menu bar
@@ -8998,15 +8998,7 @@ void ImGui::UpdateMouseWheel()
             if (do_scroll[ImGuiAxis_Y])
             {
                 LockWheelingWindow(window, wheel.y);
-                float height = window->InnerRect.GetHeight();
-                float max_step = height * 0.67f;
-                float scroll_step = ImTrunc(ImMin(5 * window->CalcFontSize(), max_step));
-                
-                float offset = window->Scroll.y - wheel.y * scroll_step * celosia::style::general::scroll_multiplier;
-                float max = window->ContentSize[ImGuiAxis_Y] - height;
-                celosia::functions::clamp(&offset, 0, max);
-                window->ScrollPending = offset;
-
+                scroll_wheel(window, wheel.y); // celosia: smooth scrolling, see ui/wrappers/ImGui/Scrollbar.cpp
                 g.WheelingWindowScrolledFrame = g.FrameCount;
             }
         }
