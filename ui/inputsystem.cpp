@@ -1,36 +1,16 @@
 #include "ui.h"
 
 namespace celosia::inputsystem {
-	static bool pressed(unsigned char key) { // watched keys use the state from refresh(), others are polled
-		return registry::watched[key] ? registry::state[key] : key::held(key);
-	}
-
 	bool key::down(int key) {
 		const unsigned char k = key & 0xFF;
-		const bool is_pressed = pressed(k);
-
-		if (is_pressed && !registry::down[k]) { // key has just went down
-			registry::down[k] = true;
-			return true;
-		}
-		if (!is_pressed && registry::down[k]) // reset
-			registry::down[k] = false;
-		return false;
+		watch(k);
+		return registry::state[k] && !registry::previous[k];
 	}
 
 	bool key::up(int key) {
 		const unsigned char k = key & 0xFF;
-		const bool is_pressed = pressed(k);
-
-		if (is_pressed && !registry::up[k]) {
-			registry::up[k] = true;
-			return false;
-		}
-		if (!is_pressed && registry::up[k]) {
-			registry::up[k] = false;
-			return true;
-		}
-		return registry::watched[k]; // CTODO: watched keys report up whenever they aren't pressed, unwatched keys only on release
+		watch(k);
+		return !registry::state[k] && registry::previous[k];
 	}
 
 	bool key::held(int key) { // key is currently down
@@ -41,7 +21,7 @@ namespace celosia::inputsystem {
 		const unsigned char k = key & 0xFF;
 		if (!registry::watched[k]) {
 			registry::watched[k] = true;
-			registry::state[k] = false;
+			registry::state[k] = registry::previous[k] = key::held(k); // a key that's already down doesn't count as just pressed
 		}
 	}
 
@@ -51,7 +31,9 @@ namespace celosia::inputsystem {
 
 	void refresh() { // loop through all of the keys in watchlist and validate them
 		for (int k = 0; k < 256; k++)
-			if (registry::watched[k])
+			if (registry::watched[k]) {
+				registry::previous[k] = registry::state[k];
 				registry::state[k] = key::held(k);
+			}
 	}
 }

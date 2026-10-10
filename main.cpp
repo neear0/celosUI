@@ -15,8 +15,6 @@ int main() {
     while (celosia::platform::poll())
     {
         celosia::ui::render();
-        if(celosia::ui::active)
-            celosia::window::drag();
 
         celosia::platform::bring_to_top();
     }

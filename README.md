@@ -72,7 +72,6 @@ Release builds also turn on Control Flow Guard (`/guard:cf`) and CET shadow stac
 
 ## Known issues
 * Rounding a window that uses the OS blur gives weird looking edges, use the shader background for rounded windows (see Effects)
-* Keydown events will overwrite each other if watching the same key
 
 ![screenshot](assets/preview.png)
 

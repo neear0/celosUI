@@ -59,6 +59,7 @@ namespace celosia::ui { // ctodo: move this to render
         if (ui::active) {
             render::groupbox::index = 0;
             main_window();
+            window::drag();
         }
 
         /* use drawlists here */

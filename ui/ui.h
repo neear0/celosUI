@@ -1,5 +1,3 @@
-// CTODO: check this out & changes here take a while to compile as a result of it being included everywhere
-
 #pragma once
 #define IMGUI_DEFINE_MATH_OPERATORS
 #define _CRT_SECURE_NO_WARNINGS
@@ -122,21 +120,17 @@ namespace celosia {
 
 	namespace inputsystem {
 		namespace registry { // indexed by virtual key code
-			inline std::array<bool, 256> down{};
-			inline std::array<bool, 256> up{};
-			inline std::array<bool, 256> watched{}; // keys that are actively being refreshed globally
-			inline std::array<bool, 256> state{};   // held state of watched keys, updated by refresh()
+			inline std::array<bool, 256> watched{};  // keys refresh() keeps track of
+			inline std::array<bool, 256> state{};    // held state of watched keys this frame
+			inline std::array<bool, 256> previous{}; // and last frame
 		}
 
 		namespace key {
-			bool down(int key);
-			bool up(int key);
-			bool held(int key);
+			bool down(int key); // went down since last frame, the same answer for every caller during a frame
+			bool up(int key);   // went up since last frame
+			bool held(int key); // down right now, asks the platform every time
 
-			void watch(int key);   // will add to an array that is constantly being checked, unlike others that depend on functions to watch for them
-											// this is only efficient if you are trying to monitor the same key in multiple places and don't want to call getasynckeystate each time, or just for easier management of it
-											// it is also important to use for first calls on key::down as there's an issue where it detects a key being held down as just being pressed, which it wasn't
-											// this is due to the lack of data from not being watched
+			void watch(int key);   // down() and up() watch keys on their first call, which reports nothing for that frame. watch a key beforehand to avoid that
 			void unwatch(int key);
 		}
 
