@@ -78,10 +78,6 @@ namespace celosia_win32::window {
         SetWindowPos(hwnd, 0, pos.x, pos.y, celosia::ui::size.x, celosia::ui::size.y, 0);
     }
 
-    void resize(HWND hwnd, ImVec2 size) { // ctodo: WARNING these will become invalid, the user can resize the window
-        SetWindowPos(hwnd, 0, 0, 0, size.x, size.y, 0);
-    }
-
     void destroy() { // every window made through create(), along with its class
         for (auto const& [title, window] : variables::windows) {
             DestroyWindow(window.second); // fails harmlessly if the window was already closed

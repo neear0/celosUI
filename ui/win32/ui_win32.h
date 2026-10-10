@@ -40,7 +40,6 @@ namespace celosia_win32 {
 		void enable_blur(HWND hwnd, int accent = 3);
 		void show(HWND hwnd);
 		void move(HWND hwnd, ImVec2 pos);
-		void resize(HWND hwnd, ImVec2 size);
 		void destroy();
 	}
 }

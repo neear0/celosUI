@@ -140,9 +140,6 @@
     <ClCompile Include="ui\wrappers\ImGui\add_rect_filled_half_rounded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\add_rect_filled_multi_color_rounded.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ui\initialize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

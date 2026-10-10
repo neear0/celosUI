@@ -9,7 +9,7 @@ void style1(const ImRect bb, const char* label, ImVec2 label_size, const ImGuiSt
 }
 
 namespace ImGui {
-    bool ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags flags) // ctodo: maybe define Button here as well, incase it gets updated & this one becomes invalid
+    bool ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags flags) // replaces ImGui's (removed from imgui_widgets.cpp), Button() and SmallButton() call it
     {
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems)

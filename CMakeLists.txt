@@ -70,7 +70,6 @@ set(celos_ui_sources
     ui/style/tab_switch.cpp
     ui/style/theme_setup.cpp
     ui/wrappers/ImGui/add_rect_filled_half_rounded.cpp
-    ui/wrappers/ImGui/add_rect_filled_multi_color_rounded.cpp
     ui/wrappers/ImGui/Button.cpp
     ui/wrappers/ImGui/Checkbox.cpp
     ui/wrappers/ImGui/ColorPicker.cpp
