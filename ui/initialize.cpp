@@ -23,6 +23,11 @@ namespace celosia::initialize {
         resources::fonts::add("default_smaller", { poppins_regular, poppins_regular_size, 14.f });
         resources::fonts::add("title", { poppins_bold, poppins_bold_size, 24.f });
     }
+
+    void images() {
+        using namespace resources::image_data;
+        resources::images::add("logo", logo, logo_size);
+    }
 }
 
 namespace celosia::ui {

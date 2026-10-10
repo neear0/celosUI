@@ -22,15 +22,6 @@ namespace celosia_glfw::effect_renderer {
     static VkImageView backdrop_view = VK_NULL_HANDLE;
     static VkDescriptorSet backdrop_set = VK_NULL_HANDLE; // the ImTextureID the blur is drawn with, null when the frame can't be copied
 
-    static uint32_t memory_type(uint32_t type_bits, VkMemoryPropertyFlags properties) {
-        VkPhysicalDeviceMemoryProperties memory;
-        vkGetPhysicalDeviceMemoryProperties(vulkan::physical_device, &memory);
-        for (uint32_t i = 0; i < memory.memoryTypeCount; i++)
-            if ((type_bits & (1u << i)) && (memory.memoryTypes[i].propertyFlags & properties) == properties)
-                return i;
-        return (uint32_t)-1;
-    }
-
     static VkImageMemoryBarrier barrier(VkImage image, VkImageLayout from, VkImageLayout to, VkAccessFlags src_access, VkAccessFlags dst_access) {
         VkImageMemoryBarrier b = {};
         b.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -112,9 +103,9 @@ namespace celosia_glfw::effect_renderer {
         VkMemoryAllocateInfo allocation = {};
         allocation.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocation.allocationSize = requirements.size;
-        allocation.memoryTypeIndex = memory_type(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        allocation.memoryTypeIndex = vulkan::memory_type(requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         if (allocation.memoryTypeIndex == (uint32_t)-1)
-            allocation.memoryTypeIndex = memory_type(requirements.memoryTypeBits, 0);
+            allocation.memoryTypeIndex = vulkan::memory_type(requirements.memoryTypeBits, 0);
         if (vkAllocateMemory(vulkan::device, &allocation, nullptr, &backdrop_memory) != VK_SUCCESS ||
             vkBindImageMemory(vulkan::device, backdrop, backdrop_memory, 0) != VK_SUCCESS)
             return false;

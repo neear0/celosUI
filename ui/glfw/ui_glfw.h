@@ -23,11 +23,16 @@ namespace celosia_glfw {
 		inline bool swapchain_rebuild = false;
 
 		void check_result(VkResult err);
+		uint32_t memory_type(uint32_t type_bits, VkMemoryPropertyFlags properties); // index of a memory type with those properties, -1 if there's none
 		bool create_device(GLFWwindow* window); // instance, device and the window's swapchain
 		void resize_swapchain(GLFWwindow* window);
 		void render(ImDrawData* draw_data);
 		void present();
 		void destroy();
+	}
+
+	namespace textures { // images' textures, see textures_vulkan.cpp
+		void destroy(); // what create_texture() keeps around, the device has to be idle
 	}
 
 	namespace effect_renderer { // vulkan side of celosia::effects, see effects_vulkan.cpp

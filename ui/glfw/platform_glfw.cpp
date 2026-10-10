@@ -79,6 +79,8 @@ namespace celosia::platform {
 
     void destroy() {
         vkDeviceWaitIdle(celosia_glfw::vulkan::device);
+        resources::images::clear();
+        celosia_glfw::textures::destroy();
         celosia_glfw::effect_renderer::destroy();
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();

@@ -92,6 +92,12 @@
     <ClCompile Include="ui\resources\fonts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\resources\images.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\resources\image_data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="external\imgui\misc\freetype\imgui_freetype.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -170,6 +176,9 @@
     <ClCompile Include="ui\wrappers\ImGui\Combo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\wrappers\ImGui\image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ui\inputsystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -215,9 +224,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ui\render\render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\resources\resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ui\wrappers\wrappers.h">

@@ -12,11 +12,11 @@ A heavily modified version of ImGui with added functionality.
 * DirectX 11 (Windows) and Vulkan (Linux)
 * Shader effects
 * New font system, rendered with FreeType
+* Images compiled into the executable
 * Tabs
 * InputSystem
 
 ## To implement
-* Image Loading
 * Button Layout (Tabs)
 * Color Picker
 * Scrollbar.h
@@ -45,7 +45,7 @@ sudo apt install build-essential cmake libx11-dev libxrandr-dev libxinerama-dev 
 ```
 The window runs through X11 (XWayland on Wayland desktops), because Wayland doesn't let windows move themselves or stay on top. `-DCELOSUI_WAYLAND=ON` additionally builds GLFW's native Wayland support, which also needs `libwayland-dev libxkbcommon-dev wayland-protocols`.
 
-The fonts in `assets/` are compiled into the executable through `ui/resources/font_data.cpp`, so nothing is loaded from disk. After changing a font, regenerate that file with `cmake -P ui/resources/embed_fonts.cmake`. Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` and looked up with `resources::fonts::get(name)`.
+The fonts and images in `assets/` are compiled into the executable through `ui/resources/font_data.cpp` and `ui/resources/image_data.cpp`, so nothing is loaded from disk. After changing or adding one (the list is at the top of the script), regenerate those files with `cmake -P ui/resources/embed_resources.cmake`. Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` and looked up with `resources::fonts::get(name)`. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `ImGui::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any ImGui image function.
 
 [FreeType](https://freetype.org) rasterizes the fonts. It's downloaded while building (CMake) or before the first build (Visual Studio, into `.deps/`), its hash is checked, and only the modules for TrueType and OpenType fonts are compiled.
 

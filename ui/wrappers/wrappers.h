@@ -7,6 +7,7 @@ namespace ImGui {
 	bool tab_button(const char* label);
 	bool tab_button_ex(const char* label, ImGuiButtonFlags flags);
 	bool checkbox_map(const char* label); // Checkbox() on variables::config::bools[label]
+	void image(const char* name, ImVec2 size = ImVec2(0, 0), float rounding = 0.f); // a resources::images image as an item, size 0 is its own size
 
 	// drawing
 	void add_rect_filled_half_rounded(ImDrawList* drawlist, const ImVec2& min, const ImVec2& max, const ImColor& clr, const int& rounding);

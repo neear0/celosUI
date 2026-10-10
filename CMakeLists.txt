@@ -89,6 +89,8 @@ set(celos_ui_sources
     ui/render/titlebar.cpp
     ui/resources/font_data.cpp
     ui/resources/fonts.cpp
+    ui/resources/image_data.cpp
+    ui/resources/images.cpp
     ui/style/accents.cpp
     ui/style/animations.cpp
     ui/style/tab_switch.cpp
@@ -98,6 +100,7 @@ set(celos_ui_sources
     ui/wrappers/ImGui/Checkbox.cpp
     ui/wrappers/ImGui/ColorPicker.cpp
     ui/wrappers/ImGui/Combo.cpp
+    ui/wrappers/ImGui/image.cpp
     ui/wrappers/ImGui/Scrollbar.cpp
     ui/wrappers/ImGui/tab_button.cpp
     ui/wrappers/ImGui/functions/render_frame_animated.cpp
@@ -157,6 +160,7 @@ elseif(CELOSUI_PLATFORM STREQUAL "glfw")
     list(APPEND celos_ui_sources
         ui/glfw/effects_vulkan.cpp
         ui/glfw/platform_glfw.cpp
+        ui/glfw/textures_vulkan.cpp
         ui/glfw/vulkan_create.cpp
     )
     set(backend_sources
@@ -173,7 +177,7 @@ target_link_libraries(celos_ui PRIVATE celos_freetype)
 
 # ui/pch.h is force-included into our sources (the vcxproj does the same), ImGui, the backends and the font data build without it
 target_precompile_headers(celos_ui PRIVATE ui/pch.h)
-set_source_files_properties(${imgui_sources} ${backend_sources} ui/resources/font_data.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+set_source_files_properties(${imgui_sources} ${backend_sources} ui/resources/font_data.cpp ui/resources/image_data.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 # compiles an hlsl shader at build time into a header holding it as an array:
 # win32: shaders/<name>_dxbc.h with <name>_dxbc for d3d11 (fxc), glfw: shaders/<name>_spirv.h with <name>_spirv for vulkan (glslangValidator)

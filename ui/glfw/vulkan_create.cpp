@@ -11,6 +11,16 @@ namespace celosia_glfw::vulkan {
             abort();
     }
 
+    uint32_t memory_type(uint32_t type_bits, VkMemoryPropertyFlags properties) {
+        VkPhysicalDeviceMemoryProperties memory;
+        vkGetPhysicalDeviceMemoryProperties(physical_device, &memory);
+        for (uint32_t i = 0; i < memory.memoryTypeCount; i++)
+            if ((type_bits & (1u << i)) && (memory.memoryTypes[i].propertyFlags & properties) == properties)
+                return i;
+        return (uint32_t)-1;
+    }
+
+
     static bool has_extension(const ImVector<VkExtensionProperties>& properties, const char* extension) {
         for (const VkExtensionProperties& p : properties)
             if (strcmp(p.extensionName, extension) == 0)
@@ -123,11 +133,11 @@ namespace celosia_glfw::vulkan {
         volkLoadDevice(device);
         vkGetDeviceQueue(device, queue_family, 0, &queue);
 
-        VkDescriptorPoolSize pool_sizes[] = { { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2 } }; // the font texture and the effects' backdrop
+        VkDescriptorPoolSize pool_sizes[] = { { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 64 } }; // the font texture, the effects' backdrop and the images
         VkDescriptorPoolCreateInfo pool_info = {};
         pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-        pool_info.maxSets = 2;
+        pool_info.maxSets = 64;
         pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
         pool_info.pPoolSizes = pool_sizes;
         return vkCreateDescriptorPool(device, &pool_info, nullptr, &descriptor_pool) == VK_SUCCESS;

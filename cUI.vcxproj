@@ -313,6 +313,7 @@
     <ClCompile Include="ui\wrappers\ImGui\Checkbox.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\ColorPicker.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\Combo.cpp" />
+    <ClCompile Include="ui\wrappers\ImGui\image.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_animated.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_border_animated.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_border_color.cpp" />
@@ -327,6 +328,11 @@
       <ForcedIncludeFiles></ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="ui\resources\fonts.cpp" />
+    <ClCompile Include="ui\resources\images.cpp" />
+    <ClCompile Include="ui\resources\image_data.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
     <ClCompile Include="ui\debug\debug.cpp" />
     <ClCompile Include="ui\style\animations.cpp" />
     <ClCompile Include="ui\functions.cpp" />
@@ -354,7 +360,6 @@
     <ClInclude Include="ui\wrappers\wrappers.h" />
     <ClInclude Include="ui\render\render.h" />
     <ClInclude Include="ui\debug\debug.h" />
-    <ClInclude Include="ui\resources\resources.h" />
     <ClInclude Include="ui\style\style.h" />
     <ClInclude Include="ui\pch.h" />
     <ClInclude Include="ui\ui.h" />

@@ -16,7 +16,6 @@
 #include "../external/imgui/imgui_internal.h"
 #include "../external/imgui/misc/freetype/imgui_freetype.h"
 
-#include "resources/resources.h"
 #include "style/style.h"
 #include "render/render.h"
 #include "debug/debug.h"
@@ -26,6 +25,7 @@ namespace celosia {
 	namespace initialize {
 		void context();
 		void fonts();
+		void images(); // after platform::create(), the textures need the renderer
 	}
 
 	namespace resources {
@@ -42,11 +42,28 @@ namespace celosia {
 			inline std::unordered_map<std::string, ImFont*> map;
 		}
 
-		namespace font_data { // compiled into the binary, see resources/embed_fonts.cmake
+		namespace images {
+			struct t_image {
+				ImTextureID texture = nullptr;
+				ImVec2 size;   // in pixels
+			};
+
+			bool add(const std::string& name, const unsigned char* png, int png_size); // decodes a compiled in png and uploads it, after platform::create()
+			const t_image& get(const std::string& name); // one with a null texture when there's none by that name
+			void clear();  // frees every texture, platform::destroy() calls it
+			inline std::unordered_map<std::string, t_image> map;
+		}
+
+		namespace font_data { // compiled into the binary, see resources/embed_resources.cmake
 			extern const unsigned char poppins_regular[];
 			extern const int poppins_regular_size;
 			extern const unsigned char poppins_bold[];
 			extern const int poppins_bold_size;
+		}
+
+		namespace image_data { // compiled into the binary, see resources/embed_resources.cmake
+			extern const unsigned char logo[];
+			extern const int logo_size;
 		}
 	}
 
@@ -200,6 +217,10 @@ namespace celosia {
 
 		bool blur_supported(); // the os can blur what's behind the window (windows), see style::window::background
 		void set_blur(bool enabled);
+
+		// textures for images, after create(). rgba is 4 bytes per pixel, row after row
+		ImTextureID create_texture(const unsigned char* rgba, int width, int height); // null when it couldn't be made
+		void destroy_texture(ImTextureID texture);
 
 		// renderer side of effects
 		void draw_effect(const ImDrawList* drawlist, const ImDrawCmd* command); // ImDrawCallback, switches to the shader of effects::commands[command->UserCallbackData]

@@ -54,6 +54,7 @@ namespace celosia::platform {
     }
 
     void destroy() {
+        resources::images::clear();
         ImGui_ImplDX11_Shutdown();
         ImGui_ImplWin32_Shutdown();
         celosia_win32::effect_renderer::destroy();
@@ -97,5 +98,31 @@ namespace celosia::platform {
 
     void set_blur(bool enabled) { // 4 is acrylic blur behind the window, 0 turns it off
         celosia_win32::window::enable_blur(hwnd, enabled ? 4 : 0);
+    }
+
+    ImTextureID create_texture(const unsigned char* rgba, int width, int height) { // the ImTextureID is the shader resource view, as ImGui's dx11 backend expects
+        D3D11_TEXTURE2D_DESC desc = {};
+        desc.Width = width;
+        desc.Height = height;
+        desc.MipLevels = 1;
+        desc.ArraySize = 1;
+        desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        desc.SampleDesc.Count = 1;
+        desc.Usage = D3D11_USAGE_IMMUTABLE;
+        desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        D3D11_SUBRESOURCE_DATA data = { rgba, (UINT)width * 4, 0 };
+
+        ID3D11Texture2D* texture = nullptr;
+        if (FAILED(celosia_win32::d3d::device->CreateTexture2D(&desc, &data, &texture)))
+            return nullptr;
+        ID3D11ShaderResourceView* view = nullptr;
+        celosia_win32::d3d::device->CreateShaderResourceView(texture, nullptr, &view);
+        texture->Release(); // the view keeps it alive
+        return (ImTextureID)view;
+    }
+
+    void destroy_texture(ImTextureID texture) {
+        if (texture)
+            ((ID3D11ShaderResourceView*)texture)->Release();
     }
 }

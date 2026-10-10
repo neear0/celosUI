@@ -11,6 +11,7 @@ int main() {
 
     if (!celosia::platform::create("Celosia UI", ImVec2(0, 0), celosia::ui::size))
         return 1;
+    celosia::initialize::images();
 
     while (celosia::platform::poll())
     {
