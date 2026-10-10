@@ -41,7 +41,7 @@ namespace celosia::ui { // ctodo: move this to render
             const char* test[] = {"Item A", "Item B", "Item C"};
             ImGui::Combo("test", &variables::config::ints["test_combo"], test, 3, 3);
 
-            ImGui::ColorEdit4("Main Color", color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoSidePreview /*| ImGuiColorEditFlags_AlphaBar*/); // ctodo: remake this
+            ImGui::color_edit("Main Color", color);
             style::general::main_color = { color[0], color[1], color[2], color[3] };
 
             ImGui::image("logo", ImVec2(48, 48), 12.f);

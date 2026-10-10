@@ -98,6 +98,7 @@ set(celos_ui_sources
     ui/wrappers/ImGui/add_rect_filled_half_rounded.cpp
     ui/wrappers/ImGui/Button.cpp
     ui/wrappers/ImGui/Checkbox.cpp
+    ui/wrappers/ImGui/color_edit.cpp
     ui/wrappers/ImGui/ColorPicker.cpp
     ui/wrappers/ImGui/Combo.cpp
     ui/wrappers/ImGui/image.cpp

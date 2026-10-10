@@ -13,12 +13,12 @@ A heavily modified version of ImGui with added functionality.
 * Shader effects
 * New font system, rendered with FreeType
 * Images compiled into the executable
+* Color picker (`ImGui::color_edit`)
 * Tabs
 * InputSystem
 
 ## To implement
 * Button Layout (Tabs)
-* Color Picker
 * Scrollbar.h
 
 ## Optional
