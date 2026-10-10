@@ -14,6 +14,7 @@
 
 #include "../external/imgui/imgui.h"
 #include "../external/imgui/imgui_internal.h"
+#include "../external/imgui/misc/freetype/imgui_freetype.h"
 
 #include "resources/resources.h"
 #include "style/style.h"
@@ -29,7 +30,15 @@ namespace celosia {
 
 	namespace resources {
 		namespace fonts {
-			bool add(std::string resourcename, const unsigned char* data, int data_size, int fontsize);
+			struct t_font {
+				const unsigned char* data; // compiled in, see font_data
+				int data_size;
+				float size;                // in pixels
+				unsigned int hinting = ImGuiFreeTypeBuilderFlags_LightHinting; // how freetype fits glyphs to the pixel grid, ImGuiFreeTypeBuilderFlags
+			};
+
+			ImFont* add(const std::string& name, const t_font& font); // null when the font couldn't be loaded
+			ImFont* get(const std::string& name); // ImGui's default font when there's none by that name
 			inline std::unordered_map<std::string, ImFont*> map;
 		}
 

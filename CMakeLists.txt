@@ -43,11 +43,34 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_link_options(-Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack)
 endif()
 
+# freetype rasterizes the fonts (IMGUI_ENABLE_FREETYPE in imconfig.h). it's downloaded and only the modules CelosUI uses are
+# compiled, the same list as cUI.vcxproj. external/freetype_config/ holds the ftmodule.h that registers them
+include(FetchContent)
+FetchContent_Declare(freetype
+    URL https://github.com/freetype/freetype/archive/refs/tags/VER-2-14-3.zip
+    URL_HASH SHA256=3f624983444f9e9149707853a792dc5a897f3afc9f23a9b8669c03ac564779d1
+    SOURCE_SUBDIR none
+)
+FetchContent_MakeAvailable(freetype)
+set(freetype_sources
+    src/base/ftsystem.c src/base/ftinit.c src/base/ftdebug.c src/base/ftbase.c
+    src/base/ftbbox.c src/base/ftglyph.c src/base/ftbitmap.c src/base/ftsynth.c src/base/ftmm.c
+    src/gzip/ftgzip.c
+    src/sfnt/sfnt.c src/truetype/truetype.c src/cff/cff.c
+    src/psaux/psaux.c src/pshinter/pshinter.c src/psnames/psnames.c
+    src/smooth/smooth.c src/autofit/autofit.c
+)
+list(TRANSFORM freetype_sources PREPEND ${freetype_SOURCE_DIR}/)
+add_library(celos_freetype STATIC ${freetype_sources})
+target_include_directories(celos_freetype PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/freetype_config ${freetype_SOURCE_DIR}/include)
+target_compile_definitions(celos_freetype PRIVATE FT2_BUILD_LIBRARY $<$<C_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)
+
 set(imgui_sources
     external/imgui/imgui.cpp
     external/imgui/imgui_draw.cpp
     external/imgui/imgui_tables.cpp
     external/imgui/imgui_widgets.cpp
+    external/imgui/misc/freetype/imgui_freetype.cpp
 )
 
 set(celos_ui_sources
@@ -65,6 +88,7 @@ set(celos_ui_sources
     ui/render/text.cpp
     ui/render/titlebar.cpp
     ui/resources/font_data.cpp
+    ui/resources/fonts.cpp
     ui/style/accents.cpp
     ui/style/animations.cpp
     ui/style/tab_switch.cpp
@@ -105,8 +129,6 @@ if(CELOSUI_PLATFORM STREQUAL "win32")
     list(TRANSFORM windows_sdk_bin_dirs APPEND /x64)
     find_program(CELOSUI_FXC fxc HINTS "${windows_kits_root}/bin/${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}/x64" ${windows_sdk_bin_dirs} REQUIRED)
 elseif(CELOSUI_PLATFORM STREQUAL "glfw")
-    include(FetchContent)
-
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -147,6 +169,7 @@ else()
 endif()
 
 add_executable(celos_ui ${celos_ui_sources} ${imgui_sources} ${backend_sources})
+target_link_libraries(celos_ui PRIVATE celos_freetype)
 
 # ui/pch.h is force-included into our sources (the vcxproj does the same), ImGui, the backends and the font data build without it
 target_precompile_headers(celos_ui PRIVATE ui/pch.h)

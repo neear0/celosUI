@@ -89,6 +89,12 @@
     <ClCompile Include="ui\resources\font_data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\resources\fonts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui\misc\freetype\imgui_freetype.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ui\effects\effects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

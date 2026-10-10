@@ -367,3 +367,6 @@ FodyWeavers.xsd
 # CMake build folders
 /build*/
 CMakeUserPresets.json
+
+# dependencies the vcxproj downloads (freetype)
+.deps/

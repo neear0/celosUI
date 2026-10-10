@@ -39,9 +39,9 @@ namespace celosia::render::groupbox {
 	}
 
 	float title_height(const char* description) { // fits the title and description with padding around them, never below style::groupbox::height
-		float text = render::text::calc::font("a", resources::fonts::map["default"]).y;
+		float text = render::text::calc::font("a", resources::fonts::get("default")).y;
 		if (description && *description)
-			text += render::text::calc::font("a", resources::fonts::map["default_smaller"]).y;
+			text += render::text::calc::font("a", resources::fonts::get("default_smaller")).y;
 		return ImMax(style::groupbox::height, text + style::groupbox::padding * 2.f);
 	}
 
@@ -76,8 +76,8 @@ namespace celosia::render::groupbox {
 			break;
 		}
 		
-		ImFont* font_default = resources::fonts::map["default"];
-		ImFont* font_default_smaller = resources::fonts::map["default_smaller"];
+		ImFont* font_default = resources::fonts::get("default");
+		ImFont* font_default_smaller = resources::fonts::get("default_smaller");
 
 		const float text_x = offset.x + style::frame::size_padding.x;
 		const float center_y = offset.y + height / 2;

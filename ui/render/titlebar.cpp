@@ -5,7 +5,7 @@ namespace celosia::render {
 		ImDrawList* drawlist_window = ImGui::GetWindowDrawList();
 		render::panel(drawlist_window, ImVec2(0, 0), ImVec2(ui::size.x, style::titlebar::height), style::themes::active.background_darker, style::general::rounding_window);
 		
-		ImGui::PushFont(resources::fonts::map["title"]);
+		ImGui::PushFont(resources::fonts::get("title"));
 
 		ImVec2 title_size = ImGui::CalcTextSize(variables::title);
 		float y_center = (style::titlebar::height - title_size.y) / 2;

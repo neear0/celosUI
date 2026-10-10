@@ -11,17 +11,15 @@ A heavily modified version of ImGui with added functionality.
 * Custom theme support, dark and light themes with eased switching
 * DirectX 11 (Windows) and Vulkan (Linux)
 * Shader effects
-* New font system
+* New font system, rendered with FreeType
 * Tabs
 * InputSystem
 
 ## To implement
-* Freetype
 * Image Loading
 * Button Layout (Tabs)
 * Color Picker
 * Scrollbar.h
-* Improved font system
 
 ## Optional
 * redo font spacing code
@@ -47,7 +45,9 @@ sudo apt install build-essential cmake libx11-dev libxrandr-dev libxinerama-dev 
 ```
 The window runs through X11 (XWayland on Wayland desktops), because Wayland doesn't let windows move themselves or stay on top. `-DCELOSUI_WAYLAND=ON` additionally builds GLFW's native Wayland support, which also needs `libwayland-dev libxkbcommon-dev wayland-protocols`.
 
-The fonts in `assets/` are compiled into the executable through `ui/resources/font_data.cpp`, so nothing is loaded from disk. After changing a font, regenerate that file with `cmake -P ui/resources/embed_fonts.cmake`.
+The fonts in `assets/` are compiled into the executable through `ui/resources/font_data.cpp`, so nothing is loaded from disk. After changing a font, regenerate that file with `cmake -P ui/resources/embed_fonts.cmake`. Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` and looked up with `resources::fonts::get(name)`.
+
+[FreeType](https://freetype.org) rasterizes the fonts. It's downloaded while building (CMake) or before the first build (Visual Studio, into `.deps/`), its hash is checked, and only the modules for TrueType and OpenType fonts are compiled.
 
 Shaders (`ui/shaders/*.hlsl`, and ImGui's D3D11 shaders next to its backend) are compiled at build time and embedded as well, nothing is compiled at runtime. Visual Studio and the Windows CMake build use `fxc` from the Windows SDK, the Linux build uses `glslangValidator` from `glslang-tools` (the GLFW build on Windows takes it from the Vulkan SDK).
 
@@ -64,6 +64,8 @@ Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui
 Debug builds report graphics API misuse: on Windows the D3D11 debug layer's messages are printed to the console (needs the "Graphics Tools" optional Windows feature), and for Vulkan run with `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation` (the `vulkan-validationlayers` package on Linux).
 
 ## Using it in other software
+FreeType is used under the FreeType License, which asks for a credit in the documentation of software that ships it, e.g. "Portions of this software are copyright (c) 2026 The FreeType Project (https://freetype.org). All rights reserved."
+
 The demo's Windows release build doesn't load DLLs from next to the executable, so a DLL someone places there (e.g. in Downloads) can't run inside it. Software using the UI should do the same:
 * call `SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32)` first thing in `main`, see `main.cpp`
 * link the C runtime statically (`/MT`) and pass `/DEPENDENTLOADFLAG:0x800` to the linker, see `cUI.vcxproj` or `CMakeLists.txt`

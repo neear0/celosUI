@@ -33,6 +33,13 @@
     <RootNamespace>cUI</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
+  <PropertyGroup Label="FreeType">
+    <!-- downloaded into .deps\ by the DownloadFreeType target below, same version and hash as CMakeLists.txt -->
+    <FreeTypeVersion>2-14-3</FreeTypeVersion>
+    <FreeTypeHash>3f624983444f9e9149707853a792dc5a897f3afc9f23a9b8669c03ac564779d1</FreeTypeHash>
+    <FreeTypeDir>$(MSBuildProjectDirectory)\.deps\freetype-VER-$(FreeTypeVersion)\</FreeTypeDir>
+    <FreeTypeIncludes>$(MSBuildProjectDirectory)\external\freetype_config;$(FreeTypeDir)include</FreeTypeIncludes>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -319,6 +326,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles></ForcedIncludeFiles>
     </ClCompile>
+    <ClCompile Include="ui\resources\fonts.cpp" />
     <ClCompile Include="ui\debug\debug.cpp" />
     <ClCompile Include="ui\style\animations.cpp" />
     <ClCompile Include="ui\functions.cpp" />
@@ -352,6 +360,29 @@
     <ClInclude Include="ui\ui.h" />
     <ClInclude Include="ui\win32\ui_win32.h" />
   </ItemGroup>
+  <ItemGroup Label="FreeType">
+    <!-- only the modules CelosUI uses, the same list as CMakeLists.txt. external\freetype_config\ holds the ftmodule.h that registers them -->
+    <ClCompile Include="$(FreeTypeDir)src\base\ftsystem.c;$(FreeTypeDir)src\base\ftinit.c;$(FreeTypeDir)src\base\ftdebug.c;$(FreeTypeDir)src\base\ftbase.c;$(FreeTypeDir)src\base\ftbbox.c;$(FreeTypeDir)src\base\ftglyph.c;$(FreeTypeDir)src\base\ftbitmap.c;$(FreeTypeDir)src\base\ftsynth.c;$(FreeTypeDir)src\base\ftmm.c;$(FreeTypeDir)src\gzip\ftgzip.c;$(FreeTypeDir)src\sfnt\sfnt.c;$(FreeTypeDir)src\truetype\truetype.c;$(FreeTypeDir)src\cff\cff.c;$(FreeTypeDir)src\psaux\psaux.c;$(FreeTypeDir)src\pshinter\pshinter.c;$(FreeTypeDir)src\psnames\psnames.c;$(FreeTypeDir)src\smooth\smooth.c;$(FreeTypeDir)src\autofit\autofit.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(FreeTypeIncludes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="external\imgui\misc\freetype\imgui_freetype.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(FreeTypeIncludes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClInclude Include="external\imgui\misc\freetype\imgui_freetype.h" />
+    <ClInclude Include="external\freetype_config\freetype\config\ftmodule.h" />
+  </ItemGroup>
+  <Target Name="DownloadFreeType" BeforeTargets="PrepareForBuild" Condition="!Exists('$(FreeTypeDir)include\ft2build.h')">
+    <DownloadFile SourceUrl="https://github.com/freetype/freetype/archive/refs/tags/VER-$(FreeTypeVersion).zip" DestinationFolder="$(MSBuildProjectDirectory)\.deps" DestinationFileName="freetype-VER-$(FreeTypeVersion).zip" />
+    <VerifyFileHash File="$(MSBuildProjectDirectory)\.deps\freetype-VER-$(FreeTypeVersion).zip" Algorithm="SHA256" Hash="$(FreeTypeHash)" />
+    <Unzip SourceFiles="$(MSBuildProjectDirectory)\.deps\freetype-VER-$(FreeTypeVersion).zip" DestinationFolder="$(MSBuildProjectDirectory)\.deps" />
+    <Delete Files="$(MSBuildProjectDirectory)\.deps\freetype-VER-$(FreeTypeVersion).zip" />
+  </Target>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
