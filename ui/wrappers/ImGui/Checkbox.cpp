@@ -25,9 +25,10 @@ namespace ImGui {
         const ImGuiID id = window->GetID(label);
         const ImVec2 label_size = CalcTextSize(label, NULL, true);
 
-        const float square_sz = GetFrameHeight() / 2; // ctodo: fix proper spacing // ctodo_urgent
+        const float square_sz = IM_TRUNC(g.FontSize * 1.15f); // follows the text size, not the frame padding
+        const float row_height = ImMax(square_sz, label_size.y); // the box and the label are centered on the row
         const ImVec2 pos = window->DC.CursorPos;
-        const ImRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y));
+        const ImRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), row_height + style.FramePadding.y));
         ItemSize(total_bb, style.FramePadding.y);
         if (!ItemAdd(total_bb, id))
         {
@@ -43,7 +44,8 @@ namespace ImGui {
             MarkItemEdited(id);
         }
 
-        const ImRect check_bb(pos, pos + ImVec2(square_sz, square_sz));
+        const ImVec2 check_pos(pos.x, pos.y + IM_TRUNC((row_height - square_sz) * 0.5f));
+        const ImRect check_bb(check_pos, check_pos + ImVec2(square_sz, square_sz));
         RenderNavHighlight(total_bb, id);
         //RenderFrame(check_bb.Min, check_bb.Max, , true, style.FrameRounding);
         //render_frame_border_animated(label, check_bb.Min, check_bb.Max, clr, true, style.FrameRounding);
@@ -61,7 +63,7 @@ namespace ImGui {
         const float pad = ImMax(1.0f, IM_TRUNC(square_sz / 6.0f));
         render_check_mark_animated(*v, label, window->DrawList, check_bb, pad, square_sz, clr);
 
-        ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y /*+ style.FramePadding.y*/);
+        ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, pos.y + IM_TRUNC((row_height - label_size.y) * 0.5f));
         if (g.LogEnabled)
             LogRenderedText(&label_pos, mixed_value ? "[~]" : *v ? "[x]" : "[ ]");
         if (label_size.x > 0.0f)
