@@ -324,6 +324,7 @@
     <ClCompile Include="ui\render\panel.cpp" />
     <ClCompile Include="ui\render\sidebar.cpp" />
     <ClCompile Include="ui\render\tabs.cpp" />
+    <ClCompile Include="ui\render\main_window.cpp" />
     <ClCompile Include="ui\render\titlebar.cpp" />
     <ClCompile Include="ui\resources\font_data.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

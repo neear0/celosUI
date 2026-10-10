@@ -134,6 +134,9 @@
     <ClCompile Include="ui\render\tabs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\render\main_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ui\wrappers\ImGui\Scrollbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

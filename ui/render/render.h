@@ -6,6 +6,7 @@ namespace celosia::render {
 	inline ImDrawList* drawlist_background = nullptr;
 
 
+	void main_window(); // the demo window, see main_window.cpp
 	void titlebar();
 	void sidebar();
 	void panel(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor color, float rounding); // glass with the shader background, a flat fill otherwise

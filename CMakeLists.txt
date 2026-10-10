@@ -83,6 +83,7 @@ set(celos_ui_sources
     ui/ui.cpp
     ui/window_drag.cpp
     ui/render/groupbox.cpp
+    ui/render/main_window.cpp
     ui/render/panel.cpp
     ui/render/sidebar.cpp
     ui/render/tabs.cpp

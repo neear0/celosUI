@@ -68,8 +68,11 @@ namespace celosia {
 	}
 
 	namespace variables {
-		inline static const char* title = "celos";
-		inline static const char* version = "UI"; // ctodo: turn into a struct / class
+		struct t_title {
+			const char* name;   // in the text color
+			const char* accent; // right after it, in the main color
+		};
+		inline t_title title = { "celos", "UI" }; // shown in the titlebar
 		
 		namespace config {
 			inline std::unordered_map<std::string, int> ints;

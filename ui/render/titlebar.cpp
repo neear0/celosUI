@@ -7,19 +7,19 @@ namespace celosia::render {
 		
 		ImGui::PushFont(resources::fonts::get("title"));
 
-		ImVec2 title_size = ImGui::CalcTextSize(variables::title);
+		ImVec2 title_size = ImGui::CalcTextSize(variables::title.name);
 		float y_center = (style::titlebar::height - title_size.y) / 2;
 
 		drawlist_window->AddText(
 			ImVec2(style::frame::size_padding.x, y_center),
 			style::themes::active.text,
-			variables::title
+			variables::title.name
 		);
 
 		drawlist_window->AddText(
 			ImVec2(style::frame::size_padding.x + title_size.x, y_center),
 			style::general::main_color,
-			variables::version
+			variables::title.accent
 		);
 
 		ImGui::PopFont();
