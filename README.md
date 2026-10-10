@@ -14,11 +14,10 @@ A heavily modified version of ImGui with added functionality.
 * New font system, rendered with FreeType
 * Images compiled into the executable
 * Color picker (`ImGui::color_edit`)
-* Tabs
+* Tabs that lay themselves out (`render::tabs`, vertical or horizontal)
 * InputSystem
 
 ## To implement
-* Button Layout (Tabs)
 * Scrollbar.h
 
 ## Optional

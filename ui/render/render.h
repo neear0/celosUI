@@ -18,6 +18,11 @@ namespace celosia::render {
 		void shadow(const char* text, ImFont* font);
 	}
 
+	enum class e_tabs_layout { vertical, horizontal };
+	// tab buttons that place and size themselves in the space left in the window: one under the other at full width, or side by side
+	// sharing the width. returns the index of the active tab, the first one starts active when none is
+	int tabs(std::initializer_list<const char*> labels, e_tabs_layout layout = e_tabs_layout::vertical);
+
 	namespace groupbox {
 		enum e_group_layout { fullscreen, two, four };
 		inline int index = 0; // position of the next groupbox, reset every frame

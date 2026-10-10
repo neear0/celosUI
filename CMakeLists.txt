@@ -85,6 +85,7 @@ set(celos_ui_sources
     ui/render/groupbox.cpp
     ui/render/panel.cpp
     ui/render/sidebar.cpp
+    ui/render/tabs.cpp
     ui/render/text.cpp
     ui/render/titlebar.cpp
     ui/resources/font_data.cpp

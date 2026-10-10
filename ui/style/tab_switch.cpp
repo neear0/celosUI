@@ -7,6 +7,9 @@ namespace celosia::animations::functions {
 		static bool animation_down = false;
 		static const ImGuiID spacing = animations::key("groupbox_active_spacing");
 
+		if (tab_old.empty()) // the first tab is shown at once
+			tab_old = ui::tab_active;
+
 		if (tab_old != ui::tab_active) {
 			animation_active = true;
 			animation_down = true;

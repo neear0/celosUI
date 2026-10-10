@@ -7,8 +7,7 @@ namespace celosia::render {
 		ImGui::SetCursorPos(ImVec2(style::general::padding.x, style::titlebar::height));
 		ImGui::BeginChild("Sidebar", ImVec2(style::sidebar::width - style::general::padding.x, ui::size.y - style::titlebar::height));
 		
-		ImGui::tab_button("tab1");
-		ImGui::tab_button("tab2");
+		render::tabs({ "tab1", "tab2" });
 
 		if (ImGui::Button("switch layout", ImVec2(celosia::style::sidebar::width - celosia::style::general::padding.x * 2.f, 40))) {
 

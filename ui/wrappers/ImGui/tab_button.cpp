@@ -16,11 +16,11 @@ void tab_style(const ImRect bb, const char* label, ImVec2 label_size, const ImGu
 }
 
 namespace ImGui { 
-    bool tab_button(const char* label)
+    bool tab_button(const char* label, const ImVec2& size_arg)
     {
-        return tab_button_ex(label, ImGuiButtonFlags_None);
+        return tab_button_ex(label, size_arg, ImGuiButtonFlags_None);
     }
-	bool tab_button_ex(const char* label, ImGuiButtonFlags flags) {
+	bool tab_button_ex(const char* label, const ImVec2& size_arg, ImGuiButtonFlags flags) {
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems)
             return false;
@@ -33,8 +33,9 @@ namespace ImGui {
         ImVec2 pos = window->DC.CursorPos;
         if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && style.FramePadding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
             pos.y += window->DC.CurrLineTextBaseOffset - style.FramePadding.y;
-        //ImVec2 size = CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
-        ImVec2 size = {celosia::style::sidebar::width - style.FramePadding.x * 2, label_size.y + style.FramePadding.y * 2.0f };
+        const ImVec2 size( // 0 is the sidebar's width and the text's height
+            size_arg.x > 0.f ? size_arg.x : celosia::style::sidebar::width - style.FramePadding.x * 2,
+            size_arg.y > 0.f ? size_arg.y : label_size.y + style.FramePadding.y * 2.0f);
         const ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
         ItemSize(size, style.FramePadding.y);
         if (!ItemAdd(bb, id))
