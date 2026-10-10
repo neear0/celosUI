@@ -8,5 +8,6 @@ namespace celosia::render {
 		}
 		else
 			drawlist->AddRectFilled(min, max, color, rounding);
+		effects::noise(drawlist, min, max, style::window::noise, rounding); // grain on the panel as well, with the shader background the blur would smooth the window's away
 	}
 }

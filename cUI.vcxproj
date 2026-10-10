@@ -262,6 +262,9 @@
     <FxCompile Include="ui\shaders\background.hlsl">
       <ShaderType>Pixel</ShaderType>
     </FxCompile>
+    <FxCompile Include="ui\shaders\noise.hlsl">
+      <ShaderType>Pixel</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ui\shaders\effect.hlsli" />

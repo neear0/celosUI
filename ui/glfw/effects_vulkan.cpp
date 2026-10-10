@@ -5,6 +5,7 @@
 #include "shaders/glow_spirv.h"
 #include "shaders/blur_spirv.h"
 #include "shaders/background_spirv.h"
+#include "shaders/noise_spirv.h"
 
 // vulkan side of celosia::effects: every effect is a pipeline made from ImGui's own (same vertex shader, layout and blending)
 // with the effect's fragment shader, which the draw list callback binds. the constants go into the push constant range
@@ -50,6 +51,7 @@ namespace celosia_glfw::effect_renderer {
             { glow_spirv, sizeof(glow_spirv) },
             { blur_spirv, sizeof(blur_spirv) },
             { background_spirv, sizeof(background_spirv) },
+            { noise_spirv, sizeof(noise_spirv) },
         };
         static_assert(std::size(code) == (size_t)celosia::effects::e_type::count);
         for (int i = 0; i < (int)celosia::effects::e_type::count; i++) {

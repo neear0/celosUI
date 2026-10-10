@@ -60,6 +60,7 @@ Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui
 * `glow`: soft glow around an item (the active tab, hovered buttons)
 * `blur`: frosted glass, blurs what was drawn before it and tints it (the combo popup, and the panels with the shader background)
 * `background`: blobs of color drifting over a base color, the window background when `style::window::background` is `shader`
+* `noise`: film grain that lightens and darkens pixels at random, static or changing 24 times a second. `style::window::noise` sets how strong it is over the window background, the panels and the combo popup (0 turns it off)
 
 `style::window::background` picks between the OS blurring the desktop behind the window (`blur`, Windows only) and the shader background (`shader`, the default where the OS can't blur). "switch background" in the demo switches between them. The shader background also makes rounded window corners work (`style::general::rounding_window`). The blur only sees what the UI itself drew, not the desktop behind the window.
 

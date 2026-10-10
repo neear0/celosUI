@@ -154,7 +154,7 @@ namespace celosia {
 	}
 
 	namespace effects { // shader effects (shaders/*.hlsl). each one is a draw list callback that swaps in its shader, so it lands in order between ImGui's own draws
-		enum class e_type { gradient, glow, blur, background, count };
+		enum class e_type { gradient, glow, blur, background, noise, count };
 
 		struct t_constants { // matches effect_constants in shaders/effect.hlsli
 			ImVec4 reserved; // vulkan: ImGui's vertex shader keeps its push constants here
@@ -178,6 +178,7 @@ namespace celosia {
 		void glow(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor color, float rounding = 0.f, float radius = 12.f); // around min-max, nothing inside it, draw it before the item
 		void blur(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor tint, float rounding = 0.f, float radius = 10.f); // frosted glass over what's already drawn there, tint alpha is how much tint
 		void background(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor base, ImColor one, ImColor two, float rounding = 0.f); // blobs of one and two drifting over base, their alpha is their strength
+		void noise(ImDrawList* drawlist, ImVec2 min, ImVec2 max, float strength = 0.05f, float rounding = 0.f, float size = 1.f, bool animated = false); // film grain over what's already drawn, size is how big a grain is, animated changes the pattern 24 times a second
 	}
 
 	namespace platform { // one implementation per backend: win32/ (Win32 + D3D11) and glfw/ (GLFW + Vulkan)

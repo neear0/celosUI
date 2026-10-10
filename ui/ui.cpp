@@ -19,6 +19,7 @@ namespace celosia::ui { // ctodo: move this to render
             effects::background(drawlist, pos, pos + celosia::ui::size,
                 base, ImColor(main.x, main.y, main.z, 0.55f), ImColor(accent.x, accent.y, accent.z, 0.45f), (float)style::general::rounding_window);
         }
+        effects::noise(drawlist, pos, pos + celosia::ui::size, style::window::noise, (float)style::general::rounding_window);
         render::titlebar();
         render::sidebar();
         drawlist->PopClipRect();

@@ -4,6 +4,7 @@
 #include "shaders/glow_dxbc.h"
 #include "shaders/blur_dxbc.h"
 #include "shaders/background_dxbc.h"
+#include "shaders/noise_dxbc.h"
 
 // d3d11 side of celosia::effects: every effect is a pixel shader that the draw list callback swaps in,
 // ImGui's vertex shader, input layout and blending stay as they are
@@ -21,6 +22,7 @@ namespace celosia_win32::effect_renderer {
             { glow_dxbc, sizeof(glow_dxbc) },
             { blur_dxbc, sizeof(blur_dxbc) },
             { background_dxbc, sizeof(background_dxbc) },
+            { noise_dxbc, sizeof(noise_dxbc) },
         };
         static_assert(std::size(code) == (size_t)celosia::effects::e_type::count);
         for (int i = 0; i < (int)celosia::effects::e_type::count; i++)

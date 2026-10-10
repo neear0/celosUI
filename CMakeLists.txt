@@ -187,7 +187,7 @@ function(celos_ui_shader source stage)
     target_sources(celos_ui PRIVATE ${output})
 endfunction()
 
-foreach(effect gradient glow blur background)
+foreach(effect gradient glow blur background noise)
     celos_ui_shader(ui/shaders/${effect}.hlsl pixel ui/shaders/effect.hlsli)
 endforeach()
 

@@ -24,6 +24,9 @@ namespace celosia::render {
 			platform::set_blur(style::window::background == style::window::blur);
 		}
 
+		if (ImGui::Button("switch noise", ImVec2(celosia::style::sidebar::width - celosia::style::general::padding.x * 2.f, 40)))
+			style::window::noise = style::window::noise > 0.f ? 0.f : 0.04f;
+
 		ImGui::EndChild();
 	}
 }

@@ -82,4 +82,14 @@ namespace celosia::effects {
         c.params.w = (float)ImGui::GetTime();
         add(drawlist, e_type::background, c, min, max);
     }
+
+    void noise(ImDrawList* drawlist, ImVec2 min, ImVec2 max, float strength, float rounding, float size, bool animated) {
+        if (strength <= 0.f)
+            return;
+        t_constants c = constants(min, max, rounding);
+        c.params.y = to_pixels(size);
+        c.params.z = strength;
+        c.params.w = animated ? ImFloor((float)ImGui::GetTime() * 24.f) : 0.f; // a new pattern 24 times a second, like film
+        add(drawlist, e_type::noise, c, min, max);
+    }
 }

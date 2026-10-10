@@ -325,6 +325,7 @@ bool ImGui::BeginComboPopup(ImGuiID popup_id, const ImRect& bb, ImGuiComboFlags 
     tint.Value.w = 0.6f;
     popup->DrawList->PushClipRect(popup->Pos, popup->Pos + popup->Size);
     celosia::effects::blur(popup->DrawList, popup->Pos, popup->Pos + popup->Size, tint, g.Style.PopupRounding, 12.f);
+    celosia::effects::noise(popup->DrawList, popup->Pos, popup->Pos + popup->Size, celosia::style::window::noise, g.Style.PopupRounding);
     popup->DrawList->PopClipRect();
     return true;
 }
