@@ -27,6 +27,9 @@ namespace celosia::render {
 		if (ImGui::Button("switch noise", ImVec2(celosia::style::sidebar::width - celosia::style::general::padding.x * 2.f, 40)))
 			style::window::noise = style::window::noise > 0.f ? 0.f : 0.04f;
 
+		if (ImGui::Button("switch theme", ImVec2(celosia::style::sidebar::width - celosia::style::general::padding.x * 2.f, 40)))
+			style::themes::set(style::themes::active.name == "dark" ? style::themes::light : style::themes::dark);
+
 		ImGui::EndChild();
 	}
 }

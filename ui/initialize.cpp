@@ -23,7 +23,7 @@ namespace celosia::initialize {
         render::io->LogFilename = nullptr;
 
         style::themes::initialize();
-        style::themes::set(style::themes::dark);
+        style::themes::set(style::themes::dark, true);
 
         inputsystem::key::watch(keys::mouse_left);
 
@@ -47,6 +47,7 @@ namespace celosia::ui {
     void begin() {
         effects::new_frame();
         inputsystem::refresh();
+        style::themes::update();
 
         platform::new_frame();
         ImGui::NewFrame();

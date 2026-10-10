@@ -8,8 +8,9 @@ A heavily modified version of ImGui with added functionality.
 * Map variables
 * Automatic layouts
 * Win32 windows and effects
-* Custom theme support
-* DirectX 11
+* Custom theme support, dark and light themes with eased switching
+* DirectX 11 (Windows) and Vulkan (Linux)
+* Shader effects
 * New font system
 * Tabs
 * InputSystem
@@ -18,12 +19,8 @@ A heavily modified version of ImGui with added functionality.
 * Freetype
 * Image Loading
 * Button Layout (Tabs)
-* Theme Lerp & PushStyleColor / Var
 * Color Picker
 * Scrollbar.h
-* Linux support
-* Other rendering backends for compatibility
-* Shader support
 * Improved font system
 
 ## Optional
@@ -75,7 +72,6 @@ Release builds also turn on Control Flow Guard (`/guard:cf`) and CET shadow stac
 
 ## Known issues
 * Rounding a window that uses the OS blur gives weird looking edges, use the shader background for rounded windows (see Effects)
-* Selectable objects will not update colors as a result of the currently broken theme switcher. I've decided to ignore it for now as it will get overwritten regardless.
 * Keydown events will overwrite each other if watching the same key
 
 ![screenshot](assets/preview.png)

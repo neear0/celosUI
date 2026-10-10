@@ -67,7 +67,9 @@ namespace celosia::style {
 		inline t_theme active;
 
 		void initialize();
-		void set(t_theme theme);
+		inline float lerp_speed = 8.f; // how fast set() eases into a new theme
+		void set(const t_theme& theme, bool instant = false); // eases active into theme, or switches at once
+		void update(); // eases active a step towards the theme given to set() and applies it, ui::begin() calls it every frame
 
 		ImVec4 rgb_vec4(const float& r, const float& g, const float& b, const float& a);
 		ImVec4 rgb_vec4(const ImColor& rgba);
@@ -76,5 +78,5 @@ namespace celosia::style {
 		ImColor rgb_intensity(ImColor clr, float percentage);
 	}
 
-	void push();
+	void apply(); // writes the active theme and the sizes above into ImGui's style
 }
