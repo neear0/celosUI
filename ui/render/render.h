@@ -21,6 +21,7 @@ namespace celosia::render {
 	namespace groupbox {
 		enum e_group_layout { fullscreen, two, four };
 		inline int index = 0; // position of the next groupbox, reset every frame
+		float title_height(const char* description = ""); // of the title at the top, grows when the text needs it
 		void body(ImDrawList* drawlist, const ImVec2 offset, const ImVec2 offset_max, const char* title = "", const char* description = "", e_group_layout layout = e_group_layout::two);
 		void begin(const char* title, const char* description = "", e_group_layout layout = e_group_layout::two);
 		void end();
