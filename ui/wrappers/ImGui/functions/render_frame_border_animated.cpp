@@ -8,7 +8,7 @@ void ImGui::render_frame_border_animated(const char* label, ImVec2 p_min, ImVec2
 
 
     const ImGuiID id = celosia::animations::key("render_frame_border_animated", celosia::animations::key(label));
-    ImColor animated_color = celosia::animations::set(id, ImVec4(fill_col), 0.f, celosia::animations::e_method::linear);
+    ImColor animated_color = celosia::animations::set(id, ImVec4(fill_col), celosia::animations::color_speed);
 
     int border_size = celosia::style::frame::border_size;
     //window->DrawList->AddRect(p_min + ImVec2(1, 1), p_max + ImVec2(1, 1), animated_color, rounding, 0, border_size);

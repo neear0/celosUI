@@ -38,6 +38,7 @@ namespace celosia::ui {
 
         platform::new_frame();
         ImGui::NewFrame();
+        animations::new_frame();
     }
 
     void end() {

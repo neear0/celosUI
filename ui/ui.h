@@ -100,8 +100,12 @@ namespace celosia {
 	namespace animations {
 		inline std::unordered_map<ImGuiID, ImVec4> values; // one entry per animated value, floats use x and ImVec2 uses x, y
 		inline float base_speed = 2.f;
+		inline float delta_time = 0.f; // the frame time animations step by, io.DeltaTime evened out, see new_frame()
+		inline float color_speed = 10.f; // hover and press colors ease by this, most of the way in about a quarter second
 
 		enum e_method{ smooth, linear };
+
+		void new_frame(); // updates delta_time, ui::begin() calls it every frame
 
 		namespace functions {
 			float calc_linear(float current_value, const float goal_value, float speed);

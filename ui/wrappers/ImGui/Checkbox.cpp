@@ -6,7 +6,7 @@ void render_check_mark_animated(bool active, const char* label, ImDrawList* draw
     if (!active)
         check_col = clr;
 
-    ImColor animated = (ImColor)celosia::animations::set(label, (ImVec4)check_col, 0.f, celosia::animations::e_method::linear);
+    ImColor animated = (ImColor)celosia::animations::set(label, (ImVec4)check_col, celosia::animations::color_speed);
 
     ImGui::RenderCheckMark(drawlist, check_bb.Min + ImVec2(pad, pad), animated, square_sz - pad * 2.0f);
     ImGui::render_frame_border_color(check_bb.Min, check_bb.Max, animated,4.f);

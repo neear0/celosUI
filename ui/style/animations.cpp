@@ -2,7 +2,6 @@
 
 namespace celosia::animations::functions {
     float calc_linear(float current_value, const float goal_value, float speed) {
-        ImGuiIO* io = celosia::render::io;
         speed += animations::base_speed;
 
         if (speed < 0)
@@ -11,13 +10,13 @@ namespace celosia::animations::functions {
         if (current_value == goal_value) return goal_value;
 
         if (current_value > goal_value) {
-            current_value -= speed * io->DeltaTime;
+            current_value -= speed * delta_time;
             if (current_value <= goal_value)
                 return goal_value;
         }
         else if (current_value < goal_value)
         {
-            current_value += speed * io->DeltaTime;
+            current_value += speed * delta_time;
             if (current_value >= goal_value)
                 return goal_value;
         }
@@ -26,23 +25,33 @@ namespace celosia::animations::functions {
     }
 
     float calc_smooth(float current_value, const float goal_value, float speed) {
-        ImGuiIO* io = celosia::render::io;
         speed += base_speed;
 
         if (speed < 0)
             speed = 0;
 
-        if ((current_value == goal_value) ||
-            (current_value + 0.11f >= goal_value && current_value < goal_value) ||
-            (current_value - 0.11f <= goal_value && current_value > goal_value)) // this works with any values pretty sure
+        // close enough to stop: a thousandth is below a pixel and below a step of an 8 bit color.
+        // snapping from further away shows as a jump at the end
+        if (fabsf(goal_value - current_value) < 0.001f)
             return goal_value;
 
-        current_value += (goal_value - current_value) * io->DeltaTime * speed;
-        return current_value;
+        // the same share of the way each second, whatever the frame rate
+        return current_value + (goal_value - current_value) * (1.f - expf(-speed * delta_time));
     }
 }
 
 namespace celosia::animations {
+    void new_frame() {
+        // the frame time measured on the cpu jitters a few ms around the display's refresh interval (13 to 21 ms at 60 Hz),
+        // while the frames are shown evenly. stepping by it moves animations unevenly from frame to frame, an average steps evenly.
+        // a frame that is much longer or shorter (a hitch, or the frame rate changing) is taken as it is so animations don't lag behind
+        const float dt = ImGui::GetIO().DeltaTime;
+        if (delta_time <= 0.f || dt > delta_time * 1.5f || dt < delta_time / 1.5f)
+            delta_time = dt;
+        else
+            delta_time += (dt - delta_time) * 0.1f;
+    }
+
     ImGuiID key(std::string_view name, ImGuiID seed) {
         return ImHashData(name.data(), name.size(), seed);
     }

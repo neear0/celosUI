@@ -135,7 +135,7 @@ namespace ImGui {
         else
             grab_rect = ImRect(bb.Min.x, ImLerp(bb.Min.y, bb.Max.y, grab_v_norm), bb.Max.x, ImLerp(bb.Min.y, bb.Max.y, grab_v_norm) + grab_h_pixels);
 
-        window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, (ImColor)celosia::animations::set(window->ID * 2, (ImVec4)grab_col, 0, celosia::animations::e_method::linear), style.ScrollbarRounding);
+        window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, (ImColor)celosia::animations::set(window->ID * 2, (ImVec4)grab_col, celosia::animations::color_speed), style.ScrollbarRounding);
         //window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, grab_col, style.ScrollbarRounding);
 
         return held;

@@ -51,7 +51,7 @@ namespace celosia::style {
 		}
 
 		void update() {
-			const float t = 1.f - expf(-ImGui::GetIO().DeltaTime * lerp_speed); // the same share of the way each second, whatever the frame rate
+			const float t = 1.f - expf(-animations::delta_time * lerp_speed); // the same share of the way each second, whatever the frame rate
 			for (ImColor t_theme::* color : colors) {
 				const ImVec4 from = (active.*color).Value, to = (target.*color).Value;
 				(active.*color).Value = ImLerp(from, to, t);

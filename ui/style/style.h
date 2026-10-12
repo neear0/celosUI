@@ -27,8 +27,9 @@ namespace celosia::style {
 		inline static int border_size = 2;
 		inline static int border_size_animated = 2;
 
-		inline static float tab_switch_animation_max = 16;
-		inline static int tab_switch_animation_speed = 2;
+		inline static float tab_switch_animation_max = 16; // how far the groupboxes move down while the tab switches
+		inline static float tab_switch_out = 0.12f; // seconds the old tab takes to fade out
+		inline static float tab_switch_in = 0.3f; // seconds the new tab takes to fade in
 	}
 	namespace groupbox {
 		inline static float height = 40; // of the title, the least it can be, see render::groupbox::title_height()
