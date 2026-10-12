@@ -26,7 +26,7 @@ namespace celosia::initialize {
 
     void images() {
         using namespace resources::image_data;
-        resources::images::add("logo", logo, logo_size);
+        resources::images::add("test", test, test_size);
     }
 }
 

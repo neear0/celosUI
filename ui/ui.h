@@ -62,8 +62,8 @@ namespace celosia {
 		}
 
 		namespace image_data { // compiled into the binary, see resources/embed_resources.cmake
-			extern const unsigned char logo[];
-			extern const int logo_size;
+			extern const unsigned char test[];
+			extern const int test_size;
 		}
 	}
 

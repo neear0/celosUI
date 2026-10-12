@@ -6,7 +6,7 @@ set(fonts
     poppins_bold=assets/Poppins-Bold.ttf
 )
 set(images
-    logo=assets/images/logo.png
+    test=assets/images/test.png
 )
 
 # embed(<output file> <namespace> <name=path>...): each file becomes `extern const unsigned char name[]` and `name_size`
