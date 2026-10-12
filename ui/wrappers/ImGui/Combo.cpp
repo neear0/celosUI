@@ -395,22 +395,6 @@ static const char* Items_ArrayGetter(void* data, int idx)
     return items[idx];
 }
 
-// Getter for the old Combo() API: "item1\0item2\0item3\0"
-static const char* Items_SingleStringGetter(void* data, int idx)
-{
-    const char* items_separated_by_zeros = (const char*)data;
-    int items_count = 0;
-    const char* p = items_separated_by_zeros;
-    while (*p)
-    {
-        if (idx == items_count)
-            break;
-        p += strlen(p) + 1;
-        items_count++;
-    }
-    return *p ? p : NULL;
-}
-
 // Old API, prefer using BeginCombo() nowadays if you can.
 bool ImGui::Combo(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), void* user_data, int items_count, int popup_max_height_in_items)
 {
@@ -461,19 +445,5 @@ bool ImGui::Combo(const char* label, int* current_item, const char* (*getter)(vo
 bool ImGui::Combo(const char* label, int* current_item, const char* const items[], int items_count, int height_in_items)
 {
     const bool value_changed = Combo(label, current_item, Items_ArrayGetter, (void*)items, items_count, height_in_items);
-    return value_changed;
-}
-
-// Combo box helper allowing to pass all items in a single string literal holding multiple zero-terminated items "item1\0item2\0"
-bool ImGui::Combo(const char* label, int* current_item, const char* items_separated_by_zeros, int height_in_items)
-{
-    int items_count = 0;
-    const char* p = items_separated_by_zeros;       // FIXME-OPT: Avoid computing this, or at least only when combo is open
-    while (*p)
-    {
-        p += strlen(p) + 1;
-        items_count++;
-    }
-    bool value_changed = Combo(label, current_item, Items_SingleStringGetter, (void*)items_separated_by_zeros, items_count, height_in_items);
     return value_changed;
 }

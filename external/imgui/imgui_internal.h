@@ -3355,11 +3355,6 @@ namespace ImGui
     inline bool             TempInputIsActive(ImGuiID id)       { ImGuiContext& g = *GImGui; return (g.ActiveId == id && g.TempInputId == id); }
     inline ImGuiInputTextState* GetInputTextState(ImGuiID id)   { ImGuiContext& g = *GImGui; return (id != 0 && g.InputTextState.ID == id) ? &g.InputTextState : NULL; } // Get input text state if active
 
-    // Color
-    IMGUI_API void          ColorTooltip(const char* text, const float* col, ImGuiColorEditFlags flags);
-    IMGUI_API void          ColorEditOptionsPopup(const float* col, ImGuiColorEditFlags flags);
-    IMGUI_API void          ColorPickerOptionsPopup(const float* ref_col, ImGuiColorEditFlags flags);
-
     // Plot
     IMGUI_API int           PlotEx(ImGuiPlotType plot_type, const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const ImVec2& size_arg);
 

@@ -1,7 +1,7 @@
 #pragma once
 
-// extra ImGui components, kept in one place. ImGui widgets that are replaced outright (ButtonEx, Checkbox, Combo, Scrollbar,
-// the color editor) keep their ImGui declarations and live in ImGui/ next to these
+// extra ImGui components, kept in one place. ImGui widgets that are replaced outright (ButtonEx, Checkbox, BeginCombo and Combo,
+// Selectable, Scrollbar) keep their ImGui declarations and live in ImGui/ next to these. ImGui's color editor is gone, see color_edit()
 namespace ImGui {
 	// widgets
 	bool tab_button(const char* label, const ImVec2& size = ImVec2(0, 0)); // render::tabs() lays these out, size 0 is the sidebar's width and the text's height

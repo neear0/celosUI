@@ -311,7 +311,6 @@
     <ClCompile Include="ui\style\accents.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\add_rect_filled_half_rounded.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\Checkbox.cpp" />
-    <ClCompile Include="ui\wrappers\ImGui\ColorPicker.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\Combo.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\image.cpp" />
     <ClCompile Include="ui\wrappers\ImGui\color_edit.cpp" />
