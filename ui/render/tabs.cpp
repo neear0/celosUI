@@ -20,7 +20,7 @@ int celosia::render::tabs(std::initializer_list<const char*> labels, e_tabs_layo
 				ImGui::SameLine(0.f, gap);
 		}
 
-		ImGui::tab_button(label, size);
+		celosia::widgets::tab_button(label, size);
 		if (ui::tab_active == label)
 			active = index;
 		index++;

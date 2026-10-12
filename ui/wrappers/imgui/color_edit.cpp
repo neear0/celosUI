@@ -41,21 +41,21 @@ static void bar_handle(ImDrawList* drawlist, const ImRect& bar, float t) { // ac
     drawlist->AddRect(top_left, bottom_right, IM_COL32_WHITE, 3.f, 0, 2.f);
 }
 
-bool ImGui::color_picker(const char* label, float col[4], bool alpha) {
-    ImGuiWindow* window = GetCurrentWindow();
+bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha) {
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
 
-    const ImGuiStyle& style = GetStyle();
+    const ImGuiStyle& style = ImGui::GetStyle();
     ImDrawList* drawlist = window->DrawList;
-    ImGuiStorage* storage = GetStateStorage();
-    PushID(label);
+    ImGuiStorage* storage = ImGui::GetStateStorage();
+    ImGui::PushID(label);
 
     // grey has no hue and black no saturation either, the last ones picked are kept for as long as the color is the one they made
     float h, s, v;
-    ColorConvertRGBtoHSV(col[0], col[1], col[2], h, s, v);
-    const ImGuiID id_hue = GetID("##hue_saved"), id_sat = GetID("##sat_saved"), id_color = GetID("##color_saved");
-    if ((ImU32)storage->GetInt(id_color, 0) == ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], 1.f))) {
+    ImGui::ColorConvertRGBtoHSV(col[0], col[1], col[2], h, s, v);
+    const ImGuiID id_hue = ImGui::GetID("##hue_saved"), id_sat = ImGui::GetID("##sat_saved"), id_color = ImGui::GetID("##color_saved");
+    if ((ImU32)storage->GetInt(id_color, 0) == ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], 1.f))) {
         if (s == 0.f || v == 0.f)
             h = storage->GetFloat(id_hue, h);
         if (v == 0.f)
@@ -68,7 +68,7 @@ bool ImGui::color_picker(const char* label, float col[4], bool alpha) {
     const ImRect hue_rect(ImVec2(sv_rect.Max.x + gap, pos.y), ImVec2(sv_rect.Max.x + gap + bar, sv_rect.Max.y));
     const ImRect alpha_rect(ImVec2(hue_rect.Max.x + gap, pos.y), ImVec2(hue_rect.Max.x + gap + bar, sv_rect.Max.y));
     const ImRect total(pos, alpha ? alpha_rect.Max : hue_rect.Max);
-    ItemSize(total);
+    ImGui::ItemSize(total);
 
     bool changed = false;
     ImVec2 p;
@@ -86,22 +86,22 @@ bool ImGui::color_picker(const char* label, float col[4], bool alpha) {
         changed = true;
     }
     if (changed) {
-        ColorConvertHSVtoRGB(h, s, v, col[0], col[1], col[2]);
+        ImGui::ColorConvertHSVtoRGB(h, s, v, col[0], col[1], col[2]);
         storage->SetFloat(id_hue, h);
         storage->SetFloat(id_sat, s);
-        storage->SetInt(id_color, (int)ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], 1.f)));
+        storage->SetInt(id_color, (int)ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], 1.f)));
     }
 
     const float rounding = style.FrameRounding;
     ImVec4 hue_color(0, 0, 0, 1);
-    ColorConvertHSVtoRGB(h, 1.f, 1.f, hue_color.x, hue_color.y, hue_color.z);
+    ImGui::ColorConvertHSVtoRGB(h, 1.f, 1.f, hue_color.x, hue_color.y, hue_color.z);
     const ImVec4 opaque(col[0], col[1], col[2], 1.f);
 
     // saturation left to right, value top to bottom
     gradient_rect(drawlist, sv_rect, sv_rect.Min, ImVec2(sv_rect.Max.x, sv_rect.Min.y), ImVec4(1, 1, 1, 1), hue_color, rounding);
     gradient_rect(drawlist, sv_rect, sv_rect.Min, ImVec2(sv_rect.Min.x, sv_rect.Max.y), ImVec4(0, 0, 0, 0), ImVec4(0, 0, 0, 1), rounding);
     const ImVec2 marker(ImLerp(sv_rect.Min.x, sv_rect.Max.x, s), ImLerp(sv_rect.Min.y, sv_rect.Max.y, 1.f - v));
-    drawlist->AddCircleFilled(marker, 6.f, ColorConvertFloat4ToU32(opaque));
+    drawlist->AddCircleFilled(marker, 6.f, ImGui::ColorConvertFloat4ToU32(opaque));
     drawlist->AddCircle(marker, 7.f, IM_COL32(0, 0, 0, 90), 0, 1.f);
     drawlist->AddCircle(marker, 6.f, IM_COL32_WHITE, 0, 2.f);
 
@@ -115,53 +115,53 @@ bool ImGui::color_picker(const char* label, float col[4], bool alpha) {
     bar_handle(drawlist, hue_rect, h);
 
     if (alpha) { // opaque at the top, see-through at the bottom, over a checkerboard
-        RenderColorRectWithAlphaCheckerboard(drawlist, alpha_rect.Min, alpha_rect.Max, IM_COL32(0, 0, 0, 0), bar / 2.f, ImVec2(0, 0), rounding);
+        ImGui::RenderColorRectWithAlphaCheckerboard(drawlist, alpha_rect.Min, alpha_rect.Max, IM_COL32(0, 0, 0, 0), bar / 2.f, ImVec2(0, 0), rounding);
         gradient_rect(drawlist, alpha_rect, alpha_rect.Min, ImVec2(alpha_rect.Min.x, alpha_rect.Max.y), opaque, ImVec4(opaque.x, opaque.y, opaque.z, 0.f), rounding);
         bar_handle(drawlist, alpha_rect, 1.f - col[3]);
     }
 
-    PopID();
+    ImGui::PopID();
     return changed;
 }
 
-bool ImGui::color_edit(const char* label, float col[4], bool alpha) {
-    ImGuiWindow* window = GetCurrentWindow();
+bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha) {
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
 
-    const ImGuiStyle& style = GetStyle();
+    const ImGuiStyle& style = ImGui::GetStyle();
     const ImGuiID id = window->GetID(label);
-    const ImVec2 label_size = CalcTextSize(label, nullptr, true);
-    const float size = GetFrameHeight();
+    const ImVec2 label_size = ImGui::CalcTextSize(label, nullptr, true);
+    const float size = ImGui::GetFrameHeight();
     const ImVec2 pos = window->DC.CursorPos;
     const ImRect swatch(pos, pos + ImVec2(size, size));
     const ImRect total(pos, pos + ImVec2(size + (label_size.x > 0.f ? style.ItemInnerSpacing.x + label_size.x : 0.f), size));
-    ItemSize(total, style.FramePadding.y);
-    if (!ItemAdd(total, id))
+    ImGui::ItemSize(total, style.FramePadding.y);
+    if (!ImGui::ItemAdd(total, id))
         return false;
 
     bool hovered, held;
-    const bool pressed = ButtonBehavior(total, id, &hovered, &held);
+    const bool pressed = ImGui::ButtonBehavior(total, id, &hovered, &held);
 
     const ImVec4 color(col[0], col[1], col[2], alpha ? col[3] : 1.f);
     const float glow = celosia::animations::set(celosia::animations::key("color_edit_glow", id), hovered ? 1.f : 0.f);
     if (glow > 0.01f) // glows in its own color while hovered
         celosia::effects::glow(window->DrawList, swatch.Min, swatch.Max, ImColor(color.x, color.y, color.z, 0.5f * glow), style.FrameRounding, 8.f);
-    RenderColorRectWithAlphaCheckerboard(window->DrawList, swatch.Min, swatch.Max, ColorConvertFloat4ToU32(color), size / 4.f, ImVec2(0, 0), style.FrameRounding);
+    ImGui::RenderColorRectWithAlphaCheckerboard(window->DrawList, swatch.Min, swatch.Max, ImGui::ColorConvertFloat4ToU32(color), size / 4.f, ImVec2(0, 0), style.FrameRounding);
     window->DrawList->AddRect(swatch.Min, swatch.Max, IM_COL32(255, 255, 255, (int)(40 + 60 * glow)), style.FrameRounding);
     if (label_size.x > 0.f)
-        RenderText(ImVec2(swatch.Max.x + style.ItemInnerSpacing.x, pos.y + (size - label_size.y) * 0.5f), label);
+        ImGui::RenderText(ImVec2(swatch.Max.x + style.ItemInnerSpacing.x, pos.y + (size - label_size.y) * 0.5f), label);
 
-    PushID(label);
+    ImGui::PushID(label);
     if (pressed)
-        OpenPopup("##picker");
+        ImGui::OpenPopup("##picker");
 
     bool changed = false;
-    SetNextWindowPos(ImVec2(swatch.Min.x, swatch.Max.y + style.ItemSpacing.y + 4.f));
-    PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
-    PushStyleColor(ImGuiCol_PopupBg, IM_COL32(0, 0, 0, 0)); // the blur below is the background
-    if (BeginPopup("##picker")) {
-        ImGuiWindow* popup = GetCurrentWindow(); // frosted glass, like the combo's popup
+    ImGui::SetNextWindowPos(ImVec2(swatch.Min.x, swatch.Max.y + style.ItemSpacing.y + 4.f));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, IM_COL32(0, 0, 0, 0)); // the blur below is the background
+    if (ImGui::BeginPopup("##picker")) {
+        ImGuiWindow* popup = ImGui::GetCurrentWindow(); // frosted glass, like the combo's popup
         ImColor tint = celosia::style::themes::active.background_darker;
         tint.Value.w = 0.6f;
         popup->DrawList->PushClipRect(popup->Pos, popup->Pos + popup->Size);
@@ -170,15 +170,15 @@ bool ImGui::color_edit(const char* label, float col[4], bool alpha) {
         popup->DrawList->PopClipRect();
 
         changed = color_picker("##body", col, alpha);
-        const ImU32 rgba = ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], col[3]));
+        const ImU32 rgba = ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], col[3]));
         if (alpha)
-            Text("#%02X%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF, rgba >> 24);
+            ImGui::Text("#%02X%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF, rgba >> 24);
         else
-            Text("#%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF);
-        EndPopup();
+            ImGui::Text("#%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF);
+        ImGui::EndPopup();
     }
-    PopStyleColor();
-    PopStyleVar();
-    PopID();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar();
+    ImGui::PopID();
     return changed;
 }

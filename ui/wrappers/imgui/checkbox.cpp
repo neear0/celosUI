@@ -9,7 +9,7 @@ static void render_check_mark_animated(ImGuiID id, bool active, ImDrawList* draw
     ImColor animated = (ImColor)celosia::animations::set(celosia::animations::key("checkbox", id), (ImVec4)check_col, celosia::animations::color_speed);
 
     ImGui::RenderCheckMark(drawlist, check_bb.Min + ImVec2(pad, pad), animated, square_sz - pad * 2.0f);
-    ImGui::render_frame_border_color(check_bb.Min, check_bb.Max, animated,4.f);
+    celosia::widgets::render_frame_border_color(check_bb.Min, check_bb.Max, animated,4.f);
     
 }
 
@@ -72,4 +72,4 @@ bool ImGui::Checkbox(const char* label, bool* v)
     return pressed;
 }
 
-bool ImGui::checkbox_map(const char* label) { return Checkbox(label, &celosia::variables::config::bools[label]); }
+bool celosia::widgets::checkbox_map(const char* label) { return ImGui::Checkbox(label, &celosia::variables::config::bools[label]); }

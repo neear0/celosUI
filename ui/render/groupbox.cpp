@@ -41,7 +41,7 @@ void celosia::render::groupbox::body(ImDrawList* drawlist, const ImVec2 offset, 
 
 	switch (style::themes::active.tab_style) {
 	case style::themes::e_tab_title_style::minimal:
-		ImGui::add_rect_filled_half_rounded(drawlist, offset, ImVec2(offset_max.x, offset.y + height), style::themes::active.frame_fill, 4);
+		celosia::widgets::add_rect_filled_half_rounded(drawlist, offset, ImVec2(offset_max.x, offset.y + height), style::themes::active.frame_fill, 4);
 		effects::gradient(drawlist, ImVec2(offset.x, offset.y + height - 2), ImVec2(offset_max.x, offset.y + height), a, b); // underline
 		break;
 	case style::themes::e_tab_title_style::full:

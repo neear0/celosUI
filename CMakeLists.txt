@@ -97,17 +97,17 @@ set(celos_ui_sources
     ui/style/animations.cpp
     ui/style/tab_switch.cpp
     ui/style/theme_setup.cpp
-    ui/wrappers/ImGui/add_rect_filled_half_rounded.cpp
-    ui/wrappers/ImGui/Button.cpp
-    ui/wrappers/ImGui/Checkbox.cpp
-    ui/wrappers/ImGui/color_edit.cpp
-    ui/wrappers/ImGui/Combo.cpp
-    ui/wrappers/ImGui/image.cpp
-    ui/wrappers/ImGui/Scrollbar.cpp
-    ui/wrappers/ImGui/tab_button.cpp
-    ui/wrappers/ImGui/functions/render_frame_animated.cpp
-    ui/wrappers/ImGui/functions/render_frame_border_animated.cpp
-    ui/wrappers/ImGui/functions/render_frame_border_color.cpp
+    ui/wrappers/imgui/add_rect_filled_half_rounded.cpp
+    ui/wrappers/imgui/button.cpp
+    ui/wrappers/imgui/checkbox.cpp
+    ui/wrappers/imgui/color_edit.cpp
+    ui/wrappers/imgui/combo.cpp
+    ui/wrappers/imgui/image.cpp
+    ui/wrappers/imgui/scrollbar.cpp
+    ui/wrappers/imgui/tab_button.cpp
+    ui/wrappers/imgui/functions/render_frame_animated.cpp
+    ui/wrappers/imgui/functions/render_frame_border_animated.cpp
+    ui/wrappers/imgui/functions/render_frame_border_color.cpp
 )
 
 if(CELOSUI_PLATFORM STREQUAL "win32")

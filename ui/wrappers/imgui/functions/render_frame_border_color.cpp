@@ -1,6 +1,6 @@
 #include "../../../ui.h"
 
-void ImGui::render_frame_border_color(ImVec2 p_min, ImVec2 p_max, ImColor clr,float rounding)
+void celosia::widgets::render_frame_border_color(ImVec2 p_min, ImVec2 p_max, ImColor clr,float rounding)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
@@ -8,7 +8,7 @@ void ImGui::render_frame_border_color(ImVec2 p_min, ImVec2 p_max, ImColor clr,fl
     if (border_size > 0)
     {
 /*
-        window->DrawList->AddRect(p_min + ImVec2(1, 1), p_max + ImVec2(1, 1), GetColorU32(ImGuiCol_BorderShadow), rounding, 0, border_size);
+        window->DrawList->AddRect(p_min + ImVec2(1, 1), p_max + ImVec2(1, 1), ImGui::GetColorU32(ImGuiCol_BorderShadow), rounding, 0, border_size);
 */
         window->DrawList->AddRect(p_min, p_max, clr, rounding, 0, border_size);
     }

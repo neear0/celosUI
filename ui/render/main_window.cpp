@@ -34,7 +34,7 @@ void celosia::render::main_window() {
 
         render::groupbox::begin("Groupbox B", "Checkboxes");
         for (int i = 0; i < 20; i++)
-            ImGui::checkbox_map(("Checkbox " + std::to_string(i)).c_str());
+            celosia::widgets::checkbox_map(("Checkbox " + std::to_string(i)).c_str());
         render::groupbox::end();
     }
     else {
@@ -42,13 +42,13 @@ void celosia::render::main_window() {
         const char* test[] = {"Item A", "Item B", "Item C"};
         ImGui::Combo("test", &variables::config::ints["test_combo"], test, 3, 3);
 
-        ImGui::color_edit("Main Color", color);
+        celosia::widgets::color_edit("Main Color", color);
         style::general::main_color = { color[0], color[1], color[2], color[3] };
 
         const ImVec2 picture = resources::images::get("test").size; // as big as fits in what's left of the groupbox, keeping its aspect
         const float picture_height = ImMin(picture.y, ImGui::GetContentRegionAvail().y - ImGui::GetStyle().WindowPadding.y);
         if (picture.y > 0.f)
-            ImGui::image("test", ImVec2(picture.x * picture_height / picture.y, picture_height), 8.f);
+            celosia::widgets::image("test", ImVec2(picture.x * picture_height / picture.y, picture_height), 8.f);
 
         render::groupbox::end();
     }

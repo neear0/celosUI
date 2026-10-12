@@ -11,9 +11,9 @@ A C++ UI framework for Windows (Win32 + DirectX 11) and Linux (GLFW + Vulkan). D
 ## Features
 * Everything ImGui has underneath (layout, input, IDs, child windows, the whole widget API)
 * Animations that step evenly whatever the frame rate
-* New and improved widgets: buttons, checkboxes, combo, color picker (`ImGui::color_edit`), images (`ImGui::image`), tab buttons, groupboxes
+* New and improved widgets: buttons, checkboxes, combo, color picker (`widgets::color_edit`), images (`widgets::image`), tab buttons, groupboxes
 * Tabs that lay themselves out (`render::tabs`, vertical or horizontal)
-* Map variables: widgets that keep their value in `variables::config` by label (`ImGui::checkbox_map`)
+* Map variables: widgets that keep their value in `variables::config` by label (`widgets::checkbox_map`)
 * Themes: dark and light, eased between when switched
 * Shader effects: gradients, glow, frosted glass blur, an animated background and film grain
 * Borderless, translucent window with the OS blur behind it (Windows) or the shader background
@@ -73,15 +73,15 @@ ImGui::DestroyContext();
 Inside the window, the widgets are used like normal ImGui ones:
 ```cpp
 render::groupbox::begin("Groupbox B", "Checkboxes");
-ImGui::checkbox_map("Checkbox 0");                // value lives in variables::config::bools["Checkbox 0"]
-ImGui::color_edit("Main Color", color);           // float[4]
-ImGui::image("test", ImVec2(0, 0), 8.f);          // 0, 0 is the image's own size
+widgets::checkbox_map("Checkbox 0");             // value lives in variables::config::bools["Checkbox 0"]
+widgets::color_edit("Main Color", color);        // float[4]
+widgets::image("test", ImVec2(0, 0), 8.f);       // 0, 0 is the image's own size
 render::groupbox::end();
 ```
 Where things are:
 * `ui/ui.h`: the public namespaces (`platform`, `effects`, `resources`, `animations`, `variables`, ...)
 * `ui/render/`: the window parts (titlebar, sidebar, tabs, groupboxes, panels, text)
-* `ui/wrappers/ImGui/`: the reworked ImGui widgets
+* `ui/wrappers/`: our widgets (`celosia::widgets`, `wrappers.h`) and the ImGui widgets we replaced (ButtonEx, Checkbox, Combo, Selectable, Scrollbar), in `imgui/`
 * `ui/style/`: style values, themes, accents and animations
 * `ui/win32/` and `ui/glfw/`: the two platform layers (window, device, textures, effects)
 * `ui/shaders/`: the effect shaders
@@ -91,7 +91,7 @@ Where things are:
 ## Fonts and images
 The fonts and images in `assets/` are compiled into the executable through `ui/resources/font_data.cpp` and `ui/resources/image_data.cpp`, so nothing is loaded from disk. After changing or adding one (the list is at the top of the script), regenerate those files with `cmake -P ui/resources/embed_resources.cmake`.
 
-Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` and looked up with `resources::fonts::get(name)`, which falls back to the default font. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `ImGui::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any ImGui image function.
+Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` and looked up with `resources::fonts::get(name)`, which falls back to the default font. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `widgets::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any ImGui image function.
 
 ## Effects
 Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui.h`). Each shader is written once in HLSL and compiled for both D3D11 and Vulkan.

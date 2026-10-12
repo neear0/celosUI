@@ -3,7 +3,7 @@
 // smooth scrolling: the mouse wheel and the scrollbar set window->ScrollPending, Scrollbar() eases the scroll towards it.
 // ImGui::UpdateMouseWheel (imgui.cpp) calls scroll_wheel() for vertical wheel scrolling, keep that call when updating ImGui
 
-void ImGui::scroll_wheel(ImGuiWindow* window, float wheel) {
+void celosia::widgets::scroll_wheel(ImGuiWindow* window, float wheel) {
     const float height = window->InnerRect.GetHeight();
     const float scroll_step = ImTrunc(ImMin(5 * window->CalcFontSize(), height * 0.67f));
 

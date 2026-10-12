@@ -68,7 +68,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\Button.cpp">
+    <ClCompile Include="ui\wrappers\imgui\button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\style\animations.cpp">
@@ -137,10 +137,10 @@
     <ClCompile Include="ui\render\main_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\Scrollbar.cpp">
+    <ClCompile Include="ui\wrappers\imgui\scrollbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_border_animated.cpp">
+    <ClCompile Include="ui\wrappers\imgui\functions\render_frame_border_animated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\render\groupbox.cpp">
@@ -152,10 +152,10 @@
     <ClCompile Include="ui\style\tab_switch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\tab_button.cpp">
+    <ClCompile Include="ui\wrappers\imgui\tab_button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\add_rect_filled_half_rounded.cpp">
+    <ClCompile Include="ui\wrappers\imgui\add_rect_filled_half_rounded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\initialize.cpp">
@@ -167,22 +167,22 @@
     <ClCompile Include="ui\style\accents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_animated.cpp">
+    <ClCompile Include="ui\wrappers\imgui\functions\render_frame_animated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\Checkbox.cpp">
+    <ClCompile Include="ui\wrappers\imgui\checkbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\functions\render_frame_border_color.cpp">
+    <ClCompile Include="ui\wrappers\imgui\functions\render_frame_border_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\Combo.cpp">
+    <ClCompile Include="ui\wrappers\imgui\combo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\image.cpp">
+    <ClCompile Include="ui\wrappers\imgui\image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\ImGui\color_edit.cpp">
+    <ClCompile Include="ui\wrappers\imgui\color_edit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\inputsystem.cpp">
