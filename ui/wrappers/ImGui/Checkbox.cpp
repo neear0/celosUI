@@ -1,6 +1,6 @@
 #include "../../ui.h"
 
-void render_check_mark_animated(bool active, const char* label, ImDrawList* drawlist, ImRect check_bb, float pad, float square_sz, ImColor clr) {
+static void render_check_mark_animated(bool active, const char* label, ImDrawList* drawlist, ImRect check_bb, float pad, float square_sz, ImColor clr) {
     ImColor check_col = celosia::style::general::main_color;
 
     if (!active)
@@ -13,67 +13,63 @@ void render_check_mark_animated(bool active, const char* label, ImDrawList* draw
     
 }
 
-namespace ImGui {
-    bool Checkbox(const char* label, bool* v)
+bool ImGui::Checkbox(const char* label, bool* v)
+{
+    ImGuiWindow* window = GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
+
+    ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
+    const ImGuiID id = window->GetID(label);
+    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+
+    const float square_sz = IM_TRUNC(g.FontSize * 1.15f); // follows the text size, not the frame padding
+    const float row_height = ImMax(square_sz, label_size.y); // the box and the label are centered on the row
+    const ImVec2 pos = window->DC.CursorPos;
+    const ImRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), row_height + style.FramePadding.y));
+    ItemSize(total_bb, style.FramePadding.y);
+    if (!ItemAdd(total_bb, id))
     {
-        ImGuiWindow* window = GetCurrentWindow();
-        if (window->SkipItems)
-            return false;
-
-        ImGuiContext& g = *GImGui;
-        const ImGuiStyle& style = g.Style;
-        const ImGuiID id = window->GetID(label);
-        const ImVec2 label_size = CalcTextSize(label, NULL, true);
-
-        const float square_sz = IM_TRUNC(g.FontSize * 1.15f); // follows the text size, not the frame padding
-        const float row_height = ImMax(square_sz, label_size.y); // the box and the label are centered on the row
-        const ImVec2 pos = window->DC.CursorPos;
-        const ImRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), row_height + style.FramePadding.y));
-        ItemSize(total_bb, style.FramePadding.y);
-        if (!ItemAdd(total_bb, id))
-        {
-            IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
-            return false;
-        }
-
-        bool hovered, held;
-        bool pressed = ButtonBehavior(total_bb, id, &hovered, &held);
-        if (pressed)
-        {
-            *v = !(*v);
-            MarkItemEdited(id);
-        }
-
-        const ImVec2 check_pos(pos.x, pos.y + IM_TRUNC((row_height - square_sz) * 0.5f));
-        const ImRect check_bb(check_pos, check_pos + ImVec2(square_sz, square_sz));
-        RenderNavHighlight(total_bb, id);
-        //RenderFrame(check_bb.Min, check_bb.Max, , true, style.FrameRounding);
-        //render_frame_border_animated(label, check_bb.Min, check_bb.Max, clr, true, style.FrameRounding);
-
-        bool mixed_value = (g.LastItemData.InFlags & ImGuiItemFlags_MixedValue) != 0;
-        if (mixed_value)
-        {
-            // Undocumented tristate/mixed/indeterminate checkbox (#2644)
-            // This may seem awkwardly designed because the aim is to make ImGuiItemFlags_MixedValue supported by all widgets (not just checkbox)
-            ImVec2 pad(ImMax(1.0f, IM_TRUNC(square_sz / 3.6f)), ImMax(1.0f, IM_TRUNC(square_sz / 3.6f)));
-           // window->DrawList->AddRectFilled(check_bb.Min + pad, check_bb.Max - pad, check_col, style.FrameRounding);
-        }
-
-        ImColor clr = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
-        const float pad = ImMax(1.0f, IM_TRUNC(square_sz / 6.0f));
-        render_check_mark_animated(*v, label, window->DrawList, check_bb, pad, square_sz, clr);
-
-        ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, pos.y + IM_TRUNC((row_height - label_size.y) * 0.5f));
-        if (g.LogEnabled)
-            LogRenderedText(&label_pos, mixed_value ? "[~]" : *v ? "[x]" : "[ ]");
-        if (label_size.x > 0.0f)
-            RenderText(label_pos, label);
-
         IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
-        return pressed;
+        return false;
     }
+
+    bool hovered, held;
+    bool pressed = ButtonBehavior(total_bb, id, &hovered, &held);
+    if (pressed)
+    {
+        *v = !(*v);
+        MarkItemEdited(id);
+    }
+
+    const ImVec2 check_pos(pos.x, pos.y + IM_TRUNC((row_height - square_sz) * 0.5f));
+    const ImRect check_bb(check_pos, check_pos + ImVec2(square_sz, square_sz));
+    RenderNavHighlight(total_bb, id);
+    //RenderFrame(check_bb.Min, check_bb.Max, , true, style.FrameRounding);
+    //render_frame_border_animated(label, check_bb.Min, check_bb.Max, clr, true, style.FrameRounding);
+
+    bool mixed_value = (g.LastItemData.InFlags & ImGuiItemFlags_MixedValue) != 0;
+    if (mixed_value)
+    {
+        // Undocumented tristate/mixed/indeterminate checkbox (#2644)
+        // This may seem awkwardly designed because the aim is to make ImGuiItemFlags_MixedValue supported by all widgets (not just checkbox)
+        ImVec2 pad(ImMax(1.0f, IM_TRUNC(square_sz / 3.6f)), ImMax(1.0f, IM_TRUNC(square_sz / 3.6f)));
+       // window->DrawList->AddRectFilled(check_bb.Min + pad, check_bb.Max - pad, check_col, style.FrameRounding);
+    }
+
+    ImColor clr = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+    const float pad = ImMax(1.0f, IM_TRUNC(square_sz / 6.0f));
+    render_check_mark_animated(*v, label, window->DrawList, check_bb, pad, square_sz, clr);
+
+    ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, pos.y + IM_TRUNC((row_height - label_size.y) * 0.5f));
+    if (g.LogEnabled)
+        LogRenderedText(&label_pos, mixed_value ? "[~]" : *v ? "[x]" : "[ ]");
+    if (label_size.x > 0.0f)
+        RenderText(label_pos, label);
+
+    IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
+    return pressed;
 }
 
-namespace ImGui {
-    bool checkbox_map(const char* label) { return Checkbox(label, &celosia::variables::config::bools[label]); }
-}
+bool ImGui::checkbox_map(const char* label) { return Checkbox(label, &celosia::variables::config::bools[label]); }

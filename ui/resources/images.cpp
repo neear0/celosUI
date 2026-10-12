@@ -11,32 +11,30 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../external/stb/stb_image.h"
 
-namespace celosia::resources::images {
-    bool add(const std::string& name, const unsigned char* png, int png_size) {
-        int width, height;
-        unsigned char* rgba = stbi_load_from_memory(png, png_size, &width, &height, nullptr, 4);
-        if (!rgba)
-            return false;
-        const ImTextureID texture = platform::create_texture(rgba, width, height);
-        stbi_image_free(rgba);
-        if (!texture)
-            return false;
+bool celosia::resources::images::add(const std::string& name, const unsigned char* png, int png_size) {
+    int width, height;
+    unsigned char* rgba = stbi_load_from_memory(png, png_size, &width, &height, nullptr, 4);
+    if (!rgba)
+        return false;
+    const ImTextureID texture = platform::create_texture(rgba, width, height);
+    stbi_image_free(rgba);
+    if (!texture)
+        return false;
 
-        if (const auto it = map.find(name); it != map.end())
-            platform::destroy_texture(it->second.texture);
-        map[name] = { texture, ImVec2((float)width, (float)height) };
-        return true;
-    }
+    if (const auto it = map.find(name); it != map.end())
+        platform::destroy_texture(it->second.texture);
+    map[name] = { texture, ImVec2((float)width, (float)height) };
+    return true;
+}
 
-    const t_image& get(const std::string& name) {
-        static const t_image none;
-        const auto it = map.find(name);
-        return it != map.end() ? it->second : none;
-    }
+const celosia::resources::images::t_image& celosia::resources::images::get(const std::string& name) {
+    static const t_image none;
+    const auto it = map.find(name);
+    return it != map.end() ? it->second : none;
+}
 
-    void clear() {
-        for (const auto& [name, image] : map)
-            platform::destroy_texture(image.texture);
-        map.clear();
-    }
+void celosia::resources::images::clear() {
+    for (const auto& [name, image] : map)
+        platform::destroy_texture(image.texture);
+    map.clear();
 }

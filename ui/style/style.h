@@ -3,12 +3,12 @@
 namespace celosia::style {
 	namespace general {
 		inline ImColor main_color = { 189, 122, 255,255 };
-		inline static int rounding = 4;
-		inline static int rounding_window = 0;
-		inline static int scroll_speed = 15.f;
-		inline static int scroll_multiplier = 2;
-		inline static ImVec2 padding = {10, 10};
-		inline static ImVec2 spacing = {0, 4};
+		inline int rounding = 4;
+		inline int rounding_window = 0;
+		inline int scroll_speed = 15;
+		inline int scroll_multiplier = 2;
+		inline ImVec2 padding = {10, 10};
+		inline ImVec2 spacing = {0, 4};
 	}
 	namespace window {
 		enum e_background { blur, shader };
@@ -16,28 +16,28 @@ namespace celosia::style {
 		inline float noise = 0.04f; // film grain (effects::noise) over the background and panels, how strong it is, 0 turns it off
 	}
 	namespace titlebar {
-		inline static float height = 45;
-		inline static int padding = 2;
+		inline float height = 45;
+		inline int padding = 2;
 	}
 	namespace sidebar {
-		inline static float width = 165;
+		inline float width = 165;
 	}
 	namespace frame {
-		inline static ImVec2 size_padding = {10,10};
-		inline static int border_size = 2;
-		inline static int border_size_animated = 2;
+		inline ImVec2 size_padding = {10,10};
+		inline int border_size = 2;
+		inline int border_size_animated = 2;
 
-		inline static float tab_switch_animation_max = 16; // how far the groupboxes move down while the tab switches
-		inline static float tab_switch_out = 0.12f; // seconds the old tab takes to fade out
-		inline static float tab_switch_in = 0.3f; // seconds the new tab takes to fade in
+		inline float tab_switch_animation_max = 16; // how far the groupboxes move down while the tab switches
+		inline float tab_switch_out = 0.12f; // seconds the old tab takes to fade out
+		inline float tab_switch_in = 0.3f; // seconds the new tab takes to fade in
 	}
 	namespace groupbox {
-		inline static float height = 40; // of the title, the least it can be, see render::groupbox::title_height()
-		inline static int padding = titlebar::padding * 4;
+		inline float height = 40; // of the title, the least it can be, see render::groupbox::title_height()
+		inline int padding = titlebar::padding * 4;
 	}
 /*
 	namespace checkbox {
-		inline static int size = 10;
+		inline int size = 10;
 	}
 */
 
