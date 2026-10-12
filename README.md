@@ -1,30 +1,26 @@
 # CelosUI
-A heavily modified version of ImGui with added functionality.
+A C++ UI framework for Windows (Win32 + DirectX 11) and Linux (GLFW + Vulkan). Dear ImGui's immediate mode core does the layout and input underneath; on top of it CelosUI has its own widgets, themes, animations, shader effects, font and image handling, and the window itself.
 
-## Current features
-* All of the ImGui features
-* Animations
-* New and improved widgets and components
-* Map variables
-* Automatic layouts
-* Win32 windows and effects
-* Custom theme support, dark and light themes with eased switching
-* DirectX 11 (Windows) and Vulkan (Linux)
-* Shader effects
-* New font system, rendered with FreeType
-* Images compiled into the executable
-* Color picker (`ImGui::color_edit`)
+| | |
+|---|---|
+| ![dark theme](assets/preview.png) | ![light theme with the color picker open](assets/preview_light.png) |
+| Dark theme | Light theme, color picker open |
+| ![minimal groupbox titles](assets/preview_minimal.png) | ![combo open with a blue main color](assets/preview_combo.png) |
+| Minimal groupbox titles | A blue main color, combo open |
+
+## Features
+* Everything ImGui has underneath (layout, input, IDs, child windows, the whole widget API)
+* Animations that step evenly whatever the frame rate
+* New and improved widgets: buttons, checkboxes, combo, color picker (`ImGui::color_edit`), images (`ImGui::image`), tab buttons, groupboxes
 * Tabs that lay themselves out (`render::tabs`, vertical or horizontal)
-* InputSystem
-
-## To implement
-* Scrollbar.h
-
-## Optional
-* redo font spacing code
-* redo imgui::endchild pushclip, combo pushclip, begin pushbclip
-* RenderFrameFunctions
-* for animations using renderframeanimations, add an index that is reset on every frame to avoid mixing up
+* Map variables: widgets that keep their value in `variables::config` by label (`ImGui::checkbox_map`)
+* Themes: dark and light, eased between when switched
+* Shader effects: gradients, glow, frosted glass blur, an animated background and film grain
+* Borderless, translucent window with the OS blur behind it (Windows) or the shader background
+* Fonts rendered with FreeType, fonts and images compiled into the executable
+* Smooth scrolling
+* Input system with per-frame key presses and releases
+* DirectX 11 (Windows) and Vulkan (Linux)
 
 ## Building
 **Windows (Visual Studio):** open `cUI.sln` and build. This uses Win32 + DirectX 11.
@@ -44,26 +40,76 @@ sudo apt install build-essential cmake libx11-dev libxrandr-dev libxinerama-dev 
 ```
 The window runs through X11 (XWayland on Wayland desktops), because Wayland doesn't let windows move themselves or stay on top. `-DCELOSUI_WAYLAND=ON` additionally builds GLFW's native Wayland support, which also needs `libwayland-dev libxkbcommon-dev wayland-protocols`.
 
-The fonts and images in `assets/` are compiled into the executable through `ui/resources/font_data.cpp` and `ui/resources/image_data.cpp`, so nothing is loaded from disk. After changing or adding one (the list is at the top of the script), regenerate those files with `cmake -P ui/resources/embed_resources.cmake`. Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` and looked up with `resources::fonts::get(name)`. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `ImGui::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any ImGui image function.
-
 [FreeType](https://freetype.org) rasterizes the fonts. It's downloaded while building (CMake) or before the first build (Visual Studio, into `.deps/`), its hash is checked, and only the modules for TrueType and OpenType fonts are compiled.
 
 Shaders (`ui/shaders/*.hlsl`, and ImGui's D3D11 shaders next to its backend) are compiled at build time and embedded as well, nothing is compiled at runtime. Visual Studio and the Windows CMake build use `fxc` from the Windows SDK, the Linux build uses `glslangValidator` from `glslang-tools` (the GLFW build on Windows takes it from the Vulkan SDK).
+
+## The demo
+The demo window is `render::main_window()` in `ui/render/main_window.cpp`, with the sidebar in `ui/render/sidebar.cpp`. The sidebar has the tabs and buttons that switch:
+* **layout**: the full or minimal groupbox title style
+* **background**: the OS blur or the shader background (only on Windows, where the OS can blur)
+* **noise**: the film grain on or off
+* **theme**: dark or light
+
+tab1 has buttons and checkboxes, tab2 has a combo, the color picker (it changes the main color everywhere) and an image.
+
+## Using it
+`main.cpp` is the whole loop:
+```cpp
+celosia::initialize::context();
+celosia::initialize::fonts();
+if (!celosia::platform::create("Celosia UI", ImVec2(0, 0), celosia::ui::size))
+    return 1;
+celosia::initialize::images(); // textures need the window
+
+while (celosia::platform::poll()) {
+    celosia::ui::render(); // draws render::main_window(), put your own window there
+    celosia::platform::bring_to_top();
+}
+
+celosia::platform::destroy();
+ImGui::DestroyContext();
+```
+Inside the window, the widgets are used like normal ImGui ones:
+```cpp
+render::groupbox::begin("Groupbox B", "Checkboxes");
+ImGui::checkbox_map("Checkbox 0");                // value lives in variables::config::bools["Checkbox 0"]
+ImGui::color_edit("Main Color", color);           // float[4]
+ImGui::image("test", ImVec2(0, 0), 8.f);          // 0, 0 is the image's own size
+render::groupbox::end();
+```
+Where things are:
+* `ui/ui.h`: the public namespaces (`platform`, `effects`, `resources`, `animations`, `variables`, ...)
+* `ui/render/`: the window parts (titlebar, sidebar, tabs, groupboxes, panels, text)
+* `ui/wrappers/ImGui/`: the reworked ImGui widgets
+* `ui/style/`: style values, themes, accents and animations
+* `ui/win32/` and `ui/glfw/`: the two platform layers (window, device, textures, effects)
+* `ui/shaders/`: the effect shaders
+* `ui/resources/`: fonts and images compiled into the binary
+* `external/`: ImGui and its backends, stb_image, the FreeType config
+
+## Fonts and images
+The fonts and images in `assets/` are compiled into the executable through `ui/resources/font_data.cpp` and `ui/resources/image_data.cpp`, so nothing is loaded from disk. After changing or adding one (the list is at the top of the script), regenerate those files with `cmake -P ui/resources/embed_resources.cmake`.
+
+Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` and looked up with `resources::fonts::get(name)`, which falls back to the default font. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `ImGui::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any ImGui image function.
 
 ## Effects
 Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui.h`). Each shader is written once in HLSL and compiled for both D3D11 and Vulkan.
 * `gradient`: two color gradient with exact rounded corners, optionally sliding back and forth (groupbox titles)
 * `glow`: soft glow around an item (the active tab, hovered buttons)
-* `blur`: frosted glass, blurs what was drawn before it and tints it (the combo popup, and the panels with the shader background)
+* `blur`: frosted glass, blurs what was drawn before it and tints it (the combo and color picker popups, and the panels with the shader background)
 * `background`: blobs of color drifting over a base color, the window background when `style::window::background` is `shader`
 * `noise`: film grain that lightens and darkens pixels at random, static or changing 24 times a second. `style::window::noise` sets how strong it is over the window background, the panels and the combo popup (0 turns it off)
 
-`style::window::background` picks between the OS blurring the desktop behind the window (`blur`, Windows only) and the shader background (`shader`, the default where the OS can't blur). "switch background" in the demo switches between them. The shader background also makes rounded window corners work (`style::general::rounding_window`). The blur only sees what the UI itself drew, not the desktop behind the window.
+`style::window::background` picks between the OS blurring the desktop behind the window (`blur`, Windows only) and the shader background (`shader`, the default where the OS can't blur). The shader background also makes rounded window corners work (`style::general::rounding_window`). The blur effect only sees what the UI itself drew, not the desktop behind the window.
 
 Debug builds report graphics API misuse: on Windows the D3D11 debug layer's messages are printed to the console (needs the "Graphics Tools" optional Windows feature), and for Vulkan run with `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation` (the `vulkan-validationlayers` package on Linux).
 
 ## Using it in other software
-FreeType is used under the FreeType License, which asks for a credit in the documentation of software that ships it, e.g. "Portions of this software are copyright (c) 2026 The FreeType Project (https://freetype.org). All rights reserved."
+Licenses of what gets compiled in:
+* FreeType: the FreeType License, which asks for a credit in the documentation of software that ships it, e.g. "Portions of this software are copyright (c) 2026 The FreeType Project (https://freetype.org). All rights reserved."
+* Poppins (the fonts in `assets/`): SIL Open Font License 1.1, its license text has to be shipped with the software
+* stb_image: public domain or MIT
 
 The demo's Windows release build doesn't load DLLs from next to the executable, so a DLL someone places there (e.g. in Downloads) can't run inside it. Software using the UI should do the same:
 * call `SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32)` first thing in `main`, see `main.cpp`
@@ -73,7 +119,11 @@ Release builds also turn on Control Flow Guard (`/guard:cf`) and CET shadow stac
 
 ## Known issues
 * Rounding a window that uses the OS blur gives weird looking edges, use the shader background for rounded windows (see Effects)
+* With the OS blur over a dark desktop, unchecked checkboxes and button frames are hard to see, they're drawn in the dark frame color
+* On X11 the window isn't see-through: GLFW creates Vulkan windows with an X11 visual that has no alpha
 
-![screenshot](assets/preview.png)
+## TODO
+* redo the font spacing code
+* redo the clip rect workarounds: ImGui clips a window's contents one pixel in from its edges, so the window background, the combo popup and the color picker popup push their own clip rect to draw up to the edge
 
-To find todo's, search all files for "CTODO". This was in order to prevent ImGui's todos from interfering with my own.
+To find todos in the code, search all files for "CTODO". This keeps them apart from ImGui's own todos.
