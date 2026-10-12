@@ -1,10 +1,10 @@
 #include "../../ui.h"
 
-static void style1(const ImRect bb, const char* label, ImVec2 label_size, const ImGuiStyle& style, ImColor col) {
+static void style1(ImGuiID id, const ImRect bb, const char* label, ImVec2 label_size, const ImGuiStyle& style, ImColor col) {
     ImVec4 fill = ImLerp(col.Value, celosia::style::themes::active.background_darker.Value, 0.25f); // a bit towards the panel color, darker than the border on dark themes and lighter on light ones
     fill.w = col.Value.w;
-    ImGui::render_frame_animated(label, bb.Min, bb.Max, fill, true, style.FrameRounding);
-    ImGui::render_frame_border_animated(label, bb.Min, bb.Max, col, style.FrameRounding);
+    ImGui::render_frame_animated(id, bb.Min, bb.Max, fill, true, style.FrameRounding);
+    ImGui::render_frame_border_animated(id, bb.Min, bb.Max, col, style.FrameRounding);
     ImGui::RenderTextClipped(ImVec2(bb.Min.x + style.FramePadding.x, bb.Min.y + style.FramePadding.y), ImVec2(bb.Max.x - style.FramePadding.x, bb.Max.y - style.FramePadding.y), label, NULL, &label_size, style.ButtonTextAlign, &bb);
 }
 
@@ -40,7 +40,7 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags
 
     const ImColor col = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
     RenderNavHighlight(bb, id);
-    style1(bb, label, label_size, style, col);
+    style1(id, bb, label, label_size, style, col);
 
     IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags);
     return pressed;

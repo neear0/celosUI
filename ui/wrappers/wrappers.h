@@ -12,12 +12,12 @@ namespace ImGui {
 	bool color_picker(const char* label, float col[4], bool alpha = true); // saturation/value square, hue bar and alpha bar
 
 	// drawing
-	void add_rect_filled_half_rounded(ImDrawList* drawlist, const ImVec2& min, const ImVec2& max, const ImColor& clr, const int& rounding);
+	void add_rect_filled_half_rounded(ImDrawList* drawlist, const ImVec2& min, const ImVec2& max, const ImColor& clr, float rounding);
 
-	// item frames, ImGui/functions/
+	// item frames, ImGui/functions/. id is the item's, the animated ones ease their color per item
 	IMGUI_API void render_frame_border_color(ImVec2 p_min, ImVec2 p_max, ImColor clr,float rounding = 0.0f);
-	IMGUI_API void render_frame_border_animated(const char* label, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, float rounding = 0.0f);
-	IMGUI_API void render_frame_animated(const char* label, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, bool border = true, float rounding = 0.0f);
+	void render_frame_border_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, float rounding = 0.0f);
+	void render_frame_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, bool border = true, float rounding = 0.0f);
 
 	// smooth scrolling, ImGui/Scrollbar.cpp
 	void scroll_wheel(ImGuiWindow* window, float wheel); // called by ImGui::UpdateMouseWheel, sets where the window scrolls to

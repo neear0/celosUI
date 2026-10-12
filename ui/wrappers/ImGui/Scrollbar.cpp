@@ -39,7 +39,7 @@ void ImGui::Scrollbar(ImGuiAxis axis)
     ImS64 scroll = (ImS64)window->Scroll[axis];
     ScrollbarEx(bb, id, axis, &scroll, (ImS64)size_avail, (ImS64)size_contents, rounding_corners);
 
-    float anim = celosia::animations::set(window->ID, window->ScrollPending, celosia::style::general::scroll_speed);
+    float anim = celosia::animations::set(celosia::animations::key("scroll", window->ID), window->ScrollPending, celosia::style::general::scroll_speed);
     SetScrollY(window, anim);
 }
 
@@ -134,7 +134,7 @@ bool ImGui::ScrollbarEx(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis, ImS6
     else
         grab_rect = ImRect(bb.Min.x, ImLerp(bb.Min.y, bb.Max.y, grab_v_norm), bb.Max.x, ImLerp(bb.Min.y, bb.Max.y, grab_v_norm) + grab_h_pixels);
 
-    window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, (ImColor)celosia::animations::set(window->ID * 2, (ImVec4)grab_col, celosia::animations::color_speed), style.ScrollbarRounding);
+    window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, (ImColor)celosia::animations::set(celosia::animations::key("scrollbar_grab", window->ID), (ImVec4)grab_col, celosia::animations::color_speed), style.ScrollbarRounding);
     //window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, grab_col, style.ScrollbarRounding);
 
     return held;

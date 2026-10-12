@@ -47,6 +47,14 @@ void celosia::animations::new_frame() {
         delta_time = dt;
     else
         delta_time += (dt - delta_time) * 0.1f;
+
+    // once a second, drop what hasn't been animated for a while, e.g. the items of a tab that isn't open
+    static double last_forget = 0.0;
+    const double now = ImGui::GetTime();
+    if (now - last_forget >= 1.0) {
+        last_forget = now;
+        std::erase_if(values, [now](const auto& entry) { return now - entry.second.last_used > forget_after; });
+    }
 }
 
 ImGuiID celosia::animations::key(std::string_view name, ImGuiID seed) {
@@ -55,11 +63,19 @@ ImGuiID celosia::animations::key(std::string_view name, ImGuiID seed) {
 
 float celosia::animations::get(ImGuiID id) {
     auto it = values.find(id);
-    return it != values.end() ? it->second.x : 0.f;
+    return it != values.end() ? it->second.value.x : 0.f;
 }
 
-float celosia::animations::get(std::string_view name) {
-    return get(key(name));
+void celosia::animations::snap(ImGuiID id, float value) {
+    values[id] = { ImVec4(value, 0.f, 0.f, 0.f), ImGui::GetTime() };
+}
+
+static ImVec4& use(ImGuiID id, const ImVec4& goal) { // id's value, marked as used this frame. a new one starts at goal, so items don't fade in when they appear
+    auto [it, created] = celosia::animations::values.try_emplace(id);
+    if (created)
+        it->second.value = goal;
+    it->second.last_used = ImGui::GetTime();
+    return it->second.value;
 }
 
 static float step(float current_value, const float goal_value, float speed, celosia::animations::e_method method) {
@@ -69,35 +85,23 @@ static float step(float current_value, const float goal_value, float speed, celo
 }
 
 float celosia::animations::set(ImGuiID id, const float goal_value, float speed, e_method method) {
-    ImVec4& v = values[id];
+    ImVec4& v = use(id, ImVec4(goal_value, 0.f, 0.f, 0.f));
     v.x = step(v.x, goal_value, speed, method);
     return v.x;
 }
 
 ImVec2 celosia::animations::set(ImGuiID id, const ImVec2 goal_value, float speed, e_method method) {
-    ImVec4& v = values[id];
+    ImVec4& v = use(id, ImVec4(goal_value.x, goal_value.y, 0.f, 0.f));
     v.x = step(v.x, goal_value.x, speed, method);
     v.y = step(v.y, goal_value.y, speed, method);
     return ImVec2(v.x, v.y);
 }
 
 ImVec4 celosia::animations::set(ImGuiID id, const ImVec4 goal_value, float speed, e_method method) {
-    ImVec4& v = values[id];
+    ImVec4& v = use(id, goal_value);
     v.x = step(v.x, goal_value.x, speed, method);
     v.y = step(v.y, goal_value.y, speed, method);
     v.z = step(v.z, goal_value.z, speed, method);
     v.w = step(v.w, goal_value.w, speed, method);
     return v;
-}
-
-float celosia::animations::set(std::string_view name, const float goal_value, float speed, e_method method) {
-    return set(key(name), goal_value, speed, method);
-}
-
-ImVec2 celosia::animations::set(std::string_view name, const ImVec2 goal_value, float speed, e_method method) {
-    return set(key(name), goal_value, speed, method);
-}
-
-ImVec4 celosia::animations::set(std::string_view name, const ImVec4 goal_value, float speed, e_method method) {
-    return set(key(name), goal_value, speed, method);
 }

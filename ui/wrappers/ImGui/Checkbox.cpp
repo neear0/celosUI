@@ -1,12 +1,12 @@
 #include "../../ui.h"
 
-static void render_check_mark_animated(bool active, const char* label, ImDrawList* drawlist, ImRect check_bb, float pad, float square_sz, ImColor clr) {
+static void render_check_mark_animated(ImGuiID id, bool active, ImDrawList* drawlist, ImRect check_bb, float pad, float square_sz, ImColor clr) {
     ImColor check_col = celosia::style::general::main_color;
 
     if (!active)
         check_col = clr;
 
-    ImColor animated = (ImColor)celosia::animations::set(label, (ImVec4)check_col, celosia::animations::color_speed);
+    ImColor animated = (ImColor)celosia::animations::set(celosia::animations::key("checkbox", id), (ImVec4)check_col, celosia::animations::color_speed);
 
     ImGui::RenderCheckMark(drawlist, check_bb.Min + ImVec2(pad, pad), animated, square_sz - pad * 2.0f);
     ImGui::render_frame_border_color(check_bb.Min, check_bb.Max, animated,4.f);
@@ -60,7 +60,7 @@ bool ImGui::Checkbox(const char* label, bool* v)
 
     ImColor clr = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
     const float pad = ImMax(1.0f, IM_TRUNC(square_sz / 6.0f));
-    render_check_mark_animated(*v, label, window->DrawList, check_bb, pad, square_sz, clr);
+    render_check_mark_animated(id, *v, window->DrawList, check_bb, pad, square_sz, clr);
 
     ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, pos.y + IM_TRUNC((row_height - label_size.y) * 0.5f));
     if (g.LogEnabled)

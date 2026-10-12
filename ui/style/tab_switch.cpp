@@ -28,7 +28,7 @@ void celosia::animations::functions::tab_switch() {
 
 	// eased so it starts and stops gently instead of at full speed
 	const float amount = progress * progress * (3.f - 2.f * progress);
-	values[spacing].x = amount * style::frame::tab_switch_animation_max;
+	animations::snap(spacing, amount * style::frame::tab_switch_animation_max);
 
 	if (amount > 0.f) {
 		ImColor overlay_color = style::themes::active.background;

@@ -98,7 +98,12 @@ namespace celosia {
 	}
 
 	namespace animations {
-		inline std::unordered_map<ImGuiID, ImVec4> values; // one entry per animated value, floats use x and ImVec2 uses x, y
+		struct t_value {
+			ImVec4 value;            // floats use x and ImVec2 uses x, y
+			double last_used = 0.0;  // ImGui::GetTime() when it was last set
+		};
+		inline std::unordered_map<ImGuiID, t_value> values; // one entry per animated value
+		inline double forget_after = 10.0; // seconds a value can go unused before it's dropped, it starts at its goal again when it's back
 		inline float base_speed = 2.f;
 		inline float delta_time = 0.f; // the frame time animations step by, io.DeltaTime evened out, see new_frame()
 		inline float color_speed = 10.f; // hover and press colors ease by this, most of the way in about a quarter second
@@ -114,17 +119,16 @@ namespace celosia {
 			void tab_switch();
 		}
 
-		ImGuiID key(std::string_view name, ImGuiID seed = 0); // chain keys without building strings: key("suffix", key(label))
-		float get(ImGuiID id);
-		float get(std::string_view name);
+		// items key their animations by their ImGui ID, so items with the same label in different windows don't share one:
+		// key("button_glow", id). things that exist once can use a name: key("groupbox_active_spacing")
+		ImGuiID key(std::string_view name, ImGuiID seed = 0);
+		float get(ImGuiID id);              // 0 when there's nothing by that key
+		void snap(ImGuiID id, float value); // sets it at once, without easing
 
+		// eases the value towards goal_value a step and returns it, a new value starts at goal_value
 		float set(ImGuiID id, const float goal_value, float speed = 0, e_method method = e_method::smooth);
 		ImVec2 set(ImGuiID id, const ImVec2 goal_value, float speed = 0, e_method method = e_method::smooth);
 		ImVec4 set(ImGuiID id, const ImVec4 goal_value, float speed = 0, e_method method = e_method::smooth);
-
-		float set(std::string_view name, const float goal_value, float speed = 0, e_method method = e_method::smooth);
-		ImVec2 set(std::string_view name, const ImVec2 goal_value, float speed = 0, e_method method = e_method::smooth);
-		ImVec4 set(std::string_view name, const ImVec4 goal_value, float speed = 0, e_method method = e_method::smooth);
 	}
 
 	namespace ui {

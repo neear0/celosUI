@@ -5,8 +5,8 @@ namespace celosia::style {
 		inline ImColor main_color = { 189, 122, 255,255 };
 		inline int rounding = 4;
 		inline int rounding_window = 0;
-		inline int scroll_speed = 15;
-		inline int scroll_multiplier = 2;
+		inline float scroll_speed = 15.f;
+		inline float scroll_multiplier = 2.f;
 		inline ImVec2 padding = {10, 10};
 		inline ImVec2 spacing = {0, 4};
 	}
@@ -24,8 +24,8 @@ namespace celosia::style {
 	}
 	namespace frame {
 		inline ImVec2 size_padding = {10,10};
-		inline int border_size = 2;
-		inline int border_size_animated = 2;
+		inline float border_size = 2.f;
+		inline float border_size_animated = 2.f;
 
 		inline float tab_switch_animation_max = 16; // how far the groupboxes move down while the tab switches
 		inline float tab_switch_out = 0.12f; // seconds the old tab takes to fade out

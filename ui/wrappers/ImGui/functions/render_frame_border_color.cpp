@@ -4,7 +4,7 @@ void ImGui::render_frame_border_color(ImVec2 p_min, ImVec2 p_max, ImColor clr,fl
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
-    int border_size = celosia::style::frame::border_size;
+    const float border_size = celosia::style::frame::border_size;
     if (border_size > 0)
     {
 /*
