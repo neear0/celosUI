@@ -226,8 +226,8 @@ namespace celosia {
 		void move(ImVec2 pos);
 		void bring_to_top();
 
-		bool blur_supported(); // the os can blur what's behind the window (windows), see style::window::background
-		void set_blur(bool enabled);
+		bool blur_supported(); // the os can blur what's behind the window (windows, kwin on x11), known once create() ran, see style::window::background
+		void set_blur(bool enabled); // on x11 the blurred area follows style::general::rounding_window, call it again after changing that
 
 		// textures for images, after create(). rgba is 4 bytes per pixel, row after row
 		ImTextureID create_texture(const unsigned char* rgba, int width, int height); // null when it couldn't be made

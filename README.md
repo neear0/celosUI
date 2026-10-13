@@ -16,7 +16,7 @@ A C++ UI framework for Windows (Win32 + DirectX 11) and Linux (GLFW + Vulkan). D
 * Map variables: widgets that keep their value in `variables::config` by label (`widgets::checkbox_map`)
 * Themes: dark and light, eased between when switched
 * Shader effects: gradients, glow, frosted glass blur, an animated background and film grain
-* Borderless, translucent window with the OS blur behind it (Windows) or the shader background
+* Borderless, translucent window with the OS blur behind it (Windows, KDE Plasma on Linux) or the shader background
 * Fonts rendered with FreeType, fonts and images compiled into the executable
 * Smooth scrolling
 * Input system with per-frame key presses and releases
@@ -31,7 +31,7 @@ cmake -S . -B build
 cmake --build build --config Release
 ```
 CMake picks the backend with `CELOSUI_PLATFORM`:
-* `win32`: Win32 + DirectX 11, the default on Windows. It's the only backend where the OS can blur the desktop behind the window, the others use the shader background.
+* `win32`: Win32 + DirectX 11, the default on Windows. The OS blurs the desktop behind the window here and with `glfw` on KDE Plasma, everywhere else the shader background is used.
 * `glfw`: GLFW + Vulkan, the default on Linux (it also builds on Windows). GLFW, the Vulkan headers and [volk](https://github.com/zeux/volk) are downloaded while configuring, so Vulkan only has to be installed as a driver.
 
 On Linux you need a compiler, CMake, the X11 development packages and a Vulkan driver. On Debian/Ubuntu:
@@ -40,6 +40,8 @@ sudo apt install build-essential cmake libx11-dev libxrandr-dev libxinerama-dev 
 ```
 The window runs through X11 (XWayland on Wayland desktops), because Wayland doesn't let windows move themselves or stay on top. `-DCELOSUI_WAYLAND=ON` additionally builds GLFW's native Wayland support, which also needs `libwayland-dev libxkbcommon-dev wayland-protocols`.
 
+GLFW is patched after it's downloaded (`external/glfw_patch/argb_visual.cmake`) so its Vulkan windows on X11 get a visual with an alpha channel, which lets a compositor show the desktop through the window. When KWin (KDE Plasma) can blur, it's asked to blur behind the window through its `_KDE_NET_WM_BLUR_BEHIND_REGION` hint, on Plasma's X11 session and through XWayland on its Wayland session. Other compositors have no way for a window to ask for it (picom and Hyprland blur translucent windows from their own config), so they get the shader background.
+
 [FreeType](https://freetype.org) rasterizes the fonts. It's downloaded while building (CMake) or before the first build (Visual Studio, into `.deps/`), its hash is checked, and only the modules for TrueType and OpenType fonts are compiled.
 
 Shaders (`ui/shaders/*.hlsl`, and ImGui's D3D11 shaders next to its backend) are compiled at build time and embedded as well, nothing is compiled at runtime. Visual Studio and the Windows CMake build use `fxc` from the Windows SDK, the Linux build uses `glslangValidator` from `glslang-tools` (the GLFW build on Windows takes it from the Vulkan SDK).
@@ -47,7 +49,7 @@ Shaders (`ui/shaders/*.hlsl`, and ImGui's D3D11 shaders next to its backend) are
 ## The demo
 The demo window is `render::main_window()` in `ui/render/main_window.cpp`, with the sidebar in `ui/render/sidebar.cpp`. The sidebar has the tabs and buttons that switch:
 * **layout**: the full or minimal groupbox title style
-* **background**: the OS blur or the shader background (only on Windows, where the OS can blur)
+* **background**: the OS blur or the shader background (only where the OS can blur: Windows, and KDE Plasma on Linux)
 * **noise**: the film grain on or off
 * **theme**: dark or light
 
@@ -101,7 +103,7 @@ Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui
 * `background`: blobs of color drifting over a base color, the window background when `style::window::background` is `shader`
 * `noise`: film grain that lightens and darkens pixels at random, static or changing 24 times a second. `style::window::noise` sets how strong it is over the window background, the panels and the combo popup (0 turns it off)
 
-`style::window::background` picks between the OS blurring the desktop behind the window (`blur`, Windows only) and the shader background (`shader`, the default where the OS can't blur). The shader background also makes rounded window corners work (`style::general::rounding_window`). The blur effect only sees what the UI itself drew, not the desktop behind the window.
+`style::window::background` picks between the OS blurring the desktop behind the window (`blur`, Windows and KDE Plasma) and the shader background (`shader`, the default where the OS can't blur). The shader background also makes rounded window corners work (`style::general::rounding_window`). With KWin's blur the blurred area follows the rounding too. The blur effect only sees what the UI itself drew, not the desktop behind the window.
 
 Debug builds report graphics API misuse: on Windows the D3D11 debug layer's messages are printed to the console (needs the "Graphics Tools" optional Windows feature), and for Vulkan run with `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation` (the `vulkan-validationlayers` package on Linux).
 
@@ -118,9 +120,9 @@ The demo's Windows release build doesn't load DLLs from next to the executable, 
 Release builds also turn on Control Flow Guard (`/guard:cf`) and CET shadow stack support (`/CETCOMPAT`). On Linux the CMake build asks for the usual hardening (stack protector, fortify, full RELRO, non-executable stack, PIE) instead of relying on the compiler defaults.
 
 ## Known issues
-* Rounding a window that uses the OS blur gives weird looking edges, use the shader background for rounded windows (see Effects)
+* Rounding a window that uses the Windows blur gives weird looking edges, use the shader background for rounded windows (see Effects)
 * With the OS blur over a dark desktop, unchecked checkboxes and button frames are hard to see, they're drawn in the dark frame color
-* On X11 the window isn't see-through: GLFW creates Vulkan windows with an X11 visual that has no alpha
+* On X11 without a compositor the window isn't see-through, the parts that should be (like rounded corners) are black
 
 ## TODO
 * redo the font spacing code

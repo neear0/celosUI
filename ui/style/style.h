@@ -12,7 +12,7 @@ namespace celosia::style {
 	}
 	namespace window {
 		enum e_background { blur, shader };
-		inline e_background background = blur; // blur: the os blurs the desktop behind the window (windows only), shader: effects::background with glass panels
+		inline e_background background = blur; // blur: the os blurs the desktop behind the window (windows, kwin on x11), shader: effects::background with glass panels
 		inline float noise = 0.04f; // film grain (effects::noise) over the background and panels, how strong it is, 0 turns it off
 	}
 	namespace titlebar {

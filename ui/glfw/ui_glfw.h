@@ -35,6 +35,11 @@ namespace celosia_glfw {
 		void destroy(); // what create_texture() keeps around, the device has to be idle
 	}
 
+	namespace x11 { // the compositor blurring the desktop behind the window (kwin), see blur_x11.cpp
+		bool blur_supported(GLFWwindow* window);
+		void set_blur(GLFWwindow* window, bool enabled, float rounding); // rounding: the window's corners, the blur stays inside them
+	}
+
 	namespace effect_renderer { // vulkan side of celosia::effects, see effects_vulkan.cpp
 		inline VkCommandBuffer command_buffer = VK_NULL_HANDLE; // the frame being recorded, set by vulkan::render()
 

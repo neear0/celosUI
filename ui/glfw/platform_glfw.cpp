@@ -3,6 +3,7 @@
 // celosia::platform on top of a glfw window and the vulkan renderer in this folder
 
 static GLFWwindow* glfw_window = nullptr;
+static bool blur = false; // the compositor can blur the desktop behind the window
 
 static void error_callback(int error, const char* description) {
     std::cerr << "[glfw] error " << error << ": " << description << std::endl;
@@ -51,6 +52,12 @@ bool celosia::platform::create(const char* title, ImVec2 pos, ImVec2 size) {
     ImGui_ImplVulkan_Init(&init_info, celosia_glfw::vulkan::window_data.RenderPass);
     if (!celosia_glfw::effect_renderer::create())
         return false;
+
+    blur = celosia_glfw::x11::blur_supported(glfw_window);
+    if (blur)
+        set_blur(style::window::background == style::window::blur);
+    else // nothing blurs the desktop, use the shader background
+        style::window::background = style::window::shader;
 
     glfwShowWindow(glfw_window);
     return true;
@@ -153,8 +160,10 @@ void celosia::platform::bring_to_top() {
     // GLFW_FLOATING already keeps the window above others, raising it every frame would steal focus
 }
 
-bool celosia::platform::blur_supported() { // no compositor blur through glfw, the shader background is used instead
-    return false;
+bool celosia::platform::blur_supported() { // only known after create(), the compositor is asked once
+    return blur;
 }
 
-void celosia::platform::set_blur(bool) {}
+void celosia::platform::set_blur(bool enabled) {
+    celosia_glfw::x11::set_blur(glfw_window, enabled && blur, (float)style::general::rounding_window);
+}

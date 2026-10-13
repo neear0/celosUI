@@ -142,6 +142,7 @@ elseif(CELOSUI_PLATFORM STREQUAL "glfw")
     FetchContent_Declare(glfw
         URL https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz
         URL_HASH SHA256=c038d34200234d071fae9345bc455e4a8f2f544ab60150765d7704e08f3dac01
+        PATCH_COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw_patch/argb_visual.cmake # an alpha channel for vulkan windows on x11
     )
     # headers and volk are only downloaded, their own cmake projects aren't needed (SOURCE_SUBDIR has no CMakeLists.txt)
     FetchContent_Declare(vulkan_headers
@@ -160,6 +161,7 @@ elseif(CELOSUI_PLATFORM STREQUAL "glfw")
     find_program(CELOSUI_GLSLANG glslangValidator HINTS $ENV{VULKAN_SDK}/bin REQUIRED)
 
     list(APPEND celos_ui_sources
+        ui/glfw/blur_x11.cpp
         ui/glfw/effects_vulkan.cpp
         ui/glfw/platform_glfw.cpp
         ui/glfw/textures_vulkan.cpp
@@ -228,6 +230,10 @@ else()
     target_include_directories(celos_ui PRIVATE ${vulkan_headers_SOURCE_DIR}/include ${volk_SOURCE_DIR})
     target_compile_definitions(celos_ui PRIVATE IMGUI_IMPL_VULKAN_NO_PROTOTYPES)
     target_link_libraries(celos_ui PRIVATE glfw ${CMAKE_DL_LIBS})
+    if(NOT WIN32)
+        find_package(X11 REQUIRED) # blur_x11.cpp asks the x server for the compositor's blur
+        target_link_libraries(celos_ui PRIVATE X11::X11)
+    endif()
 endif()
 
 if(MSVC)

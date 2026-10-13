@@ -11,9 +11,7 @@ void celosia::initialize::context() {
     style::themes::set(style::themes::dark, true);
 
     inputsystem::key::watch(keys::mouse_left);
-
-    if (!platform::blur_supported()) // nothing to blur the desktop with, use the shader background
-        style::window::background = style::window::shader;
+    // platform::create() switches style::window::background to the shader when nothing can blur the desktop
 }
 
 void celosia::initialize::fonts() {
