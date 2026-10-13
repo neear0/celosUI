@@ -11,7 +11,7 @@ A C++ UI framework for Windows (Win32 + DirectX 11) and Linux (GLFW + Vulkan). D
 ## Features
 * Everything ImGui has underneath (layout, input, IDs, child windows, the whole widget API)
 * Animations that step evenly whatever the frame rate
-* New and improved widgets: buttons, checkboxes, combo, color picker (`widgets::color_edit`), images (`widgets::image`), tab buttons, groupboxes
+* New and improved widgets: buttons, checkboxes, combo, color picker (`widgets::color_edit`), slider (`widgets::slider_float`), images (`widgets::image`), tab buttons, groupboxes
 * Tabs that lay themselves out (`render::tabs`, vertical or horizontal)
 * Map variables: widgets that keep their value in `variables::config` by label (`widgets::checkbox_map`)
 * Themes: dark and light, eased between when switched
@@ -53,7 +53,7 @@ The demo window is `render::main_window()` in `ui/render/main_window.cpp`, with 
 * **noise**: the film grain on or off
 * **theme**: dark or light
 
-tab1 has buttons and checkboxes, tab2 has a combo, the color picker (it changes the main color everywhere) and an image.
+tab1 has buttons and checkboxes, tab2 has a combo, the color picker (it changes the main color everywhere), a slider for how strong the frosted glass blurs and an image.
 
 ## Using it
 `main.cpp` is the whole loop:
@@ -77,6 +77,7 @@ Inside the window, the widgets are used like normal ImGui ones:
 render::groupbox::begin("Groupbox B", "Checkboxes");
 widgets::checkbox_map("Checkbox 0");             // value lives in variables::config::bools["Checkbox 0"]
 widgets::color_edit("Main Color", color);        // float[4]
+widgets::slider_float("Size", &size, 0.f, 10.f); // float, dragged between 0 and 10
 widgets::image("test", ImVec2(0, 0), 8.f);       // 0, 0 is the image's own size
 render::groupbox::end();
 ```
@@ -99,7 +100,7 @@ Each font is added with `resources::fonts::add(name, { data, size, pixels, hinti
 Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui.h`). Each shader is written once in HLSL and compiled for both D3D11 and Vulkan.
 * `gradient`: two color gradient with exact rounded corners, optionally sliding back and forth (groupbox titles)
 * `glow`: soft glow around an item (the active tab, hovered buttons)
-* `blur`: frosted glass, blurs what was drawn before it and tints it (the combo and color picker popups, and the panels with the shader background)
+* `blur`: frosted glass, blurs what was drawn before it and tints it (the combo and color picker popups, and the panels with the shader background). `style::window::glass_blur` is its radius there
 * `background`: blobs of color drifting over a base color, the window background when `style::window::background` is `shader`
 * `noise`: film grain that lightens and darkens pixels at random, static or changing 24 times a second. `style::window::noise` sets how strong it is over the window background, the panels and the combo popup (0 turns it off)
 

@@ -318,6 +318,7 @@
     <ClCompile Include="ui\wrappers\imgui\functions\render_frame_border_animated.cpp" />
     <ClCompile Include="ui\wrappers\imgui\functions\render_frame_border_color.cpp" />
     <ClCompile Include="ui\wrappers\imgui\scrollbar.cpp" />
+    <ClCompile Include="ui\wrappers\imgui\slider.cpp" />
     <ClCompile Include="ui\wrappers\imgui\tab_button.cpp" />
     <ClCompile Include="ui\render\groupbox.cpp" />
     <ClCompile Include="ui\render\panel.cpp" />

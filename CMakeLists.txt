@@ -104,6 +104,7 @@ set(celos_ui_sources
     ui/wrappers/imgui/combo.cpp
     ui/wrappers/imgui/image.cpp
     ui/wrappers/imgui/scrollbar.cpp
+    ui/wrappers/imgui/slider.cpp
     ui/wrappers/imgui/tab_button.cpp
     ui/wrappers/imgui/functions/render_frame_animated.cpp
     ui/wrappers/imgui/functions/render_frame_border_animated.cpp

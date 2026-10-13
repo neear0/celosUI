@@ -45,6 +45,8 @@ void celosia::render::main_window() {
         celosia::widgets::color_edit("Main Color", color);
         style::general::main_color = { color[0], color[1], color[2], color[3] };
 
+        celosia::widgets::slider_float("Glass blur", &style::window::glass_blur, 0.f, 32.f, "%.0f px");
+
         const ImVec2 picture = resources::images::get("test").size; // as big as fits in what's left of the groupbox, keeping its aspect
         const float picture_height = ImMin(picture.y, ImGui::GetContentRegionAvail().y - ImGui::GetStyle().WindowPadding.y);
         if (picture.y > 0.f)

@@ -185,6 +185,9 @@
     <ClCompile Include="ui\wrappers\imgui\color_edit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\wrappers\imgui\slider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ui\inputsystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

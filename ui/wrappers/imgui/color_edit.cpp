@@ -165,7 +165,7 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha) {
         ImColor tint = celosia::style::themes::active.background_darker;
         tint.Value.w = 0.6f;
         popup->DrawList->PushClipRect(popup->Pos, popup->Pos + popup->Size);
-        celosia::effects::blur(popup->DrawList, popup->Pos, popup->Pos + popup->Size, tint, style.PopupRounding, 12.f);
+        celosia::effects::blur(popup->DrawList, popup->Pos, popup->Pos + popup->Size, tint, style.PopupRounding, celosia::style::window::glass_blur);
         celosia::effects::noise(popup->DrawList, popup->Pos, popup->Pos + popup->Size, celosia::style::window::noise, style.PopupRounding);
         popup->DrawList->PopClipRect();
 
