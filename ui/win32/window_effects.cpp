@@ -36,7 +36,8 @@ void celosia_win32::window::enable_blur(HWND hwnd, int accent) {
 
         const set_window_composition_attribute_fn set_window_composition_attribute = (set_window_composition_attribute_fn)GetProcAddress(hm, "SetWindowCompositionAttribute");
         if (set_window_composition_attribute) {
-            accent_policy policy = { accent, 0, 0, 0 };
+            // the acrylic blur (4) doesn't blur at all with a fully transparent tint, an alpha of 1 is invisible but turns it on
+            accent_policy policy = { accent, 0, 0x01000000, 0 };
             win_comp_attr_data data = { 19, &policy,sizeof(accent_policy) };
             set_window_composition_attribute(hwnd, &data);
         }
