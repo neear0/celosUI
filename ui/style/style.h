@@ -15,6 +15,7 @@ namespace celosia::style {
 		inline e_background background = blur; // blur: the os blurs the desktop behind the window (windows, kwin on x11), shader: effects::background with glass panels
 		inline float noise = 0.04f; // film grain (effects::noise) over the background and panels, how strong it is, 0 turns it off
 		inline float glass_blur = 12.f; // radius in pixels of the frosted glass (effects::blur): the popups, and the panels over the shader background
+		inline float glass_opacity = 0.4f; // with the blur background: how much the window's background and panels cover the blurred desktop, 0 leaves it bare
 	}
 	namespace titlebar {
 		inline float height = 45;

@@ -62,6 +62,8 @@ void celosia::style::apply() {
 	ImVec4* c = style.Colors;
 	c[ImGuiCol_Text] = theme.text;
 	c[ImGuiCol_WindowBg] = theme.background;
+	if (window::background == window::blur) // the theme's alpha alone hides most of the blurred desktop
+		c[ImGuiCol_WindowBg].w *= window::glass_opacity;
 
 	c[ImGuiCol_FrameBg] = theme.idle;
 	c[ImGuiCol_FrameBgHovered] = theme.hovered;

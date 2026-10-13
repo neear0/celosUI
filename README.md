@@ -53,7 +53,7 @@ The demo window is `render::main_window()` in `ui/render/main_window.cpp`, with 
 * **noise**: the film grain on or off
 * **theme**: dark or light
 
-tab1 has buttons and checkboxes, tab2 has a combo, the color picker (it changes the main color everywhere), a slider for how strong the frosted glass blurs and an image.
+tab1 has buttons and checkboxes, tab2 has a combo, the color picker (it changes the main color everywhere), a slider for how strong the frosted glass blurs, one for how see-through the window is over the OS blur, and an image.
 
 ## Using it
 `main.cpp` is the whole loop:
@@ -104,7 +104,7 @@ Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui
 * `background`: blobs of color drifting over a base color, the window background when `style::window::background` is `shader`
 * `noise`: film grain that lightens and darkens pixels at random, static or changing 24 times a second. `style::window::noise` sets how strong it is over the window background, the panels and the combo popup (0 turns it off)
 
-`style::window::background` picks between the OS blurring the desktop behind the window (`blur`, Windows and KDE Plasma) and the shader background (`shader`, the default where the OS can't blur). The shader background also makes rounded window corners work (`style::general::rounding_window`). With KWin's blur the blurred area follows the rounding too. The blur effect only sees what the UI itself drew, not the desktop behind the window.
+`style::window::background` picks between the OS blurring the desktop behind the window (`blur`, Windows and KDE Plasma) and the shader background (`shader`, the default where the OS can't blur). The shader background also makes rounded window corners work (`style::general::rounding_window`). With KWin's blur the blurred area follows the rounding too. The blur effect only sees what the UI itself drew, not the desktop behind the window. How strongly the OS blurs is up to the OS, `style::window::glass_opacity` sets how much the window's background and panels cover it (0 leaves the blurred desktop bare, 1 is the theme's own alpha).
 
 Debug builds report graphics API misuse: on Windows the D3D11 debug layer's messages are printed to the console (needs the "Graphics Tools" optional Windows feature), and for Vulkan run with `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation` (the `vulkan-validationlayers` package on Linux).
 
