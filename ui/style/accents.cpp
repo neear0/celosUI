@@ -1,8 +1,5 @@
 #include "../ui.h"
 
-ImVec4 celosia::style::themes::rgb_vec4(const float& r, const float& g, const float& b, const float& a) { return ImVec4(r / 255.f, g / 255.f, b / 255.f, a / 255.f); }
-ImVec4 celosia::style::themes::rgb_vec4(const ImColor& rgba) { return ImVec4(rgba); }
-
 ImColor celosia::style::themes::rgb_accent(ImColor clr) { // a neighbouring hue, a little more saturated, for gradients from the main color
 	float h, s, v;
 	ImGui::ColorConvertRGBtoHSV(clr.Value.x, clr.Value.y, clr.Value.z, h, s, v);

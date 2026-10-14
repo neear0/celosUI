@@ -8,24 +8,19 @@ void celosia::render::sidebar() {
 	
 	render::tabs({ "tab1", "tab2" });
 
-	if (ImGui::Button("switch layout", ImVec2(celosia::style::sidebar::width - celosia::style::general::padding.x * 2.f, 40))) {
+	const ImVec2 button_size = ImVec2(style::sidebar::width - style::general::padding.x * 2.f, 40.f * style::scale);
+	if (ImGui::Button("switch layout", button_size))
+		style::groupbox::title_style = style::groupbox::title_style == style::groupbox::full ? style::groupbox::minimal : style::groupbox::full;
 
-		if (style::themes::active.tab_style == style::themes::e_tab_title_style::full)
-			style::themes::active.tab_style = style::themes::e_tab_title_style::minimal;
-		else
-			style::themes::active.tab_style = style::themes::e_tab_title_style::full;
-
-	}
-
-	if (platform::blur_supported() && ImGui::Button("switch background", ImVec2(celosia::style::sidebar::width - celosia::style::general::padding.x * 2.f, 40))) {
+	if (platform::blur_supported() && ImGui::Button("switch background", button_size)) {
 		style::window::background = style::window::background == style::window::blur ? style::window::shader : style::window::blur;
 		platform::set_blur(style::window::background == style::window::blur);
 	}
 
-	if (ImGui::Button("switch noise", ImVec2(celosia::style::sidebar::width - celosia::style::general::padding.x * 2.f, 40)))
+	if (ImGui::Button("switch noise", button_size))
 		style::window::noise = style::window::noise > 0.f ? 0.f : 0.04f;
 
-	if (ImGui::Button("switch theme", ImVec2(celosia::style::sidebar::width - celosia::style::general::padding.x * 2.f, 40)))
+	if (ImGui::Button("switch theme", button_size))
 		style::themes::set(style::themes::active.name == "dark" ? style::themes::light : style::themes::dark);
 
 	ImGui::EndChild();

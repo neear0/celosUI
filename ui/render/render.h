@@ -2,8 +2,6 @@
 
 namespace celosia::render {
 	inline ImGuiIO* io = nullptr;
-	inline ImDrawList* drawlist_foreground = nullptr;
-	inline ImDrawList* drawlist_background = nullptr;
 
 	struct t_tab_content { // what the open tab drew this frame, the tab switch fades it out and in
 		ImDrawList* drawlist = nullptr; // the window's, from vtx_begin to vtx_end: the groupbox panels and titles
@@ -22,7 +20,6 @@ namespace celosia::render {
 			ImVec2 font(const char* text, ImFont* font);
 		}
 		void font(ImDrawList* drawlist, const char* text, ImVec2 pos, ImColor clr, ImFont* font);
-		void shadow(const char* text, ImFont* font);
 	}
 
 	enum class e_tabs_layout { vertical, horizontal };

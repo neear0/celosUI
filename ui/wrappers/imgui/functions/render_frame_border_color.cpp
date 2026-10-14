@@ -7,9 +7,6 @@ void celosia::widgets::render_frame_border_color(ImVec2 p_min, ImVec2 p_max, ImC
     const float border_size = celosia::style::frame::border_size;
     if (border_size > 0)
     {
-/*
-        window->DrawList->AddRect(p_min + ImVec2(1, 1), p_max + ImVec2(1, 1), ImGui::GetColorU32(ImGuiCol_BorderShadow), rounding, 0, border_size);
-*/
         window->DrawList->AddRect(p_min, p_max, clr, rounding, 0, border_size);
     }
 }

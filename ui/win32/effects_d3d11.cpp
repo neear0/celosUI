@@ -44,8 +44,8 @@ bool celosia_win32::effect_renderer::create() {
     if (FAILED(d3d::device->CreateSamplerState(&sampler, &clamp_sampler)))
         return false;
 
-    update_backdrop();
-    return backdrop_view != nullptr;
+    update_backdrop(); // without it the blur draws a plain panel, see backdrop_texture()
+    return true;
 }
 
 void celosia_win32::effect_renderer::update_backdrop() {

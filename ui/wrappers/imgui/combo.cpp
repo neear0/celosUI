@@ -128,7 +128,6 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
     if (selected != was_selected) //-V547
         g.LastItemData.StatusFlags |= ImGuiItemStatusFlags_ToggledSelection;
 
-    //const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_HeaderActive : hovered ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
     ImColor col = GetColorU32(ImGuiCol_WindowBg);
     
     if (selected) col = GetColorU32(ImGuiCol_Header);
@@ -210,7 +209,6 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     }
 
     // Render shape
-    //const ImU32 frame_col = GetColorU32(hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
     const ImU32 frame_col = GetColorU32(ImGuiCol_Button);
     ImU32 hover_col = GetColorU32(hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
     if (popup_open) hover_col = celosia::style::general::main_color;

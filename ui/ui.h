@@ -4,13 +4,13 @@
 
 #include <iostream>
 #include <array>
+#include <cstdint>
 #include <cmath>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <map>
 #include <vector>
-#include <filesystem>
 
 #include "../external/imgui/imgui.h"
 #include "../external/imgui/imgui_internal.h"
@@ -24,7 +24,7 @@
 namespace celosia {
 	namespace initialize {
 		void context();
-		void fonts();
+		void fonts(); // after platform::create(), the sizes follow style::scale
 		void images(); // after platform::create(), the textures need the renderer
 	}
 
@@ -33,7 +33,7 @@ namespace celosia {
 			struct t_font {
 				const unsigned char* data; // compiled in, see font_data
 				int data_size;
-				float size;                // in pixels
+				float size;                // in pixels at scale 1, add() scales it by style::scale
 				unsigned int hinting = ImGuiFreeTypeBuilderFlags_LightHinting; // how freetype fits glyphs to the pixel grid, ImGuiFreeTypeBuilderFlags
 			};
 
@@ -91,12 +91,6 @@ namespace celosia {
 		}
 	}
 
-	namespace monitor {
-		inline ImVec2 size;
-
-		void update();
-	}
-
 	namespace animations {
 		struct t_value {
 			ImVec4 value;            // floats use x and ImVec2 uses x, y
@@ -145,14 +139,6 @@ namespace celosia {
 
 	namespace functions {
 		ImVec2 mouse_vec2();
-		bool hovered(const ImVec2& pos1, const ImVec2& pos2);
-		
-		void spacing(int amount);
-
-		int clamp(int val, const int& min, const int& max);
-		float clamp(float val, const float& min, const float& max);
-		void clamp(int* val, const int& min, const int& max);
-		void clamp(float* val, const float& min, const float& max);
 	}
 
 	namespace inputsystem {
@@ -213,7 +199,7 @@ namespace celosia {
 	}
 
 	namespace platform { // one implementation per backend: win32/ (Win32 + D3D11) and glfw/ (GLFW + Vulkan)
-		bool create(const char* title, ImVec2 pos, ImVec2 size); // window, renderer and ImGui backends, call after initialize::context()
+		bool create(const char* title, ImVec2 pos, ImVec2 size); // window, renderer and ImGui backends, call after initialize::context(). size is at scale 1, it becomes ui::size times style::scale (the window and the layout), see style::set_scale()
 		bool poll();         // handles window events, false once the window has been closed
 		void new_frame();
 		void present();      // renders ImGui's draw data and shows it

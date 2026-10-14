@@ -1,15 +1,36 @@
 #include "../../ui.h"
 
-// smooth scrolling: the mouse wheel and the scrollbar set window->ScrollPending, Scrollbar() eases the scroll towards it.
+// smooth scrolling: the mouse wheel and dragging the scrollbar set window->ScrollPending, where the window scrolls to, and
+// Scrollbar() eases the vertical scroll towards it. anything else that scrolls the window (SetScrollY, SetScrollHereY,
+// keyboard navigation, content getting shorter) is followed at once and the easing carries on from there.
 // ImGui::UpdateMouseWheel (imgui.cpp) calls scroll_wheel() for vertical wheel scrolling, keep that call when updating ImGui
 
 void celosia::widgets::scroll_wheel(ImGuiWindow* window, float wheel) {
-    const float height = window->InnerRect.GetHeight();
-    const float scroll_step = ImTrunc(ImMin(5 * window->CalcFontSize(), height * 0.67f));
+    const float scroll_step = ImTrunc(ImMin(5 * window->CalcFontSize(), window->InnerRect.GetHeight() * 0.67f));
+    const float step = wheel * scroll_step * celosia::style::general::scroll_multiplier;
+    if (!window->ScrollbarY) { // nothing eases it without a scrollbar
+        ImGui::SetScrollY(window, window->Scroll.y - step);
+        return;
+    }
+    // from where it's heading, so quick wheel ticks add up
+    window->ScrollPending = ImClamp(window->ScrollPending - step, 0.f, window->ScrollMax.y);
+}
 
-    float offset = window->Scroll.y - wheel * scroll_step * celosia::style::general::scroll_multiplier;
-    celosia::functions::clamp(&offset, 0, window->ContentSize[ImGuiAxis_Y] - height);
-    window->ScrollPending = offset;
+static ImGuiID eased_key(ImGuiWindow* window) { return celosia::animations::key("scroll", window->ID); }
+static ImGuiID applied_key(ImGuiWindow* window) { return celosia::animations::key("scroll_applied", window->ID); } // what the last step scrolled to
+
+static void scroll_follow(ImGuiWindow* window) { // when something else scrolled the window, the smooth scroll goes along with it
+    if (window->Scroll.y != celosia::animations::get(applied_key(window))) {
+        window->ScrollPending = window->Scroll.y;
+        celosia::animations::snap(eased_key(window), window->Scroll.y);
+    }
+}
+
+static void scroll_ease(ImGuiWindow* window) { // a step of the vertical scroll towards ScrollPending
+    window->ScrollPending = ImClamp(window->ScrollPending, 0.f, window->ScrollMax.y);
+    const float eased = celosia::animations::set(eased_key(window), window->ScrollPending, celosia::style::general::scroll_speed);
+    ImGui::SetScrollY(window, eased);
+    celosia::animations::snap(applied_key(window), IM_ROUND(eased)); // ImGui scrolls by whole pixels
 }
 
 void ImGui::Scrollbar(ImGuiAxis axis)
@@ -37,10 +58,13 @@ void ImGui::Scrollbar(ImGuiAxis axis)
     float size_avail = window->InnerRect.Max[axis] - window->InnerRect.Min[axis];
     float size_contents = window->ContentSize[axis] + window->WindowPadding[axis] * 2.0f;
     ImS64 scroll = (ImS64)window->Scroll[axis];
-    ScrollbarEx(bb, id, axis, &scroll, (ImS64)size_avail, (ImS64)size_contents, rounding_corners);
-
-    float anim = celosia::animations::set(celosia::animations::key("scroll", window->ID), window->ScrollPending, celosia::style::general::scroll_speed);
-    SetScrollY(window, anim);
+    if (axis == ImGuiAxis_Y)
+        scroll_follow(window);
+    ScrollbarEx(bb, id, axis, &scroll, (ImS64)size_avail, (ImS64)size_contents, rounding_corners); // dragging the vertical one sets ScrollPending
+    if (axis == ImGuiAxis_Y)
+        scroll_ease(window);
+    else
+        window->Scroll.x = (float)scroll; // not smoothed, as in ImGui
 }
 
 bool ImGui::ScrollbarEx(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis, ImS64* p_scroll_v, ImS64 size_avail_v, ImS64 size_contents_v, ImDrawFlags flags)
@@ -120,8 +144,8 @@ bool ImGui::ScrollbarEx(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis, ImS6
         if (seek_absolute)
             g.ScrollbarClickDeltaToGrabCenter = clicked_v_norm - grab_v_norm - grab_h_norm * 0.5f;
 
-
-        window->ScrollPending = scroll_v_norm * scroll_max;
+        if (axis == ImGuiAxis_Y)
+            window->ScrollPending = scroll_v_norm * scroll_max;
     }
 
 
@@ -135,7 +159,5 @@ bool ImGui::ScrollbarEx(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis, ImS6
         grab_rect = ImRect(bb.Min.x, ImLerp(bb.Min.y, bb.Max.y, grab_v_norm), bb.Max.x, ImLerp(bb.Min.y, bb.Max.y, grab_v_norm) + grab_h_pixels);
 
     window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, (ImColor)celosia::animations::set(celosia::animations::key("scrollbar_grab", window->ID), (ImVec4)grab_col, celosia::animations::color_speed), style.ScrollbarRounding);
-    //window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, grab_col, style.ScrollbarRounding);
-
     return held;
 }

@@ -8,6 +8,5 @@ void celosia::widgets::render_frame_border_animated(ImGuiID id, ImVec2 p_min, Im
     ImColor animated_color = celosia::animations::set(celosia::animations::key("render_frame_border_animated", id), ImVec4(fill_col), celosia::animations::color_speed);
 
     const float border_size = celosia::style::frame::border_size;
-    //window->DrawList->AddRect(p_min + ImVec2(1, 1), p_max + ImVec2(1, 1), animated_color, rounding, 0, border_size);
     window->DrawList->AddRect(p_min, p_max, animated_color, rounding, 0, border_size);
 }

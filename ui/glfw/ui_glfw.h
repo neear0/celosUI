@@ -44,7 +44,7 @@ namespace celosia_glfw {
 		inline VkCommandBuffer command_buffer = VK_NULL_HANDLE; // the frame being recorded, set by vulkan::render()
 
 		bool create();           // after ImGui_ImplVulkan_Init()
-		bool create_backdrop();  // sized like the swapchain, call again after it's rebuilt
+		void create_backdrop();  // sized like the swapchain, call again after it's rebuilt. without it the blur draws plain panels
 		void destroy_backdrop();
 		void destroy();
 	}

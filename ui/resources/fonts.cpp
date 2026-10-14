@@ -5,7 +5,7 @@ ImFont* celosia::resources::fonts::add(const std::string& name, const t_font& fo
     ImFontConfig config;
     config.FontDataOwnedByAtlas = false; // static data, the atlas only reads it and must not free it
     config.FontBuilderFlags = font.hinting;
-    ImFont* added = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(const_cast<unsigned char*>(font.data), font.data_size, font.size, &config);
+    ImFont* added = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(const_cast<unsigned char*>(font.data), font.data_size, font.size * style::scale, &config);
     if (added)
         map[name] = added;
     return added;

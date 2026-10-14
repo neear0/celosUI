@@ -71,10 +71,11 @@ bool celosia_glfw::effect_renderer::create() {
     if (vkCreateSampler(celosia_glfw::vulkan::device, &info, nullptr, &sampler) != VK_SUCCESS)
         return false;
 
-    return create_backdrop();
+    create_backdrop();
+    return true;
 }
 
-bool celosia_glfw::effect_renderer::create_backdrop() {
+static bool make_backdrop() {
     const ImGui_ImplVulkanH_Window* wd = &celosia_glfw::vulkan::window_data;
     VkSurfaceCapabilitiesKHR capabilities;
     if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(celosia_glfw::vulkan::physical_device, wd->Surface, &capabilities) != VK_SUCCESS)
@@ -120,6 +121,13 @@ bool celosia_glfw::effect_renderer::create_backdrop() {
 
     backdrop_set = ImGui_ImplVulkan_AddTexture(sampler, backdrop_view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     return true;
+}
+
+void celosia_glfw::effect_renderer::create_backdrop() {
+    if (!make_backdrop()) { // the blur draws a plain panel instead, see backdrop_texture()
+        std::cerr << "[vulkan] couldn't make the blur's copy of the frame, it draws plain panels" << std::endl;
+        destroy_backdrop();
+    }
 }
 
 void celosia_glfw::effect_renderer::destroy_backdrop() { // the device has to be idle

@@ -36,9 +36,10 @@ static bool drag_area(const char* id, const ImRect& rect, ImVec2* position) { //
 
 static void bar_handle(ImDrawList* drawlist, const ImRect& bar, float t) { // across a vertical bar at t (0 top, 1 bottom)
     const float y = ImLerp(bar.Min.y, bar.Max.y, t);
-    const ImVec2 top_left(bar.Min.x - 2.f, y - 3.f), bottom_right(bar.Max.x + 2.f, y + 3.f);
-    drawlist->AddRect(top_left - ImVec2(1, 1), bottom_right + ImVec2(1, 1), IM_COL32(0, 0, 0, 90), 4.f, 0, 1.f);
-    drawlist->AddRect(top_left, bottom_right, IM_COL32_WHITE, 3.f, 0, 2.f);
+    const float scale = celosia::style::scale;
+    const ImVec2 top_left(bar.Min.x - 2.f * scale, y - 3.f * scale), bottom_right(bar.Max.x + 2.f * scale, y + 3.f * scale);
+    drawlist->AddRect(top_left - ImVec2(1, 1), bottom_right + ImVec2(1, 1), IM_COL32(0, 0, 0, 90), 4.f * scale, 0, 1.f);
+    drawlist->AddRect(top_left, bottom_right, IM_COL32_WHITE, 3.f * scale, 0, 2.f * scale);
 }
 
 bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha) {
@@ -62,7 +63,8 @@ bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha)
             s = storage->GetFloat(id_sat, s);
     }
 
-    const float square = 160.f, bar = 14.f, gap = 8.f;
+    const float scale = celosia::style::scale;
+    const float square = 160.f * scale, bar = 14.f * scale, gap = 8.f * scale;
     const ImVec2 pos = window->DC.CursorPos;
     const ImRect sv_rect(pos, pos + ImVec2(square, square));
     const ImRect hue_rect(ImVec2(sv_rect.Max.x + gap, pos.y), ImVec2(sv_rect.Max.x + gap + bar, sv_rect.Max.y));
@@ -101,9 +103,9 @@ bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha)
     gradient_rect(drawlist, sv_rect, sv_rect.Min, ImVec2(sv_rect.Max.x, sv_rect.Min.y), ImVec4(1, 1, 1, 1), hue_color, rounding);
     gradient_rect(drawlist, sv_rect, sv_rect.Min, ImVec2(sv_rect.Min.x, sv_rect.Max.y), ImVec4(0, 0, 0, 0), ImVec4(0, 0, 0, 1), rounding);
     const ImVec2 marker(ImLerp(sv_rect.Min.x, sv_rect.Max.x, s), ImLerp(sv_rect.Min.y, sv_rect.Max.y, 1.f - v));
-    drawlist->AddCircleFilled(marker, 6.f, ImGui::ColorConvertFloat4ToU32(opaque));
-    drawlist->AddCircle(marker, 7.f, IM_COL32(0, 0, 0, 90), 0, 1.f);
-    drawlist->AddCircle(marker, 6.f, IM_COL32_WHITE, 0, 2.f);
+    drawlist->AddCircleFilled(marker, 6.f * scale, ImGui::ColorConvertFloat4ToU32(opaque));
+    drawlist->AddCircle(marker, 7.f * scale, IM_COL32(0, 0, 0, 90), 0, 1.f);
+    drawlist->AddCircle(marker, 6.f * scale, IM_COL32_WHITE, 0, 2.f * scale);
 
     // hue, six segments between the primary and secondary colors, the ends rounded
     static const ImVec4 hues[7] = { {1,0,0,1}, {1,1,0,1}, {0,1,0,1}, {0,1,1,1}, {0,0,1,1}, {1,0,1,1}, {1,0,0,1} };
@@ -146,7 +148,7 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha) {
     const ImVec4 color(col[0], col[1], col[2], alpha ? col[3] : 1.f);
     const float glow = celosia::animations::set(celosia::animations::key("color_edit_glow", id), hovered ? 1.f : 0.f);
     if (glow > 0.01f) // glows in its own color while hovered
-        celosia::effects::glow(window->DrawList, swatch.Min, swatch.Max, ImColor(color.x, color.y, color.z, 0.5f * glow), style.FrameRounding, 8.f);
+        celosia::effects::glow(window->DrawList, swatch.Min, swatch.Max, ImColor(color.x, color.y, color.z, 0.5f * glow), style.FrameRounding, 8.f * celosia::style::scale);
     ImGui::RenderColorRectWithAlphaCheckerboard(window->DrawList, swatch.Min, swatch.Max, ImGui::ColorConvertFloat4ToU32(color), size / 4.f, ImVec2(0, 0), style.FrameRounding);
     window->DrawList->AddRect(swatch.Min, swatch.Max, IM_COL32(255, 255, 255, (int)(40 + 60 * glow)), style.FrameRounding);
     if (label_size.x > 0.f)
@@ -157,8 +159,8 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha) {
         ImGui::OpenPopup("##picker");
 
     bool changed = false;
-    ImGui::SetNextWindowPos(ImVec2(swatch.Min.x, swatch.Max.y + style.ItemSpacing.y + 4.f));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+    ImGui::SetNextWindowPos(ImVec2(swatch.Min.x, swatch.Max.y + style.ItemSpacing.y + 4.f * celosia::style::scale));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, celosia::style::general::padding);
     ImGui::PushStyleColor(ImGuiCol_PopupBg, IM_COL32(0, 0, 0, 0)); // the blur below is the background
     if (ImGui::BeginPopup("##picker")) {
         ImGuiWindow* popup = ImGui::GetCurrentWindow(); // frosted glass, like the combo's popup

@@ -19,6 +19,7 @@ A C++ UI framework for Windows (Win32 + DirectX 11) and Linux (GLFW + Vulkan). D
 * Borderless, translucent window with the OS blur behind it (Windows, KDE Plasma on Linux) or the shader background
 * Fonts rendered with FreeType, fonts and images compiled into the executable
 * Smooth scrolling
+* Scales with the display: `platform::create()` sizes the window, fonts and style to the monitor's DPI (`style::scale`)
 * Input system with per-frame key presses and releases
 * DirectX 11 (Windows) and Vulkan (Linux)
 
@@ -48,7 +49,7 @@ Shaders (`ui/shaders/*.hlsl`, and ImGui's D3D11 shaders next to its backend) are
 
 ## The demo
 The demo window is `render::main_window()` in `ui/render/main_window.cpp`, with the sidebar in `ui/render/sidebar.cpp`. The sidebar has the tabs and buttons that switch:
-* **layout**: the full or minimal groupbox title style
+* **layout**: the full or minimal groupbox title style (`style::groupbox::title_style`, the theme leaves it as it is)
 * **background**: the OS blur or the shader background (only where the OS can blur: Windows, and KDE Plasma on Linux)
 * **noise**: the film grain on or off
 * **theme**: dark or light
@@ -59,9 +60,9 @@ tab1 has buttons and checkboxes, tab2 has a combo, the color picker (it changes 
 `main.cpp` is the whole loop:
 ```cpp
 celosia::initialize::context();
-celosia::initialize::fonts();
 if (!celosia::platform::create("Celosia UI", ImVec2(0, 0), celosia::ui::size))
     return 1;
+celosia::initialize::fonts();  // sized for the monitor create() scaled the ui to
 celosia::initialize::images(); // textures need the window
 
 while (celosia::platform::poll()) {
@@ -94,7 +95,7 @@ Where things are:
 ## Fonts and images
 The fonts and images in `assets/` are compiled into the executable through `ui/resources/font_data.cpp` and `ui/resources/image_data.cpp`, so nothing is loaded from disk. After changing or adding one (the list is at the top of the script), regenerate those files with `cmake -P ui/resources/embed_resources.cmake`.
 
-Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` and looked up with `resources::fonts::get(name)`, which falls back to the default font. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `widgets::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any ImGui image function.
+Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` (pixels at 96 DPI, scaled by `style::scale`, so add fonts after `platform::create()`) and looked up with `resources::fonts::get(name)`, which falls back to the default font. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `widgets::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any ImGui image function.
 
 ## Effects
 Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui.h`). Each shader is written once in HLSL and compiled for both D3D11 and Vulkan.
@@ -122,8 +123,9 @@ Release builds also turn on Control Flow Guard (`/guard:cf`) and CET shadow stac
 
 ## Known issues
 * Rounding a window that uses the Windows blur gives weird looking edges, use the shader background for rounded windows (see Effects)
-* With the OS blur over a dark desktop, unchecked checkboxes and button frames are hard to see, they're drawn in the dark frame color
+* With the OS blur over a dark desktop, buttons are hard to see, they're drawn in the dark frame color
 * On X11 without a compositor the window isn't see-through, the parts that should be (like rounded corners) are black
+* The UI keeps the scale of the monitor it opened on, moved to a monitor with a different scale it isn't resized
 
 ## TODO
 * redo the font spacing code

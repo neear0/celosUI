@@ -29,7 +29,7 @@ namespace celosia_win32 {
 	}
 
 	namespace variables {
-		inline std::map<LPCWSTR, std::pair<WNDCLASSEXW, HWND>> windows;
+		inline std::map<std::wstring, std::pair<WNDCLASSEXW, HWND>> windows; // by title, which is also the class name
 		inline long default_window_flags = WS_EX_TOPMOST | WS_EX_LAYERED; // WS_EX_TRANSPARENT to be able to click through
 	}
 
@@ -37,7 +37,7 @@ namespace celosia_win32 {
 		LRESULT WINAPI wnd_proc(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param);
 		HWND create(LPCWSTR window_title, ImVec2 pos, ImVec2 size, long window_flags = variables::default_window_flags);
 		void enable_transparency(HWND hwnd);
-		void enable_blur(HWND hwnd, int accent = 3);
+		void enable_blur(HWND hwnd, int accent = 4); // 4 is the acrylic blur, 0 turns it off
 		void show(HWND hwnd);
 		void move(HWND hwnd, ImVec2 pos);
 		void destroy();

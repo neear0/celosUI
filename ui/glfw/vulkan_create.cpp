@@ -153,6 +153,7 @@ bool celosia_glfw::vulkan::create_device(GLFWwindow* window) {
         std::cerr << "[vulkan] couldn't create a surface for the window" << std::endl;
         return false;
     }
+    window_data.Surface = surface; // destroy() cleans it up from here on
 
     if (!select_physical_device(surface)) {
         std::cerr << "[vulkan] no gpu can draw to the window" << std::endl;
@@ -164,7 +165,6 @@ bool celosia_glfw::vulkan::create_device(GLFWwindow* window) {
         return false;
     }
 
-    window_data.Surface = surface;
     const VkFormat formats[] = { VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM };
     window_data.SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(physical_device, surface, formats, (size_t)IM_ARRAYSIZE(formats), VK_COLORSPACE_SRGB_NONLINEAR_KHR);
     VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR }; // vsync, same as the d3d11 swapchain
@@ -273,9 +273,19 @@ void celosia_glfw::vulkan::present() {
     check_result(err);
 }
 
-void celosia_glfw::vulkan::destroy() {
-    ImGui_ImplVulkanH_DestroyWindow(instance, device, &window_data, nullptr);
-    vkDestroyDescriptorPool(device, descriptor_pool, nullptr);
-    vkDestroyDevice(device, nullptr);
-    vkDestroyInstance(instance, nullptr);
+void celosia_glfw::vulkan::destroy() { // whatever create_device() got through
+    if (device) {
+        ImGui_ImplVulkanH_DestroyWindow(instance, device, &window_data, nullptr); // the surface along with the swapchain
+        vkDestroyDescriptorPool(device, descriptor_pool, nullptr);
+        vkDestroyDevice(device, nullptr);
+    }
+    else if (window_data.Surface)
+        vkDestroySurfaceKHR(instance, window_data.Surface, nullptr);
+    if (instance)
+        vkDestroyInstance(instance, nullptr);
+    window_data = ImGui_ImplVulkanH_Window();
+    descriptor_pool = VK_NULL_HANDLE;
+    device = VK_NULL_HANDLE;
+    physical_device = VK_NULL_HANDLE;
+    instance = VK_NULL_HANDLE;
 }

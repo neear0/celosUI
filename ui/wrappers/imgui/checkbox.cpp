@@ -1,16 +1,21 @@
 #include "../../ui.h"
 
-static void render_check_mark_animated(ImGuiID id, bool active, ImDrawList* drawlist, ImRect check_bb, float pad, float square_sz, ImColor clr) {
-    ImColor check_col = celosia::style::general::main_color;
+// the box's border in the text color, faint, so an unchecked box shows over the os blur and on both themes. checked, the border
+// and the mark ease into the main color, unchecked the mark fades out
+static void render_check_mark_animated(ImGuiID id, bool active, bool hovered, bool held, ImDrawList* drawlist, ImRect check_bb, float pad, float square_sz) {
+    const ImVec4 text = celosia::style::themes::active.text.Value;
+    ImVec4 border = ImVec4(text.x, text.y, text.z, held ? 0.3f : hovered ? 0.45f : 0.25f);
+    ImVec4 mark = celosia::style::general::main_color.Value;
+    if (active)
+        border = mark;
+    else
+        mark.w = 0.f;
 
-    if (!active)
-        check_col = clr;
+    const ImColor border_animated = celosia::animations::set(celosia::animations::key("checkbox_border", id), border, celosia::animations::color_speed);
+    const ImColor mark_animated = celosia::animations::set(celosia::animations::key("checkbox", id), mark, celosia::animations::color_speed);
 
-    ImColor animated = (ImColor)celosia::animations::set(celosia::animations::key("checkbox", id), (ImVec4)check_col, celosia::animations::color_speed);
-
-    ImGui::RenderCheckMark(drawlist, check_bb.Min + ImVec2(pad, pad), animated, square_sz - pad * 2.0f);
-    celosia::widgets::render_frame_border_color(check_bb.Min, check_bb.Max, animated,4.f);
-    
+    ImGui::RenderCheckMark(drawlist, check_bb.Min + ImVec2(pad, pad), mark_animated, square_sz - pad * 2.0f);
+    celosia::widgets::render_frame_border_color(check_bb.Min, check_bb.Max, border_animated, (float)celosia::style::general::rounding);
 }
 
 bool ImGui::Checkbox(const char* label, bool* v)
@@ -46,25 +51,13 @@ bool ImGui::Checkbox(const char* label, bool* v)
     const ImVec2 check_pos(pos.x, pos.y + IM_TRUNC((row_height - square_sz) * 0.5f));
     const ImRect check_bb(check_pos, check_pos + ImVec2(square_sz, square_sz));
     RenderNavHighlight(total_bb, id);
-    //RenderFrame(check_bb.Min, check_bb.Max, , true, style.FrameRounding);
-    //render_frame_border_animated(label, check_bb.Min, check_bb.Max, clr, true, style.FrameRounding);
 
-    bool mixed_value = (g.LastItemData.InFlags & ImGuiItemFlags_MixedValue) != 0;
-    if (mixed_value)
-    {
-        // Undocumented tristate/mixed/indeterminate checkbox (#2644)
-        // This may seem awkwardly designed because the aim is to make ImGuiItemFlags_MixedValue supported by all widgets (not just checkbox)
-        ImVec2 pad(ImMax(1.0f, IM_TRUNC(square_sz / 3.6f)), ImMax(1.0f, IM_TRUNC(square_sz / 3.6f)));
-       // window->DrawList->AddRectFilled(check_bb.Min + pad, check_bb.Max - pad, check_col, style.FrameRounding);
-    }
-
-    ImColor clr = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
     const float pad = ImMax(1.0f, IM_TRUNC(square_sz / 6.0f));
-    render_check_mark_animated(id, *v, window->DrawList, check_bb, pad, square_sz, clr);
+    render_check_mark_animated(id, *v, hovered, held, window->DrawList, check_bb, pad, square_sz);
 
     ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, pos.y + IM_TRUNC((row_height - label_size.y) * 0.5f));
     if (g.LogEnabled)
-        LogRenderedText(&label_pos, mixed_value ? "[~]" : *v ? "[x]" : "[ ]");
+        LogRenderedText(&label_pos, *v ? "[x]" : "[ ]");
     if (label_size.x > 0.0f)
         RenderText(label_pos, label);
 

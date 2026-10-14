@@ -1,19 +1,8 @@
 #include "../win32/ui_win32.h"
 
-void celosia_win32::window::enable_transparency(HWND hwnd) { // 0, 0, 0, 0 will turn invisible
+void celosia_win32::window::enable_transparency(HWND hwnd) { // the frame's alpha is what the desktop shows of it
     SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), BYTE(255), LWA_ALPHA);
-    RECT clarea{}; GetClientRect(hwnd, &clarea);
-    RECT warea{}; GetWindowRect(hwnd, &warea);
-
-    POINT difference{};
-    ClientToScreen(hwnd, &difference);
-
-    const MARGINS margin{
-        warea.left + difference.x - warea.left,
-        warea.top + difference.y - warea.top,
-        clarea.right, clarea.bottom
-    };
-
+    const MARGINS margin{ -1, -1, -1, -1 }; // the whole window composes with alpha
     DwmExtendFrameIntoClientArea(hwnd, &margin);
 }
 

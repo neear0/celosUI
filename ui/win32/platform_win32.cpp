@@ -3,20 +3,33 @@
 // celosia::platform on top of the Win32 window and D3D11 device in this folder
 
 static HWND hwnd = nullptr;
-static std::wstring title_wide; // the windows map keeps a pointer to the title
+static bool backends = false; // ImGui's win32 and dx11 backends are initialized
 
 bool celosia::platform::create(const char* title, ImVec2 pos, ImVec2 size) {
+    std::wstring title_wide;
     title_wide.resize(MultiByteToWideChar(CP_UTF8, 0, title, -1, nullptr, 0));
     MultiByteToWideChar(CP_UTF8, 0, title, -1, title_wide.data(), (int)title_wide.size());
 
     hwnd = celosia_win32::window::create(title_wide.c_str(), pos, size, WS_EX_TOPMOST | WS_EX_LAYERED);
-    if (!hwnd || !celosia_win32::d3d::create_device(hwnd))
+    if (!hwnd)
         return false;
+    // the scale of the monitor it opened on, 1 unless the process is dpi aware (main.cpp makes it so). set_scale() takes
+    // ui::size along with the other sizes, the window and the swapchain follow it
+    ui::size = size * style::scale;
+    style::set_scale((float)GetDpiForWindow(hwnd) / USER_DEFAULT_SCREEN_DPI);
+    SetWindowPos(hwnd, nullptr, 0, 0, (int)ui::size.x, (int)ui::size.y, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    if (!celosia_win32::d3d::create_device(hwnd)) {
+        destroy(); // undoes whatever got made so far
+        return false;
+    }
 
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(celosia_win32::d3d::device, celosia_win32::d3d::device_context);
-    if (!celosia_win32::effect_renderer::create())
+    backends = true;
+    if (!celosia_win32::effect_renderer::create()) {
+        destroy();
         return false;
+    }
 
     celosia_win32::window::enable_transparency(hwnd);
     celosia_win32::window::enable_blur(hwnd, style::window::background == style::window::blur ? 4 : 0);
@@ -48,14 +61,17 @@ void celosia::platform::present() {
     celosia_win32::d3d::device_context->ClearRenderTargetView(celosia_win32::d3d::render_target_view, clear_color_with_alpha);
 
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-    celosia_win32::d3d::swapchain->Present(1, 0); // Present with vsync, (use 0, 0 for no vsync, although unnecessary because I don't think I'll be needing 1000+ fps for this. Maybe limit it to 60 fps or something even.)
+    celosia_win32::d3d::swapchain->Present(1, 0); // with vsync
     celosia_win32::d3d::report_debug_messages();
 }
 
 void celosia::platform::destroy() {
     resources::images::clear();
-    ImGui_ImplDX11_Shutdown();
-    ImGui_ImplWin32_Shutdown();
+    if (backends) {
+        ImGui_ImplDX11_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+        backends = false;
+    }
     celosia_win32::effect_renderer::destroy();
     celosia_win32::d3d::destroy_device();
     celosia_win32::window::destroy();
@@ -63,6 +79,8 @@ void celosia::platform::destroy() {
 }
 
 bool celosia::platform::key_held(int key) {
+    if ((key == keys::mouse_left || key == keys::mouse_right) && GetSystemMetrics(SM_SWAPBUTTON)) // GetAsyncKeyState() reads the physical buttons, keys are the logical ones
+        key = key == keys::mouse_left ? keys::mouse_right : keys::mouse_left;
     return GetAsyncKeyState(key) & 0x8000;
 }
 
@@ -87,8 +105,8 @@ void celosia::platform::move(ImVec2 pos) {
     celosia_win32::window::move(hwnd, pos);
 }
 
-void celosia::platform::bring_to_top() {
-    BringWindowToTop(hwnd);
+void celosia::platform::bring_to_top() { // back above other topmost windows that opened since, without taking the focus
+    SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 bool celosia::platform::blur_supported() {

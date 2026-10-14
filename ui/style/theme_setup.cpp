@@ -13,7 +13,6 @@ void celosia::style::themes::initialize() {
 	dark.active = ImColor(28, 28, 28, 255);
 	dark.frame_border = ImColor(0, 0, 0, 0);
 	dark.frame_fill = ImColor(16, 16, 16, 255);
-	dark.tab_style = e_tab_title_style::full;
 
 	light.name = "light";
 	light.text = ImColor(18, 18, 18, 255);
@@ -25,13 +24,11 @@ void celosia::style::themes::initialize() {
 	light.active = ImColor(235, 235, 240, 255);
 	light.frame_border = ImColor(0, 0, 0, 0);
 	light.frame_fill = ImColor(236, 236, 240, 255);
-	light.tab_style = e_tab_title_style::full;
 }
 
 void celosia::style::themes::set(const t_theme& theme, bool instant) {
 	target = theme;
 	active.name = theme.name;
-	active.tab_style = theme.tab_style;
 	if (instant)
 		active = theme;
 }
@@ -55,7 +52,7 @@ void celosia::style::apply() {
 	style.FramePadding = frame::size_padding;
 	style.WindowRounding = (float)general::rounding_window;
 	style.WindowPadding = ImVec2(0, 0);
-	style.ScrollbarSize = 4.f;
+	style.ScrollbarSize = 4.f * scale;
 	style.ItemSpacing = general::spacing;
 
 	const themes::t_theme& theme = themes::active;
@@ -85,4 +82,30 @@ void celosia::style::apply() {
 	c[ImGuiCol_TitleBg] = theme.idle;
 	c[ImGuiCol_TitleBgActive] = theme.idle;
 	c[ImGuiCol_TitleBgCollapsed] = theme.idle;
+}
+
+void celosia::style::set_scale(float new_scale) {
+	if (new_scale <= 0.f || new_scale == scale)
+		return;
+	const float factor = new_scale / scale;
+	scale = new_scale;
+	const auto scale_int = [factor](int& value) { value = (int)IM_ROUND(value * factor); };
+
+	scale_int(general::rounding);
+	scale_int(general::rounding_window);
+	general::padding *= factor;
+	general::spacing *= factor;
+	window::glass_blur *= factor;
+	titlebar::height *= factor;
+	scale_int(titlebar::padding);
+	sidebar::width *= factor;
+	frame::size_padding *= factor;
+	frame::border_size *= factor;
+	frame::tab_switch_animation_max *= factor;
+	groupbox::height *= factor;
+	scale_int(groupbox::padding);
+	ui::size = ImVec2(IM_ROUND(ui::size.x * factor), IM_ROUND(ui::size.y * factor));
+
+	ImGui::GetStyle().ScaleAllSizes(factor); // the ones apply() doesn't set, like ItemInnerSpacing and GrabMinSize
+	apply();
 }

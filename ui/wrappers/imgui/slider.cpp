@@ -26,7 +26,8 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     value_width = ImMax(value_width, ImGui::CalcTextSize(value_text).x);
     ImFormatString(value_text, IM_ARRAYSIZE(value_text), format, *v);
 
-    const float knob_radius = 7.f; // while held, smaller otherwise
+    const float scale = celosia::style::scale;
+    const float knob_radius = 7.f * scale; // while held, smaller otherwise
     const float track_min = frame.Min.x + knob_radius;
     const float track_max = ImMax(track_min, frame.Max.x - value_width - style.ItemInnerSpacing.x * 2.f - knob_radius);
 
@@ -48,18 +49,18 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     const float t = max > min ? ImSaturate((*v - min) / (max - min)) : 0.f;
     const ImVec2 knob(ImLerp(track_min, track_max, t), frame.GetCenter().y);
     const float grow = celosia::animations::set(celosia::animations::key("slider_knob", id), held ? 1.f : hovered ? 0.6f : 0.f);
-    const float radius = ImLerp(5.f, knob_radius, grow);
+    const float radius = ImLerp(5.f * scale, knob_radius, grow);
 
     // the track in the text color, faint, so it shows over the os blur and on both themes
-    const float track_half = 2.f;
+    const float track_half = 2.f * scale;
     const float track_alpha = celosia::animations::set(celosia::animations::key("slider_track", id), hovered || held ? 0.22f : 0.12f);
     drawlist->AddRectFilled(ImVec2(track_min, knob.y - track_half), ImVec2(track_max, knob.y + track_half), ImColor(text.x, text.y, text.z, track_alpha), track_half);
     drawlist->AddRectFilled(ImVec2(track_min, knob.y - track_half), ImVec2(knob.x, knob.y + track_half), celosia::style::general::main_color, track_half);
 
     if (grow > 0.01f) // glows in the main color like a hovered button
-        celosia::effects::glow(drawlist, knob - ImVec2(radius, radius), knob + ImVec2(radius, radius), ImColor(main.x, main.y, main.z, 0.5f * grow), radius, 8.f);
+        celosia::effects::glow(drawlist, knob - ImVec2(radius, radius), knob + ImVec2(radius, radius), ImColor(main.x, main.y, main.z, 0.5f * grow), radius, 8.f * scale);
     drawlist->AddCircleFilled(knob, radius, celosia::style::general::main_color);
-    drawlist->AddCircle(knob, radius, ImColor(text.x, text.y, text.z, 0.9f), 0, 2.f);
+    drawlist->AddCircle(knob, radius, ImColor(text.x, text.y, text.z, 0.9f), 0, 2.f * scale);
 
     const ImVec2 value_size = ImGui::CalcTextSize(value_text);
     ImGui::RenderText(ImVec2(frame.Max.x - value_size.x, knob.y - value_size.y * 0.5f), value_text);

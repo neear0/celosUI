@@ -8,7 +8,7 @@ static void tab_style(ImGuiID id, const ImRect bb, const char* label, ImVec2 lab
     const float glow = celosia::animations::set(celosia::animations::key("tab_glow", id), active ? 1.f : 0.f);
     if (glow > 0.01f) { // the active tab glows in the main color, fading in and out
         const ImVec4 main = celosia::style::general::main_color.Value;
-        celosia::effects::glow(ImGui::GetWindowDrawList(), bb.Min, bb.Max, ImColor(main.x, main.y, main.z, 0.5f * glow), style.FrameRounding, 10.f);
+        celosia::effects::glow(ImGui::GetWindowDrawList(), bb.Min, bb.Max, ImColor(main.x, main.y, main.z, 0.5f * glow), style.FrameRounding, 10.f * celosia::style::scale);
     }
 
     celosia::widgets::render_frame_border_animated(id, bb.Min, bb.Max, col, style.FrameRounding);

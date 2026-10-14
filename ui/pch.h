@@ -13,13 +13,13 @@
 
 #include <iostream>
 #include <array>
+#include <cstdint>
 #include <cmath>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <map>
 #include <vector>
-#include <filesystem>
 
 #include "../external/imgui/imgui.h"
 #include "../external/imgui/imgui_internal.h"

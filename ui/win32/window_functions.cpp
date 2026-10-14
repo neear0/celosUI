@@ -9,18 +9,9 @@ LRESULT WINAPI celosia_win32::window::wnd_proc(HWND hwnd, UINT msg, WPARAM w_par
 
     switch (msg)
     {
-    case WM_SIZE:
-        if (w_param == SIZE_MINIMIZED)
-            return 0;
-        return 0;
     case WM_SYSCOMMAND:
         if ((w_param & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
             return 0;
-        break;
-    case WM_DISPLAYCHANGE: // screen resolution changed
-        //ui::variables::monitor::update();
-        break;
-    case WM_DEVICECHANGE: // monitor changed
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
@@ -30,9 +21,10 @@ LRESULT WINAPI celosia_win32::window::wnd_proc(HWND hwnd, UINT msg, WPARAM w_par
 }
 
 HWND celosia_win32::window::create(LPCWSTR window_title, ImVec2 pos, ImVec2 size, long window_flags) {
-    if (!(variables::windows.find(window_title) == variables::windows.end())) { // window already exists with same title / class
-        DestroyWindow(variables::windows[window_title].second);
-        UnregisterClassW(window_title, 0);
+    if (const auto existing = variables::windows.find(window_title); existing != variables::windows.end()) { // one with the same title / class is replaced
+        DestroyWindow(existing->second.second);
+        UnregisterClassW(window_title, existing->second.first.hInstance);
+        variables::windows.erase(existing);
     }
 
     WNDCLASSEXW wc = {
@@ -46,18 +38,23 @@ HWND celosia_win32::window::create(LPCWSTR window_title, ImVec2 pos, ImVec2 size
         nullptr
     };
 
-    RegisterClassExW(&wc);
+    if (!RegisterClassExW(&wc))
+        return nullptr;
 
     const HWND hwnd = CreateWindowExW(
-        window_flags /*| WS_EX_TRANSPARENT*/,
+        window_flags,
         wc.lpszClassName,
         window_title,
-        WS_POPUP, // WS_OVERLAPPED
+        WS_POPUP,
         (int)pos.x, (int)pos.y, (int)size.x, (int)size.y,
         nullptr, nullptr,
         wc.hInstance,
         nullptr
     );
+    if (!hwnd) {
+        UnregisterClassW(window_title, wc.hInstance);
+        return nullptr;
+    }
 
     variables::windows[window_title] = { wc, hwnd };
     return hwnd;
@@ -69,13 +66,13 @@ void celosia_win32::window::show(HWND hwnd) {
 }
 
 void celosia_win32::window::move(HWND hwnd, ImVec2 pos) {
-    SetWindowPos(hwnd, 0, (int)pos.x, (int)pos.y, (int)celosia::ui::size.x, (int)celosia::ui::size.y, 0);
+    SetWindowPos(hwnd, nullptr, (int)pos.x, (int)pos.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE); // only moves it
 }
 
 void celosia_win32::window::destroy() { // every window made through create(), along with its class
     for (auto const& [title, window] : variables::windows) {
         DestroyWindow(window.second); // fails harmlessly if the window was already closed
-        UnregisterClassW(window.first.lpszClassName, window.first.hInstance);
+        UnregisterClassW(title.c_str(), window.first.hInstance);
     }
     variables::windows.clear();
 }

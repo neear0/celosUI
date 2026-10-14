@@ -4,9 +4,23 @@
 
 static GLFWwindow* glfw_window = nullptr;
 static bool blur = false; // the compositor can blur the desktop behind the window
+static bool backends = false; // ImGui's glfw and vulkan backends are initialized
 
 static void error_callback(int error, const char* description) {
     std::cerr << "[glfw] error " << error << ": " << description << std::endl;
+}
+
+static GLFWmonitor* monitor_at(ImVec2 pos) { // the monitor the window opens on, the primary one when pos is on none
+    int count = 0;
+    GLFWmonitor** monitors = glfwGetMonitors(&count);
+    for (int i = 0; i < count; i++) {
+        int x, y;
+        glfwGetMonitorPos(monitors[i], &x, &y);
+        const GLFWvidmode* mode = glfwGetVideoMode(monitors[i]);
+        if (mode && pos.x >= x && pos.y >= y && pos.x < x + mode->width && pos.y < y + mode->height)
+            return monitors[i];
+    }
+    return glfwGetPrimaryMonitor();
 }
 
 bool celosia::platform::create(const char* title, ImVec2 pos, ImVec2 size) {
@@ -28,13 +42,24 @@ bool celosia::platform::create(const char* title, ImVec2 pos, ImVec2 size) {
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);       // shown once it's in place
-    glfw_window = glfwCreateWindow((int)size.x, (int)size.y, title, nullptr, nullptr);
-    if (!glfw_window)
+
+    // set_scale() takes ui::size along with the other sizes, the window follows it. x11 has one scale for every monitor (Xft.dpi)
+    float scale = 1.f, scale_y = 1.f;
+    if (GLFWmonitor* monitor = monitor_at(pos))
+        glfwGetMonitorContentScale(monitor, &scale, &scale_y);
+    ui::size = size * style::scale;
+    style::set_scale(scale);
+    glfw_window = glfwCreateWindow((int)ui::size.x, (int)ui::size.y, title, nullptr, nullptr);
+    if (!glfw_window) {
+        destroy(); // undoes whatever got made so far
         return false;
+    }
     glfwSetWindowPos(glfw_window, (int)pos.x, (int)pos.y);
 
-    if (!celosia_glfw::vulkan::create_device(glfw_window))
+    if (!celosia_glfw::vulkan::create_device(glfw_window)) {
+        destroy();
         return false;
+    }
 
     ImGui_ImplGlfw_InitForVulkan(glfw_window, true);
 
@@ -50,8 +75,11 @@ bool celosia::platform::create(const char* title, ImVec2 pos, ImVec2 size) {
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     init_info.CheckVkResultFn = celosia_glfw::vulkan::check_result;
     ImGui_ImplVulkan_Init(&init_info, celosia_glfw::vulkan::window_data.RenderPass);
-    if (!celosia_glfw::effect_renderer::create())
+    backends = true;
+    if (!celosia_glfw::effect_renderer::create()) {
+        destroy();
         return false;
+    }
 
     blur = celosia_glfw::x11::blur_supported(glfw_window);
     if (blur)
@@ -83,15 +111,22 @@ void celosia::platform::present() {
     celosia_glfw::vulkan::present();
 }
 
-void celosia::platform::destroy() {
-    vkDeviceWaitIdle(celosia_glfw::vulkan::device);
+void celosia::platform::destroy() { // also cleans up after a create() that failed partway
+    if (celosia_glfw::vulkan::device)
+        vkDeviceWaitIdle(celosia_glfw::vulkan::device);
     resources::images::clear();
     celosia_glfw::textures::destroy();
     celosia_glfw::effect_renderer::destroy();
-    ImGui_ImplVulkan_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
+    if (backends) {
+        ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        backends = false;
+    }
     celosia_glfw::vulkan::destroy();
-    glfwDestroyWindow(glfw_window);
+    if (glfw_window) {
+        glfwDestroyWindow(glfw_window);
+        glfw_window = nullptr;
+    }
     glfwTerminate();
 }
 
