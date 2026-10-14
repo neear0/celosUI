@@ -135,7 +135,7 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
     if (hovered) col = GetColorU32(ImGuiCol_HeaderHovered);
     if (pressed || held) col = GetColorU32(ImGuiCol_HeaderActive);
     
-    celosia::widgets::render_frame_animated(id, bb.Min, bb.Max, col, false, 0.0f);
+    celosia::widgets::render_frame_animated(id, bb.Min, bb.Max, col);
 
     // Render
     if (g.NavId == id)
@@ -223,9 +223,6 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     
     if (!(flags & ImGuiComboFlags_NoArrowButton))
     {
-        ImU32 bg_col = GetColorU32((popup_open || hovered) ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
-        ImU32 text_col = GetColorU32(ImGuiCol_Text);
-        //window->DrawList->AddRectFilled(ImVec2(value_x2, bb.Min.y), bb.Max, bg_col, style.FrameRounding, (w <= arrow_size) ? ImDrawFlags_RoundCornersAll : ImDrawFlags_RoundCornersRight);
         if (value_x2 + arrow_size - style.FramePadding.x <= bb.Max.x)
             RenderArrow(window->DrawList, ImVec2(value_x2 + style.FramePadding.y, bb.Min.y + style.FramePadding.y), hover_col, ImGuiDir_Down, 1.0f);
     }

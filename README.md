@@ -74,7 +74,7 @@ ImGui::DestroyContext();
 ```
 Inside the window, the widgets are used like normal ImGui ones:
 ```cpp
-render::groupbox::begin("Groupbox B", "Checkboxes");
+render::groupbox::begin("Groupbox B", "Checkboxes"); // stacked two to a tab, or render::groupbox::fullscreen / four (a 2x2 grid) as the 3rd argument
 widgets::checkbox_map("Checkbox 0");             // value lives in variables::config::bools["Checkbox 0"]
 widgets::color_edit("Main Color", color);        // float[4]
 widgets::slider_float("Size", &size, 0.f, 10.f); // float, dragged between 0 and 10

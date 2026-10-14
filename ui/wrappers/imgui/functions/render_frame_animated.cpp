@@ -1,6 +1,6 @@
 #include "../../../ui.h"
 
-void celosia::widgets::render_frame_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, bool border, float rounding)
+void celosia::widgets::render_frame_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, float rounding)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;

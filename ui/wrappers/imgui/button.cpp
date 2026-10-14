@@ -3,7 +3,7 @@
 static void style1(ImGuiID id, const ImRect bb, const char* label, ImVec2 label_size, const ImGuiStyle& style, ImColor col) {
     ImVec4 fill = ImLerp(col.Value, celosia::style::themes::active.background_darker.Value, 0.25f); // a bit towards the panel color, darker than the border on dark themes and lighter on light ones
     fill.w = col.Value.w;
-    celosia::widgets::render_frame_animated(id, bb.Min, bb.Max, fill, true, style.FrameRounding);
+    celosia::widgets::render_frame_animated(id, bb.Min, bb.Max, fill, style.FrameRounding);
     celosia::widgets::render_frame_border_animated(id, bb.Min, bb.Max, col, style.FrameRounding);
     ImGui::RenderTextClipped(ImVec2(bb.Min.x + style.FramePadding.x, bb.Min.y + style.FramePadding.y), ImVec2(bb.Max.x - style.FramePadding.x, bb.Max.y - style.FramePadding.y), label, NULL, &label_size, style.ButtonTextAlign, &bb);
 }

@@ -3,19 +3,26 @@
 static const ImGuiID active_spacing = celosia::animations::key("groupbox_active_spacing");
 static const ImGuiID text_color_key = celosia::animations::key("Groupbox Text Color");
 
-// where the groupbox at groupbox::index goes when two share the height, moved down by the tab switch animation
-static void rect_two(ImVec2* offset, ImVec2* offset_max, ImVec2* offset_size) {
+// where the groupbox at groupbox::index goes in the space right of the sidebar, moved down by the tab switch animation:
+// fullscreen takes all of it, two share the height, four make a 2x2 grid filled row by row
+static void rect(celosia::render::groupbox::e_group_layout layout, ImVec2* offset, ImVec2* offset_max, ImVec2* offset_size) {
+	using celosia::render::groupbox::e_group_layout;
 	const ImVec2 padding = celosia::style::frame::size_padding;
 	const float title = celosia::style::titlebar::height;
-	const float size = ((celosia::ui::size.y - title) / 2) - padding.y;
+	const int columns = layout == e_group_layout::four ? 2 : 1;
+	const int rows = layout == e_group_layout::fullscreen ? 1 : 2;
+	const int cell = celosia::render::groupbox::index % (columns * rows);
+	const float left = celosia::style::sidebar::width + padding.x;
+	const float width = (celosia::ui::size.x - padding.x - left) / columns;
+	const float height = ((celosia::ui::size.y - title) / rows) - padding.y;
 
 	*offset = {
-		celosia::style::sidebar::width + padding.x,
-		title + celosia::animations::get(active_spacing) + padding.y + (size * celosia::render::groupbox::index)
+		left + width * (cell % columns),
+		title + celosia::animations::get(active_spacing) + padding.y + (height * (cell / columns))
 	};
 	*offset_max = {
-		celosia::ui::size.x - padding.x,
-		offset->y + size - padding.y
+		offset->x + width - (cell % columns < columns - 1 ? padding.x : 0.f), // a gap between columns, the last one ends at the window's padding
+		offset->y + height - padding.y
 	};
 
 	*offset_size = {
@@ -31,7 +38,7 @@ float celosia::render::groupbox::title_height(const char* description) { // fits
 	return ImMax(style::groupbox::height, text + style::groupbox::padding * 2.f);
 }
 
-void celosia::render::groupbox::body(ImDrawList* drawlist, const ImVec2 offset, const ImVec2 offset_max, const char* title, const char* description, e_group_layout layout) {
+void celosia::render::groupbox::body(ImDrawList* drawlist, const ImVec2 offset, const ImVec2 offset_max, const char* title, const char* description) {
 	const float height = title_height(description);
 	ImColor a = style::general::main_color;
 	ImColor b = style::themes::rgb_accent(a);
@@ -82,10 +89,10 @@ void celosia::render::groupbox::body(ImDrawList* drawlist, const ImVec2 offset, 
 void celosia::render::groupbox::begin(const char* title, const char* description, e_group_layout layout) {
 	ImDrawList* drawlist_window = ImGui::GetWindowDrawList();
 	ImVec2 offset, offset_max, offset_size;
-	rect_two(&offset, &offset_max, &offset_size);
+	rect(layout, &offset, &offset_max, &offset_size);
 	const float height = title_height(description);
 
-	body(drawlist_window, offset, offset_max, title, description, layout);
+	body(drawlist_window, offset, offset_max, title, description);
 	ImGui::SetCursorPos(ImVec2(offset.x + style::frame::size_padding.x, offset.y + style::frame::size_padding.y + height));
 	ImGui::BeginChild(title, ImVec2(offset_size.x - style::frame::size_padding.x, offset_size.y - height - (2 * style::frame::size_padding.y)));
 }

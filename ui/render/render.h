@@ -28,7 +28,8 @@ namespace celosia::render {
 		enum e_group_layout { fullscreen, two, four };
 		inline int index = 0; // position of the next groupbox, reset every frame
 		float title_height(const char* description = ""); // of the title at the top, grows when the text needs it
-		void body(ImDrawList* drawlist, const ImVec2 offset, const ImVec2 offset_max, const char* title = "", const char* description = "", e_group_layout layout = e_group_layout::two);
+		void body(ImDrawList* drawlist, const ImVec2 offset, const ImVec2 offset_max, const char* title = "", const char* description = "");
+		// layout: fullscreen fills the space right of the sidebar, two stack in it, four make a 2x2 grid. groupbox::index picks the cell
 		void begin(const char* title, const char* description = "", e_group_layout layout = e_group_layout::two);
 		void end();
 	}

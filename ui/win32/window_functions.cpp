@@ -53,7 +53,7 @@ HWND celosia_win32::window::create(LPCWSTR window_title, ImVec2 pos, ImVec2 size
         wc.lpszClassName,
         window_title,
         WS_POPUP, // WS_OVERLAPPED
-        pos.x, pos.y, size.x, size.y,
+        (int)pos.x, (int)pos.y, (int)size.x, (int)size.y,
         nullptr, nullptr,
         wc.hInstance,
         nullptr
@@ -69,7 +69,7 @@ void celosia_win32::window::show(HWND hwnd) {
 }
 
 void celosia_win32::window::move(HWND hwnd, ImVec2 pos) {
-    SetWindowPos(hwnd, 0, pos.x, pos.y, celosia::ui::size.x, celosia::ui::size.y, 0);
+    SetWindowPos(hwnd, 0, (int)pos.x, (int)pos.y, (int)celosia::ui::size.x, (int)celosia::ui::size.y, 0);
 }
 
 void celosia_win32::window::destroy() { // every window made through create(), along with its class

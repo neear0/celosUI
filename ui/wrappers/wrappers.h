@@ -19,7 +19,7 @@ namespace celosia::widgets {
 	// item frames, imgui/functions/. id is the item's, the animated ones ease their color per item
 	void render_frame_border_color(ImVec2 p_min, ImVec2 p_max, ImColor clr, float rounding = 0.0f);
 	void render_frame_border_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, float rounding = 0.0f);
-	void render_frame_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, bool border = true, float rounding = 0.0f);
+	void render_frame_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, float rounding = 0.0f);
 
 	// smooth scrolling, imgui/scrollbar.cpp
 	void scroll_wheel(ImGuiWindow* window, float wheel); // called by ImGui::UpdateMouseWheel, sets where the window scrolls to

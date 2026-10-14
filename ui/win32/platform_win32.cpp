@@ -69,18 +69,18 @@ bool celosia::platform::key_held(int key) {
 ImVec2 celosia::platform::cursor_pos() {
     POINT p;
     if (GetCursorPos(&p))
-        return ImVec2(p.x, p.y);
+        return ImVec2((float)p.x, (float)p.y);
     return ImVec2(0, 0);
 }
 
 ImRect celosia::platform::window_rect() {
     RECT r;
     GetWindowRect(hwnd, &r);
-    return ImRect(r.left, r.top, r.right, r.bottom);
+    return ImRect((float)r.left, (float)r.top, (float)r.right, (float)r.bottom);
 }
 
 ImVec2 celosia::platform::screen_size() {
-    return ImVec2(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
+    return ImVec2((float)GetSystemMetrics(SM_CXSCREEN), (float)GetSystemMetrics(SM_CYSCREEN));
 }
 
 void celosia::platform::move(ImVec2 pos) {
