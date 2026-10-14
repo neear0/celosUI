@@ -29,6 +29,6 @@ float4 main(ps_input input) : SV_Target
     n = n * 2.0 - 1.0;
 
     // white over the light grains, black over the dark ones
-    float alpha = abs(n) * effect.params.z * coverage(rounded_rect_distance(input.pos.xy, effect.rect, effect.params.x));
+    float alpha = abs(n) * effect.params.z * coverage(rounded_rect_distance(input.pos.xy, effect.rect, effect.params.x)) * input.col.a;
     return float4(n > 0.0 ? float3(1, 1, 1) : float3(0, 0, 0), alpha);
 }

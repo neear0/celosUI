@@ -5,6 +5,12 @@ namespace celosia::render {
 	inline ImDrawList* drawlist_foreground = nullptr;
 	inline ImDrawList* drawlist_background = nullptr;
 
+	struct t_tab_content { // what the open tab drew this frame, the tab switch fades it out and in
+		ImDrawList* drawlist = nullptr; // the window's, from vtx_begin to vtx_end: the groupbox panels and titles
+		int vtx_begin = 0, vtx_end = 0;
+		ImVector<ImDrawList*> children; // the groupboxes' child windows, all of them
+	};
+	inline t_tab_content tab_content; // cleared every frame, filled by main_window() and groupbox::begin()
 
 	void main_window(); // the demo window, see main_window.cpp
 	void titlebar();

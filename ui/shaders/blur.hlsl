@@ -26,5 +26,5 @@ float4 main(ps_input input) : SV_Target
     float4 blurred = sum / weight_sum;
     float3 color = lerp(blurred.rgb, effect.color_a.rgb, effect.color_a.a) + dither(input.pos.xy);
     float alpha = max(blurred.a, effect.color_a.a); // keeps a see-through window see-through
-    return float4(color, alpha * coverage(rounded_rect_distance(input.pos.xy, effect.rect, effect.params.x)));
+    return float4(color, alpha * coverage(rounded_rect_distance(input.pos.xy, effect.rect, effect.params.x)) * input.col.a);
 }

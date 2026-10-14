@@ -25,5 +25,5 @@ float4 main(ps_input input) : SV_Target
     color = lerp(color, effect.color_b.rgb, blob(p, three, 0.30) * effect.color_b.a * 0.6);
     color += dither(input.pos.xy);
 
-    return float4(color, effect.color_a.a * coverage(rounded_rect_distance(input.pos.xy, effect.rect, effect.params.x)));
+    return float4(color, effect.color_a.a * coverage(rounded_rect_distance(input.pos.xy, effect.rect, effect.params.x)) * input.col.a);
 }

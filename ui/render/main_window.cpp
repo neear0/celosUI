@@ -25,6 +25,8 @@ void celosia::render::main_window() {
     render::sidebar();
     drawlist->PopClipRect();
 
+    render::tab_content.drawlist = drawlist;
+    render::tab_content.vtx_begin = drawlist->VtxBuffer.Size;
     if (ui::tab_current == "tab1") { // --> visible tab
         render::groupbox::begin("Groupbox A");
         for (int i = 0; i < 20; i++)
@@ -56,6 +58,7 @@ void celosia::render::main_window() {
 
         render::groupbox::end();
     }
+    render::tab_content.vtx_end = drawlist->VtxBuffer.Size;
 
     ImGui::End();
 }

@@ -95,6 +95,7 @@ void celosia::render::groupbox::begin(const char* title, const char* description
 	body(drawlist_window, offset, offset_max, title, description);
 	ImGui::SetCursorPos(ImVec2(offset.x + style::frame::size_padding.x, offset.y + style::frame::size_padding.y + height));
 	ImGui::BeginChild(title, ImVec2(offset_size.x - style::frame::size_padding.x, offset_size.y - height - (2 * style::frame::size_padding.y)));
+	tab_content.children.push_back(ImGui::GetWindowDrawList());
 }
 
 void celosia::render::groupbox::end() {

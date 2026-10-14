@@ -5,6 +5,8 @@ void celosia::ui::render() {
 
     render::drawlist_background = ImGui::GetBackgroundDrawList();
     render::drawlist_foreground = ImGui::GetForegroundDrawList();
+    render::tab_content.drawlist = nullptr;
+    render::tab_content.children.resize(0);
 
     if (ui::active) {
         render::groupbox::index = 0;

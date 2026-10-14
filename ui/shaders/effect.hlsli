@@ -11,7 +11,7 @@
 
 struct ps_input { // what ImGui's vertex shader hands over, has to match it on both backends
     float4 pos : SV_POSITION; // pixel center in framebuffer pixels
-    vk_location(0) float4 col : COLOR0;
+    vk_location(0) float4 col : COLOR0; // white, every effect multiplies its alpha by col.a so a draw list's vertices can fade it
     vk_location(1) float2 uv : TEXCOORD0;
 };
 
