@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <array>
+#include <chrono>
 #include <cstdint>
 #include <cmath>
 #include <string>
@@ -94,12 +95,12 @@ namespace celosia {
 	namespace animations {
 		struct t_value {
 			ImVec4 value;            // floats use x and ImVec2 uses x, y
-			double last_used = 0.0;  // ImGui::GetTime() when it was last set
+			double last_used = 0.0;  // ui::time when it was last set
 		};
 		inline std::unordered_map<ImGuiID, t_value> values; // one entry per animated value
 		inline double forget_after = 10.0; // seconds a value can go unused before it's dropped, it starts at its goal again when it's back
 		inline float base_speed = 2.f;
-		inline float delta_time = 0.f; // the frame time animations step by, io.DeltaTime evened out, see new_frame()
+		inline float delta_time = 0.f; // the frame time animations step by, ui::delta_time evened out, see new_frame()
 		inline float color_speed = 10.f; // hover and press colors ease by this, most of the way in about a quarter second
 
 		enum e_method{ smooth, linear };
@@ -128,6 +129,11 @@ namespace celosia {
 	namespace ui {
 		inline ImVec2 size = { 800, 600 };
 		inline bool active = true;
+
+		inline double time = 0.0;          // seconds since the first frame, begin() moves it on
+		inline float delta_time = 0.f;     // seconds the last frame took
+		inline ImVec2 display_size;        // the window's drawable area, 0 while it's minimized. begin() asks the platform
+		inline ImVec2 framebuffer_scale = { 1.f, 1.f }; // framebuffer pixels per unit of ui::size
 
 		inline std::string tab_active;  // last tab button pressed
 		inline std::string tab_current; // tab being drawn, follows tab_active once the switch animation hides the old one
@@ -158,6 +164,33 @@ namespace celosia {
 		}
 
 		void refresh();		// this has to be ran every frame
+	}
+
+	// the window's own mouse and keyboard, from the platform's events for the window: the mouse while it's over the window
+	// or a button is held on it, the keys while the window has the focus. inputsystem asks about keys anywhere, at any time
+	namespace input {
+		enum e_button { left, right, middle, button_count };
+
+		// the platform's side, as the events come in
+		void add_mouse_pos(ImVec2 pos);   // in the window, -FLT_MAX once the mouse left it
+		void add_mouse_button(int button, bool down);
+		void add_wheel(float notches);    // positive is away from the user, scrolling up
+		void add_key(int key, bool down); // celosia::keys code, a key held down comes again as it repeats
+		void add_focus(bool focused);
+
+		// applies the events since the last frame, ui::begin() calls it. a button that went down and up between two frames
+		// is down for this one and up for the next, a quick click isn't lost
+		void new_frame();
+
+		// the ui's side, the same answers for the whole frame
+		ImVec2 mouse_pos();
+		bool mouse_down(int button);
+		bool mouse_clicked(int button);  // went down this frame
+		bool mouse_released(int button); // went up this frame
+		float wheel();                   // notches this frame
+		bool key_down(int key);
+		bool key_pressed(int key);       // went down this frame, or repeated
+		bool focused();
 	}
 
 	namespace keys { // key codes used by inputsystem, these match the windows virtual key codes and other platforms translate them
@@ -203,6 +236,8 @@ namespace celosia {
 		bool poll();         // handles window events, false once the window has been closed
 		void new_frame();
 		void present();      // renders ImGui's draw data and shows it
+		ImVec2 display_size();      // the window's drawable area in units of ui::size, 0 while it's minimized
+		ImVec2 framebuffer_scale(); // framebuffer pixels per unit
 		void destroy();
 
 		bool key_held(int key);  // celosia::keys code, works while the window isn't focused where the platform allows it

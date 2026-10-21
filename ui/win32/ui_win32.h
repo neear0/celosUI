@@ -2,13 +2,14 @@
 
 #include "../ui.h"
 #include <Windows.h>
+#include <windowsx.h>
 #include <d3d11.h>
 #include <dwmapi.h>
 
 #include "../../external/imgui/dx11/imgui_impl_dx11.h"
-#include "../../external/imgui/win32/imgui_impl_win32.h"
 
 #pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dwmapi.lib")
 
 namespace celosia_win32 {
 	namespace d3d {

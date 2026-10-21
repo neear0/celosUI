@@ -5,13 +5,11 @@
 // the renderer half is platform::draw_effect() in win32/effects_d3d11.cpp and glfw/effects_vulkan.cpp
 
 static ImVec2 to_framebuffer(ImVec2 p) { // the shaders work in framebuffer pixels
-    const ImGuiIO& io = ImGui::GetIO();
-    const ImVec2 origin = ImGui::GetMainViewport()->Pos;
-    return ImVec2((p.x - origin.x) * io.DisplayFramebufferScale.x, (p.y - origin.y) * io.DisplayFramebufferScale.y);
+    return ImVec2(p.x * celosia::ui::framebuffer_scale.x, p.y * celosia::ui::framebuffer_scale.y);
 }
 
 static float to_pixels(float size) {
-    return size * ImGui::GetIO().DisplayFramebufferScale.x;
+    return size * celosia::ui::framebuffer_scale.x;
 }
 
 static celosia::effects::t_constants constants(ImVec2 min, ImVec2 max, float rounding) {
@@ -42,7 +40,7 @@ void celosia::effects::gradient(ImDrawList* drawlist, ImVec2 min, ImVec2 max, Im
     c.color_b = b;
     c.params.y = angle;
     c.params.z = speed;
-    c.params.w = (float)ImGui::GetTime();
+    c.params.w = (float)ui::time;
     add(drawlist, e_type::gradient, c, min, max);
 }
 
@@ -65,11 +63,11 @@ void celosia::effects::blur(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColo
     }
 
     t_constants c = constants(min, max, rounding);
-    const ImGuiIO& io = ImGui::GetIO();
+    const ImVec2 framebuffer = to_framebuffer(ui::display_size);
     c.color_a = tint;
     c.params.y = to_pixels(radius);
-    c.params.z = 1.f / ImMax(io.DisplaySize.x * io.DisplayFramebufferScale.x, 1.f);
-    c.params.w = 1.f / ImMax(io.DisplaySize.y * io.DisplayFramebufferScale.y, 1.f);
+    c.params.z = 1.f / ImMax(framebuffer.x, 1.f);
+    c.params.w = 1.f / ImMax(framebuffer.y, 1.f);
     add(drawlist, e_type::blur, c, min, max, backdrop);
 }
 
@@ -78,7 +76,7 @@ void celosia::effects::background(ImDrawList* drawlist, ImVec2 min, ImVec2 max, 
     c.color_a = base;
     c.color_b = one;
     c.color_c = two;
-    c.params.w = (float)ImGui::GetTime();
+    c.params.w = (float)ui::time;
     add(drawlist, e_type::background, c, min, max);
 }
 
@@ -88,6 +86,6 @@ void celosia::effects::noise(ImDrawList* drawlist, ImVec2 min, ImVec2 max, float
     t_constants c = constants(min, max, rounding);
     c.params.y = to_pixels(size);
     c.params.z = strength;
-    c.params.w = animated ? ImFloor((float)ImGui::GetTime() * 24.f) : 0.f; // a new pattern 24 times a second, like film
+    c.params.w = animated ? ImFloor((float)ui::time * 24.f) : 0.f; // a new pattern 24 times a second, like film
     add(drawlist, e_type::noise, c, min, max);
 }

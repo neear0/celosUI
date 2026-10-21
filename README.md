@@ -20,7 +20,7 @@ A C++ UI framework for Windows (Win32 + DirectX 11) and Linux (GLFW + Vulkan). D
 * Fonts rendered with FreeType, fonts and images compiled into the executable
 * Smooth scrolling
 * Scales with the display: `platform::create()` sizes the window, fonts and style to the monitor's DPI (`style::scale`)
-* Input system with per-frame key presses and releases
+* Input from the window's own events (`celosia::input`, a click too quick for one frame isn't lost) and keys anywhere, also while the window isn't focused (`inputsystem`)
 * DirectX 11 (Windows) and Vulkan (Linux)
 
 ## Building
@@ -88,7 +88,7 @@ Where things are:
 * `ui/win32/` and `ui/glfw/`: the two platform layers (window, device, textures, effects)
 * `ui/shaders/`: the effect shaders
 * `ui/resources/`: fonts and images compiled into the binary
-* `external/`: ImGui and its backends, stb_image, the FreeType config
+* `external/`: ImGui and its D3D11 and Vulkan renderers, stb_image, the FreeType config
 
 ## Fonts and images
 The fonts and images in `assets/` are compiled into the executable through `ui/resources/font_data.cpp` and `ui/resources/image_data.cpp`, so nothing is loaded from disk. After changing or adding one (the list is at the top of the script), regenerate those files with `cmake -P ui/resources/embed_resources.cmake`.

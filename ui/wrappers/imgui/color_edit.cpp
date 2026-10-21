@@ -29,7 +29,7 @@ static bool drag_area(const char* id, const ImRect& rect, ImVec2* position) { //
     ImGui::ButtonBehavior(rect, item, &hovered, &held, ImGuiButtonFlags_NoNavFocus);
     if (!held)
         return false;
-    const ImVec2 mouse = ImGui::GetIO().MousePos;
+    const ImVec2 mouse = celosia::input::mouse_pos();
     *position = ImVec2(ImSaturate((mouse.x - rect.Min.x) / rect.GetWidth()), ImSaturate((mouse.y - rect.Min.y) / rect.GetHeight()));
     return true;
 }

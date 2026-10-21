@@ -35,7 +35,7 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     ImGui::ButtonBehavior(frame, id, &hovered, &held, ImGuiButtonFlags_NoNavFocus);
     bool changed = false;
     if (held && track_max > track_min) { // the value follows the cursor while the slider is held, also outside of it
-        const float value = ImLerp(min, max, ImSaturate((ImGui::GetIO().MousePos.x - track_min) / (track_max - track_min)));
+        const float value = ImLerp(min, max, ImSaturate((input::mouse_pos().x - track_min) / (track_max - track_min)));
         if (value != *v) {
             *v = value;
             changed = true;

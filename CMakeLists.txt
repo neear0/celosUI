@@ -78,6 +78,7 @@ set(celos_ui_sources
     ui/effects/effects.cpp
     ui/functions.cpp
     ui/initialize.cpp
+    ui/input.cpp
     ui/inputsystem.cpp
     ui/ui.cpp
     ui/window_drag.cpp
@@ -130,7 +131,6 @@ if(CELOSUI_PLATFORM STREQUAL "win32")
     )
     set(backend_sources
         external/imgui/dx11/imgui_impl_dx11.cpp
-        external/imgui/win32/imgui_impl_win32.cpp
     )
 
     # shaders are compiled at build time by fxc from the windows sdk, preferably the sdk version this build targets
@@ -174,7 +174,6 @@ elseif(CELOSUI_PLATFORM STREQUAL "glfw")
         ui/glfw/vulkan_create.cpp
     )
     set(backend_sources
-        external/imgui/glfw/imgui_impl_glfw.cpp
         external/imgui/vulkan/imgui_impl_vulkan.cpp
         ${volk_SOURCE_DIR}/volk.c
     )

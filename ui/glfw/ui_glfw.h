@@ -6,7 +6,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "../../external/imgui/glfw/imgui_impl_glfw.h"
 #include "../../external/imgui/vulkan/imgui_impl_vulkan.h"
 
 namespace celosia_glfw {

@@ -42,7 +42,7 @@ void celosia::animations::new_frame() {
     // the frame time measured on the cpu jitters a few ms around the display's refresh interval (13 to 21 ms at 60 Hz),
     // while the frames are shown evenly. stepping by it moves animations unevenly from frame to frame, an average steps evenly.
     // a frame that is much longer or shorter (a hitch, or the frame rate changing) is taken as it is so animations don't lag behind
-    const float dt = ImGui::GetIO().DeltaTime;
+    const float dt = ui::delta_time;
     if (delta_time <= 0.f || dt > delta_time * 1.5f || dt < delta_time / 1.5f)
         delta_time = dt;
     else
@@ -50,7 +50,7 @@ void celosia::animations::new_frame() {
 
     // once a second, drop what hasn't been animated for a while, e.g. the items of a tab that isn't open
     static double last_forget = 0.0;
-    const double now = ImGui::GetTime();
+    const double now = ui::time;
     if (now - last_forget >= 1.0) {
         last_forget = now;
         std::erase_if(values, [now](const auto& entry) { return now - entry.second.last_used > forget_after; });
@@ -67,14 +67,14 @@ float celosia::animations::get(ImGuiID id) {
 }
 
 void celosia::animations::snap(ImGuiID id, float value) {
-    values[id] = { ImVec4(value, 0.f, 0.f, 0.f), ImGui::GetTime() };
+    values[id] = { ImVec4(value, 0.f, 0.f, 0.f), ui::time };
 }
 
 static ImVec4& use(ImGuiID id, const ImVec4& goal) { // id's value, marked as used this frame. a new one starts at goal, so items don't fade in when they appear
     auto [it, created] = celosia::animations::values.try_emplace(id);
     if (created)
         it->second.value = goal;
-    it->second.last_used = ImGui::GetTime();
+    it->second.last_used = celosia::ui::time;
     return it->second.value;
 }
 

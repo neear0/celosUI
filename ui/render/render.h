@@ -1,8 +1,6 @@
 #pragma once
 
 namespace celosia::render {
-	inline ImGuiIO* io = nullptr;
-
 	struct t_tab_content { // what the open tab drew this frame, the tab switch fades it out and in
 		ImDrawList* drawlist = nullptr; // the window's, from vtx_begin to vtx_end: the groupbox panels and titles
 		int vtx_begin = 0, vtx_end = 0;

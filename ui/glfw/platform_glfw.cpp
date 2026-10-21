@@ -4,7 +4,9 @@
 
 static GLFWwindow* glfw_window = nullptr;
 static bool blur = false; // the compositor can blur the desktop behind the window
-static bool backends = false; // ImGui's glfw and vulkan backends are initialized
+static bool backends = false; // ImGui's vulkan backend is initialized
+
+static void input_callbacks(GLFWwindow* window); // the window's events into celosia::input, see below
 
 static void error_callback(int error, const char* description) {
     std::cerr << "[glfw] error " << error << ": " << description << std::endl;
@@ -61,7 +63,7 @@ bool celosia::platform::create(const char* title, ImVec2 pos, ImVec2 size) {
         return false;
     }
 
-    ImGui_ImplGlfw_InitForVulkan(glfw_window, true);
+    input_callbacks(glfw_window);
 
     ImGui_ImplVulkan_InitInfo init_info = {};
     init_info.Instance = celosia_glfw::vulkan::instance;
@@ -100,7 +102,24 @@ bool celosia::platform::poll() {
 
 void celosia::platform::new_frame() {
     ImGui_ImplVulkan_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
+}
+
+ImVec2 celosia::platform::display_size() {
+    if (glfwGetWindowAttrib(glfw_window, GLFW_ICONIFIED))
+        return ImVec2(0, 0);
+    int w, h;
+    glfwGetWindowSize(glfw_window, &w, &h);
+    return ImVec2((float)w, (float)h);
+}
+
+ImVec2 celosia::platform::framebuffer_scale() { // the last one known while the window is minimized
+    static ImVec2 scale(1.f, 1.f);
+    int w, h, framebuffer_w, framebuffer_h;
+    glfwGetWindowSize(glfw_window, &w, &h);
+    glfwGetFramebufferSize(glfw_window, &framebuffer_w, &framebuffer_h);
+    if (w > 0 && h > 0 && framebuffer_w > 0 && framebuffer_h > 0)
+        scale = ImVec2((float)framebuffer_w / (float)w, (float)framebuffer_h / (float)h);
+    return scale;
 }
 
 void celosia::platform::present() {
@@ -119,7 +138,6 @@ void celosia::platform::destroy() { // also cleans up after a create() that fail
     celosia_glfw::effect_renderer::destroy();
     if (backends) {
         ImGui_ImplVulkan_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
         backends = false;
     }
     celosia_glfw::vulkan::destroy();
@@ -152,6 +170,44 @@ static int glfw_key(int key) { // celosia::keys (windows virtual key codes) to g
     case celosia::keys::end: return GLFW_KEY_END;
     }
     return -1;
+}
+
+static int celosia_key(int glfw) { // glfw to celosia::keys, -1 when there's no match
+    switch (glfw) {
+    case GLFW_KEY_LEFT_SHIFT: case GLFW_KEY_RIGHT_SHIFT: return celosia::keys::shift;
+    case GLFW_KEY_LEFT_CONTROL: case GLFW_KEY_RIGHT_CONTROL: return celosia::keys::control;
+    case GLFW_KEY_LEFT_ALT: case GLFW_KEY_RIGHT_ALT: return celosia::keys::alt;
+    case GLFW_KEY_KP_ENTER: return celosia::keys::enter;
+    }
+    for (int key = 0; key < 256; key++)
+        if (glfw_key(key) == glfw)
+            return key;
+    return -1;
+}
+
+static void input_callbacks(GLFWwindow* window) {
+    glfwSetCursorPosCallback(window, [](GLFWwindow*, double x, double y) { celosia::input::add_mouse_pos(ImVec2((float)x, (float)y)); });
+    glfwSetCursorEnterCallback(window, [](GLFWwindow* w, int entered) {
+        if (entered) { // where it came in, the position callback only follows once it moves
+            double x, y;
+            glfwGetCursorPos(w, &x, &y);
+            celosia::input::add_mouse_pos(ImVec2((float)x, (float)y));
+        }
+        else
+            celosia::input::add_mouse_pos(ImVec2(-FLT_MAX, -FLT_MAX));
+    });
+    glfwSetMouseButtonCallback(window, [](GLFWwindow*, int button, int action, int) {
+        const int ours = button == GLFW_MOUSE_BUTTON_LEFT ? celosia::input::left : button == GLFW_MOUSE_BUTTON_RIGHT ? celosia::input::right : button == GLFW_MOUSE_BUTTON_MIDDLE ? celosia::input::middle : -1;
+        if (ours != -1)
+            celosia::input::add_mouse_button(ours, action == GLFW_PRESS);
+    });
+    glfwSetScrollCallback(window, [](GLFWwindow*, double, double y) { celosia::input::add_wheel((float)y); });
+    glfwSetKeyCallback(window, [](GLFWwindow*, int key, int, int action, int) {
+        const int ours = celosia_key(key);
+        if (ours != -1)
+            celosia::input::add_key(ours, action != GLFW_RELEASE);
+    });
+    glfwSetWindowFocusCallback(window, [](GLFWwindow*, int focused) { celosia::input::add_focus(focused != 0); });
 }
 
 bool celosia::platform::key_held(int key) { // glfw only sees input aimed at its own window

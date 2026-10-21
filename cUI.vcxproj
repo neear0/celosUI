@@ -295,15 +295,12 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles></ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="external\imgui\win32\imgui_impl_win32.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ui\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ui\initialize.cpp" />
+    <ClCompile Include="ui\input.cpp" />
     <ClCompile Include="ui\inputsystem.cpp" />
     <ClCompile Include="ui\render\text.cpp" />
     <ClCompile Include="ui\style\accents.cpp" />
@@ -362,7 +359,6 @@
     <ClInclude Include="external\imgui\imgui_internal.h" />
     <ClInclude Include="external\imgui\imstb_rectpack.h" />
     <ClInclude Include="external\imgui\imstb_textedit.h" />
-    <ClInclude Include="external\imgui\win32\imgui_impl_win32.h" />
     <ClInclude Include="ui\wrappers\wrappers.h" />
     <ClInclude Include="ui\render\render.h" />
     <ClInclude Include="ui\debug\debug.h" />

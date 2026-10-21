@@ -3,7 +3,7 @@
 // celosia::platform on top of the Win32 window and D3D11 device in this folder
 
 static HWND hwnd = nullptr;
-static bool backends = false; // ImGui's win32 and dx11 backends are initialized
+static bool backends = false; // ImGui's dx11 backend is initialized
 
 bool celosia::platform::create(const char* title, ImVec2 pos, ImVec2 size) {
     std::wstring title_wide;
@@ -23,7 +23,6 @@ bool celosia::platform::create(const char* title, ImVec2 pos, ImVec2 size) {
         return false;
     }
 
-    ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(celosia_win32::d3d::device, celosia_win32::d3d::device_context);
     backends = true;
     if (!celosia_win32::effect_renderer::create()) {
@@ -52,7 +51,6 @@ bool celosia::platform::poll() {
 void celosia::platform::new_frame() {
     celosia_win32::effect_renderer::update_backdrop();
     ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
 }
 
 void celosia::platform::present() {
@@ -69,7 +67,6 @@ void celosia::platform::destroy() {
     resources::images::clear();
     if (backends) {
         ImGui_ImplDX11_Shutdown();
-        ImGui_ImplWin32_Shutdown();
         backends = false;
     }
     celosia_win32::effect_renderer::destroy();
@@ -89,6 +86,17 @@ ImVec2 celosia::platform::cursor_pos() {
     if (GetCursorPos(&p))
         return ImVec2((float)p.x, (float)p.y);
     return ImVec2(0, 0);
+}
+
+ImVec2 celosia::platform::display_size() {
+    RECT r = {};
+    if (IsIconic(hwnd) || !GetClientRect(hwnd, &r))
+        return ImVec2(0, 0);
+    return ImVec2((float)(r.right - r.left), (float)(r.bottom - r.top));
+}
+
+ImVec2 celosia::platform::framebuffer_scale() { // the window is dpi aware, a unit is a pixel
+    return ImVec2(1.f, 1.f);
 }
 
 ImRect celosia::platform::window_rect() {
