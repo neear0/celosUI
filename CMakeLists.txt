@@ -68,7 +68,6 @@ target_compile_definitions(celos_freetype PRIVATE FT2_BUILD_LIBRARY $<$<C_COMPIL
 set(imgui_sources
     external/imgui/imgui.cpp
     external/imgui/imgui_draw.cpp
-    external/imgui/imgui_tables.cpp
     external/imgui/imgui_widgets.cpp
     external/imgui/misc/freetype/imgui_freetype.cpp
 )
