@@ -56,8 +56,6 @@ bool ImGui::Checkbox(const char* label, bool* v)
     render_check_mark_animated(id, *v, hovered, held, window->DrawList, check_bb, pad, square_sz);
 
     ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, pos.y + IM_TRUNC((row_height - label_size.y) * 0.5f));
-    if (g.LogEnabled)
-        LogRenderedText(&label_pos, *v ? "[x]" : "[ ]");
     if (label_size.x > 0.0f)
         RenderText(label_pos, label);
 

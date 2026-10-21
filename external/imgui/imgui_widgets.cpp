@@ -175,9 +175,8 @@ void ImGui::TextEx(const char* text, const char* text_end, ImGuiTextFlags flags)
         const float line_height = GetTextLineHeight();
         ImVec2 text_size(0, 0);
 
-        // Lines to skip (can't skip when logging text)
+        // Lines to skip
         ImVec2 pos = text_pos;
-        if (!g.LogEnabled)
         {
             int lines_skippable = (int)((window->ClipRect.Min.y - text_pos.y) / line_height);
             if (lines_skippable > 0)
@@ -2112,11 +2111,6 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     }
 
     // Log as text
-    if (g.LogEnabled && (!is_password || is_displaying_hint))
-    {
-        LogSetNextTextDecoration("{", "}");
-        LogRenderedText(&draw_pos, buf_display, buf_display_end);
-    }
 
     if (label_size.x > 0)
         RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);

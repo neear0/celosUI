@@ -206,8 +206,6 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     // Render preview and label
     if (preview_value != NULL && !(flags & ImGuiComboFlags_NoPreview))
     {
-        if (g.LogEnabled)
-            LogSetNextTextDecoration("{", "}");
         RenderTextClipped(bb.Min + style.FramePadding, ImVec2(value_x2, bb.Max.y), preview_value, NULL, NULL);
     }
     if (label_size.x > 0)

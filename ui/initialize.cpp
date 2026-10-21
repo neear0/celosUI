@@ -4,8 +4,6 @@ void celosia::initialize::context() {
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
     render::io = &ImGui::GetIO();
-    render::io->IniFilename = nullptr; // no imgui.ini / imgui_log.txt
-    render::io->LogFilename = nullptr;
 
     style::themes::initialize();
     style::themes::set(style::themes::dark, true);
