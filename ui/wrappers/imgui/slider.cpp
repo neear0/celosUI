@@ -10,7 +10,7 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
 
     const ImGuiStyle& style = ImGui::GetStyle();
     const ImGuiID id = window->GetID(label);
-    const ImVec2 label_size = ImGui::CalcTextSize(label, nullptr, true);
+    const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const ImVec2 pos = window->DC.CursorPos;
     const ImRect frame(pos, pos + ImVec2(ImGui::CalcItemWidth(), ImGui::GetFrameHeight())); // as wide and tall as a combo
     const ImRect total(pos, frame.Max + ImVec2(label_size.x > 0.f ? style.ItemInnerSpacing.x + label_size.x : 0.f, 0.f));
@@ -21,9 +21,9 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     // the track leaves room for the widest value, so it doesn't change length while the value's text does
     char value_text[64];
     ImFormatString(value_text, IM_ARRAYSIZE(value_text), format, min);
-    float value_width = ImGui::CalcTextSize(value_text).x;
+    float value_width = celosia::render::text::size(value_text).x;
     ImFormatString(value_text, IM_ARRAYSIZE(value_text), format, max);
-    value_width = ImMax(value_width, ImGui::CalcTextSize(value_text).x);
+    value_width = ImMax(value_width, celosia::render::text::size(value_text).x);
     ImFormatString(value_text, IM_ARRAYSIZE(value_text), format, *v);
 
     const float scale = celosia::style::scale;
@@ -62,10 +62,10 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     drawlist->AddCircleFilled(knob, radius, celosia::style::general::accent);
     drawlist->AddCircle(knob, radius, ImColor(text.x, text.y, text.z, 0.9f), 0, 2.f * scale);
 
-    const ImVec2 value_size = ImGui::CalcTextSize(value_text);
-    ImGui::RenderText(ImVec2(frame.Max.x - value_size.x, knob.y - value_size.y * 0.5f), value_text);
+    const ImVec2 value_size = celosia::render::text::size(value_text);
+    celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x - value_size.x, knob.y - value_size.y * 0.5f), celosia::style::themes::active.text, value_text);
     if (label_size.x > 0.f)
-        ImGui::RenderText(ImVec2(frame.Max.x + style.ItemInnerSpacing.x, knob.y - label_size.y * 0.5f), label);
+        celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x + style.ItemInnerSpacing.x, knob.y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return changed;
 }

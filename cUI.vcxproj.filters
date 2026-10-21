@@ -152,6 +152,9 @@
     <ClCompile Include="ui\wrappers\imgui\tab_button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\wrappers\imgui\text_item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ui\wrappers\imgui\toggle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

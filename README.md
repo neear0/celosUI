@@ -130,7 +130,6 @@ Release builds also turn on Control Flow Guard (`/guard:cf`) and CET shadow stac
 * The UI keeps the scale of the monitor it opened on, moved to a monitor with a different scale it isn't resized
 
 ## TODO
-* redo the font spacing code
 * redo the clip rect workarounds: ImGui clips a window's contents one pixel in from its edges, so the window background, the combo popup and the color picker popup push their own clip rect to draw up to the edge
 
 To find todos in the code, search all files for "CTODO". This keeps them apart from ImGui's own todos.

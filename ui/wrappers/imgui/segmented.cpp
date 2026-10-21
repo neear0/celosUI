@@ -11,7 +11,7 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
 
     const ImGuiStyle& style = ImGui::GetStyle();
     const ImGuiID id = window->GetID(label);
-    const ImVec2 label_size = ImGui::CalcTextSize(label, nullptr, true);
+    const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const ImVec2 pos = window->DC.CursorPos;
     const ImRect frame(pos, pos + ImVec2(ImGui::CalcItemWidth(), ImGui::GetFrameHeight()));
     const ImRect total(pos, frame.Max + ImVec2(label_size.x > 0.f ? style.ItemInnerSpacing.x + label_size.x : 0.f, 0.f));
@@ -68,14 +68,14 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
     for (int i = 0; i < count; i++) { // each label turns to the text on the accent as far as the pill covers its segment
         const float x = frame.Min.x + segment * i;
         const float covered = ImSaturate(1.f - fabsf(pill_x - segment * i) / segment) * pill_alpha;
-        const ImVec2 size = ImGui::CalcTextSize(items[i]);
+        const ImVec2 size = celosia::render::text::size(items[i]);
         const ImVec2 at(x + (segment - size.x) * 0.5f, frame.GetCenter().y - size.y * 0.5f);
         drawlist->PushClipRect(ImVec2(x, frame.Min.y), ImVec2(x + segment, frame.Max.y), true);
-        drawlist->AddText(at, ImGui::GetColorU32(ImLerp(text, on_accent, covered)), items[i]);
+        celosia::render::text::draw(drawlist, at, ImGui::GetColorU32(ImLerp(text, on_accent, covered)), items[i]);
         drawlist->PopClipRect();
     }
     if (label_size.x > 0.f)
-        ImGui::RenderText(ImVec2(frame.Max.x + style.ItemInnerSpacing.x, frame.GetCenter().y - label_size.y * 0.5f), label);
+        celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x + style.ItemInnerSpacing.x, frame.GetCenter().y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return changed;
 }

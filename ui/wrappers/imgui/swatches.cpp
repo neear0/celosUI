@@ -15,7 +15,7 @@ bool celosia::widgets::swatches(const char* label, float col[4], const ImColor* 
 
     const ImGuiStyle& style = ImGui::GetStyle();
     const ImGuiID id = window->GetID(label);
-    const ImVec2 label_size = ImGui::CalcTextSize(label, nullptr, true);
+    const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const float size = ImGui::GetFrameHeight();
     const float gap = style.ItemInnerSpacing.x;
     const ImVec2 pos = window->DC.CursorPos;
@@ -56,7 +56,7 @@ bool celosia::widgets::swatches(const char* label, float col[4], const ImColor* 
             drawlist->AddCircle(center, size * 0.5f - 1.f * scale, ImColor(text.x, text.y, text.z, 0.9f * picked), 0, 2.f * scale);
     }
     if (label_size.x > 0.f)
-        ImGui::RenderText(ImVec2(pos.x + row + gap, pos.y + (size - label_size.y) * 0.5f), label);
+        celosia::render::text::draw(window->DrawList, ImVec2(pos.x + row + gap, pos.y + (size - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return changed;
 }

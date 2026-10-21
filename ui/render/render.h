@@ -15,11 +15,14 @@ namespace celosia::render {
 	void sidebar();
 	void panel(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor color, float rounding); // glass with the shader background, a flat fill otherwise
 
+	// text in any draw list, font nullptr is the current font. text_end nullptr goes to the end of the string, a label's
+	// shown part ends at label_end(), what's after "##" only makes its id
 	namespace text {
-		namespace calc {
-			ImVec2 font(const char* text, ImFont* font);
-		}
-		void font(ImDrawList* drawlist, const char* text, ImVec2 pos, ImColor clr, ImFont* font);
+		const char* label_end(const char* label);
+		ImVec2 size(const char* text, const char* text_end = nullptr, ImFont* font = nullptr); // width rounded up to whole pixels
+		void draw(ImDrawList* drawlist, ImVec2 pos, ImU32 color, const char* text, const char* text_end = nullptr, ImFont* font = nullptr);
+		// in the current font, placed in min..max by align (0 left/top, 1 right/bottom) and cut off at clip (min..max when nullptr)
+		void draw_aligned(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImVec2 align, ImU32 color, const char* text, const char* text_end = nullptr, const ImVec2* known_size = nullptr, const ImRect* clip = nullptr);
 	}
 
 	enum class e_tabs_layout { vertical, horizontal };

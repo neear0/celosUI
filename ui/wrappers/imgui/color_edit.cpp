@@ -137,7 +137,7 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, f
 
     const ImGuiStyle& style = ImGui::GetStyle();
     const ImGuiID id = window->GetID(label);
-    const ImVec2 label_size = ImGui::CalcTextSize(label, nullptr, true);
+    const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const float size = ImGui::GetFrameHeight();
     const ImVec2 pos = window->DC.CursorPos;
     const ImRect swatch(pos, pos + ImVec2(size, size));
@@ -156,7 +156,7 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, f
     ImGui::RenderColorRectWithAlphaCheckerboard(window->DrawList, swatch.Min, swatch.Max, ImGui::ColorConvertFloat4ToU32(color), size / 4.f, ImVec2(0, 0), style.FrameRounding);
     window->DrawList->AddRect(swatch.Min, swatch.Max, IM_COL32(255, 255, 255, (int)(40 + 60 * glow)), style.FrameRounding);
     if (label_size.x > 0.f)
-        ImGui::RenderText(ImVec2(swatch.Max.x + style.ItemInnerSpacing.x, pos.y + (size - label_size.y) * 0.5f), label);
+        celosia::render::text::draw(window->DrawList, ImVec2(swatch.Max.x + style.ItemInnerSpacing.x, pos.y + (size - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     ImGui::PushID(label);
     if (pressed)
@@ -177,10 +177,12 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, f
 
         changed = color_picker("##body", col, alpha, saturation_min, value_min);
         const ImU32 rgba = ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], col[3]));
+        char hex[16];
         if (alpha)
-            ImGui::Text("#%02X%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF, rgba >> 24);
+            ImFormatString(hex, IM_ARRAYSIZE(hex), "#%02X%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF, rgba >> 24);
         else
-            ImGui::Text("#%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF);
+            ImFormatString(hex, IM_ARRAYSIZE(hex), "#%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF);
+        widgets::text(hex);
         ImGui::EndPopup();
     }
     ImGui::PopStyleColor();

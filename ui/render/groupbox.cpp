@@ -32,9 +32,9 @@ static void rect(celosia::render::groupbox::e_group_layout layout, ImVec2* offse
 }
 
 float celosia::render::groupbox::title_height(const char* description) { // fits the title and description with padding around them, never below style::groupbox::height
-	float text = render::text::calc::font("a", resources::fonts::get("default")).y;
+	float text = render::text::size("a", nullptr, resources::fonts::get("default")).y;
 	if (description && *description)
-		text += render::text::calc::font("a", resources::fonts::get("default_smaller")).y;
+		text += render::text::size("a", nullptr, resources::fonts::get("default_smaller")).y;
 	return ImMax(style::groupbox::height, text + style::groupbox::padding * 2.f);
 }
 
@@ -67,16 +67,16 @@ void celosia::render::groupbox::body(ImDrawList* drawlist, const ImVec2 offset, 
 
 	const float text_x = offset.x + style::frame::size_padding.x;
 	const float center_y = offset.y + height / 2;
-	const float title_text_height = render::text::calc::font("a", font_default).y;
-	const float description_height = render::text::calc::font("a", font_default_smaller).y;
+	const float title_text_height = render::text::size("a", nullptr, font_default).y;
+	const float description_height = render::text::size("a", nullptr, font_default_smaller).y;
 
 	if (description && *description) {
 		const float top = center_y - (title_text_height + description_height) / 2; // title and description stacked, centered together
-		render::text::font(drawlist, title, ImVec2(text_x, top), text_color, font_default);
-		render::text::font(drawlist, description, ImVec2(text_x, top + title_text_height), text_color, font_default_smaller);
+		render::text::draw(drawlist, ImVec2(text_x, top), text_color, title, nullptr, font_default);
+		render::text::draw(drawlist, ImVec2(text_x, top + title_text_height), text_color, description, nullptr, font_default_smaller);
 	}
 	else
-		render::text::font(drawlist, title, ImVec2(text_x, center_y - title_text_height / 2), text_color, font_default);
+		render::text::draw(drawlist, ImVec2(text_x, center_y - title_text_height / 2), text_color, title, nullptr, font_default);
 }
 
 void celosia::render::groupbox::begin(const char* title, const char* description, e_group_layout layout) {

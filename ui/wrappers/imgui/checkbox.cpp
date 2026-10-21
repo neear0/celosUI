@@ -27,7 +27,7 @@ bool ImGui::Checkbox(const char* label, bool* v)
     ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
     const ImGuiID id = window->GetID(label);
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
 
     const float square_sz = IM_TRUNC(g.FontSize * 1.15f); // follows the text size, not the frame padding
     const float row_height = ImMax(square_sz, label_size.y); // the box and the label are centered on the row
@@ -57,7 +57,7 @@ bool ImGui::Checkbox(const char* label, bool* v)
 
     ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, pos.y + IM_TRUNC((row_height - label_size.y) * 0.5f));
     if (label_size.x > 0.0f)
-        RenderText(label_pos, label);
+        celosia::render::text::draw(window->DrawList, label_pos, celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
     return pressed;

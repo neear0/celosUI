@@ -7,7 +7,7 @@ static void style1(ImGuiID id, const ImRect bb, const char* label, ImVec2 label_
     ImVec4 border = ImLerp(col.Value, celosia::style::themes::active.text.Value, 0.12f); // a little towards the text color, so the button shows over a dark desktop through the os blur
     border.w = col.Value.w;
     celosia::widgets::render_frame_border_animated(id, bb.Min, bb.Max, border, style.FrameRounding);
-    ImGui::RenderTextClipped(ImVec2(bb.Min.x + style.FramePadding.x, bb.Min.y + style.FramePadding.y), ImVec2(bb.Max.x - style.FramePadding.x, bb.Max.y - style.FramePadding.y), label, NULL, &label_size, style.ButtonTextAlign, &bb);
+    celosia::render::text::draw_aligned(ImGui::GetWindowDrawList(), bb.Min + style.FramePadding, bb.Max - style.FramePadding, style.ButtonTextAlign, celosia::style::themes::active.text, label, celosia::render::text::label_end(label), &label_size, &bb);
 }
 
 bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags flags) // replaces ImGui's (removed from imgui_widgets.cpp), Button() and SmallButton() call it
@@ -19,7 +19,7 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags
     ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
     const ImGuiID id = window->GetID(label);
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
 
     ImVec2 pos = window->DC.CursorPos;
     if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && style.FramePadding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)

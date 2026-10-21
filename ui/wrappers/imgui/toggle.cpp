@@ -10,7 +10,7 @@ bool celosia::widgets::toggle(const char* label, bool* v) {
 
     const ImGuiStyle& style = ImGui::GetStyle();
     const ImGuiID id = window->GetID(label);
-    const ImVec2 label_size = ImGui::CalcTextSize(label, nullptr, true);
+    const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const float frame_height = ImGui::GetFrameHeight();
     const float height = IM_TRUNC(frame_height * 0.6f), width = IM_TRUNC(height * 1.8f);
     const ImVec2 pos = window->DC.CursorPos;
@@ -46,7 +46,7 @@ bool celosia::widgets::toggle(const char* label, bool* v) {
     drawlist->AddCircleFilled(knob, knob_radius * (held ? 0.85f : 1.f), ImGui::GetColorU32(knob_color));
 
     if (label_size.x > 0.f)
-        ImGui::RenderText(ImVec2(track.Max.x + style.ItemInnerSpacing.x, pos.y + (frame_height - label_size.y) * 0.5f), label);
+        celosia::render::text::draw(window->DrawList, ImVec2(track.Max.x + style.ItemInnerSpacing.x, pos.y + (frame_height - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return pressed;
 }

@@ -15,6 +15,7 @@ namespace celosia::widgets {
 	bool segmented(const char* label, int* current, const char* const items[], int count); // side by side choices in one frame, the picked one in the accent, current -1 picks none. true when one was clicked
 	bool swatches(const char* label, float col[4], const ImColor* colors, int count); // a row of round color choices, sets col to the clicked one and rings the one col is, true when it changed
 	bool toggle(const char* label, bool* v); // an on/off switch, true when it was flipped
+	void text(const char* text); // a line of text as an item
 
 	// drawing
 	void add_rect_filled_half_rounded(ImDrawList* drawlist, const ImVec2& min, const ImVec2& max, const ImColor& clr, float rounding);
