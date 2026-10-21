@@ -44,12 +44,13 @@ void celosia::render::main_window() {
         const char* test[] = {"Item A", "Item B", "Item C"};
         ImGui::Combo("test", &variables::config::ints["test_combo"], test, 3, 3);
 
-        celosia::widgets::color_edit("Main Color", color);
+        // only as far as style::limits lets them go
+        celosia::widgets::color_edit("Main Color", color, false, style::limits::saturation_min, style::limits::value_min);
         style::general::main_color = { color[0], color[1], color[2], color[3] };
 
-        celosia::widgets::slider_float("Glass blur", &style::window::glass_blur, 0.f, 32.f * style::scale, "%.0f px");
+        celosia::widgets::slider_float("Glass blur", &style::window::glass_blur, style::limits::glass_blur_min * style::scale, style::limits::glass_blur_max * style::scale, "%.0f px");
         if (style::window::background == style::window::blur) // the shader background is opaque, there's nothing behind to see
-            celosia::widgets::slider_float("Glass opacity", &style::window::glass_opacity, 0.f, 1.f, "%.2f");
+            celosia::widgets::slider_float("Glass opacity", &style::window::glass_opacity, style::limits::glass_opacity_min, 1.f, "%.2f");
 
         const ImVec2 picture = resources::images::get("test").size; // as big as fits in what's left of the groupbox, keeping its aspect
         const float picture_height = ImMin(picture.y, ImGui::GetContentRegionAvail().y - ImGui::GetStyle().WindowPadding.y);

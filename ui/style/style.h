@@ -19,7 +19,17 @@ namespace celosia::style {
 		inline e_background background = blur; // blur: the os blurs the desktop behind the window (windows, kwin on x11), shader: effects::background with glass panels
 		inline float noise = 0.04f; // film grain (effects::noise) over the background and panels, how strong it is, 0 turns it off
 		inline float glass_blur = 12.f; // radius in pixels of the frosted glass (effects::blur): the popups, and the panels over the shader background
-		inline float glass_opacity = 0.4f; // with the blur background: how much the window's background and panels cover the blurred desktop, 0 leaves it bare
+		inline float glass_opacity = 0.4f; // with the blur background: how much the window's background and panels cover the blurred desktop, 0 would leave it bare
+	}
+	// how far the values above that a user can change may go: far enough to make the window their own, not so far it falls
+	// apart. keep_in_limits() holds them to these whatever set them, the demo's sliders and color picker only reach this far
+	namespace limits {
+		inline float saturation_min = 0.3f; // of the main color, greyer and the accent no longer stands out from the theme
+		inline float value_min = 0.5f; // of the main color, darker and the groupbox titles, the checkmarks and the logo disappear
+		inline float glass_blur_min = 6.f; // in pixels at scale 1, less and the glass is only a tint with what's behind it sharp
+		inline float glass_blur_max = 32.f;
+		inline float glass_opacity_min = 0.3f; // less and the text is lost against a bright desktop, or a dark one with the light theme
+		inline float noise_max = 0.1f;
 	}
 	namespace titlebar {
 		inline float height = 45;
@@ -75,6 +85,7 @@ namespace celosia::style {
 		ImColor rgb_intensity(ImColor clr, float percentage);
 	}
 
+	void keep_in_limits(); // brings the main color, glass and noise back into limits, an opaque main color too. apply() calls it
 	void apply(); // writes the active theme and the sizes above into ImGui's style
 	void set_scale(float new_scale); // scales the sizes above, ui::size and ImGui's style sizes from the current scale to new_scale
 }

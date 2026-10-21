@@ -9,8 +9,8 @@ namespace celosia::widgets {
 	bool tab_button_ex(const char* label, const ImVec2& size, ImGuiButtonFlags flags);
 	bool checkbox_map(const char* label); // ImGui::Checkbox() on variables::config::bools[label]
 	void image(const char* name, ImVec2 size = ImVec2(0, 0), float rounding = 0.f); // a resources::images image as an item, size 0 is its own size
-	bool color_edit(const char* label, float col[4], bool alpha = true);   // swatch that opens a color picker popup, true when the color changed
-	bool color_picker(const char* label, float col[4], bool alpha = true); // saturation/value square, hue bar and alpha bar
+	bool color_edit(const char* label, float col[4], bool alpha = true, float saturation_min = 0.f, float value_min = 0.f); // swatch that opens a color picker popup, true when the color changed
+	bool color_picker(const char* label, float col[4], bool alpha = true, float saturation_min = 0.f, float value_min = 0.f); // saturation/value square, hue bar and alpha bar. the square only spans saturations and values from the mins up
 	bool slider_float(const char* label, float* v, float min, float max, const char* format = "%.1f"); // dragged along a track, true when the value changed. format shows the value
 
 	// drawing

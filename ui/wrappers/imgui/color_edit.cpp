@@ -42,7 +42,7 @@ static void bar_handle(ImDrawList* drawlist, const ImRect& bar, float t) { // ac
     drawlist->AddRect(top_left, bottom_right, IM_COL32_WHITE, 3.f * scale, 0, 2.f * scale);
 }
 
-bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha) {
+bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha, float saturation_min, float value_min) {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
@@ -75,8 +75,8 @@ bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha)
     bool changed = false;
     ImVec2 p;
     if (drag_area("##sv", sv_rect, &p)) {
-        s = p.x;
-        v = 1.f - p.y;
+        s = ImLerp(saturation_min, 1.f, p.x);
+        v = ImLerp(1.f, value_min, p.y);
         changed = true;
     }
     if (drag_area("##hue", hue_rect, &p)) {
@@ -99,10 +99,14 @@ bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha)
     ImGui::ColorConvertHSVtoRGB(h, 1.f, 1.f, hue_color.x, hue_color.y, hue_color.z);
     const ImVec4 opaque(col[0], col[1], col[2], 1.f);
 
-    // saturation left to right, value top to bottom
-    gradient_rect(drawlist, sv_rect, sv_rect.Min, ImVec2(sv_rect.Max.x, sv_rect.Min.y), ImVec4(1, 1, 1, 1), hue_color, rounding);
-    gradient_rect(drawlist, sv_rect, sv_rect.Min, ImVec2(sv_rect.Min.x, sv_rect.Max.y), ImVec4(0, 0, 0, 0), ImVec4(0, 0, 0, 1), rounding);
-    const ImVec2 marker(ImLerp(sv_rect.Min.x, sv_rect.Max.x, s), ImLerp(sv_rect.Min.y, sv_rect.Max.y, 1.f - v));
+    // saturation left to right, value top to bottom, each from its min. a color is v * lerp(white, hue, s), linear in both,
+    // so a white to hue gradient under a black one that gets opaque by 1 - v is exact
+    const ImVec4 least_saturated = ImLerp(ImVec4(1, 1, 1, 1), hue_color, saturation_min);
+    gradient_rect(drawlist, sv_rect, sv_rect.Min, ImVec2(sv_rect.Max.x, sv_rect.Min.y), least_saturated, hue_color, rounding);
+    gradient_rect(drawlist, sv_rect, sv_rect.Min, ImVec2(sv_rect.Min.x, sv_rect.Max.y), ImVec4(0, 0, 0, 0), ImVec4(0, 0, 0, 1.f - value_min), rounding);
+    const float marker_s = saturation_min < 1.f ? ImSaturate((s - saturation_min) / (1.f - saturation_min)) : 0.f;
+    const float marker_v = value_min < 1.f ? ImSaturate((1.f - v) / (1.f - value_min)) : 0.f;
+    const ImVec2 marker(ImLerp(sv_rect.Min.x, sv_rect.Max.x, marker_s), ImLerp(sv_rect.Min.y, sv_rect.Max.y, marker_v));
     drawlist->AddCircleFilled(marker, 6.f * scale, ImGui::ColorConvertFloat4ToU32(opaque));
     drawlist->AddCircle(marker, 7.f * scale, IM_COL32(0, 0, 0, 90), 0, 1.f);
     drawlist->AddCircle(marker, 6.f * scale, IM_COL32_WHITE, 0, 2.f * scale);
@@ -126,7 +130,7 @@ bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha)
     return changed;
 }
 
-bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha) {
+bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, float saturation_min, float value_min) {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
@@ -171,7 +175,7 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha) {
         celosia::effects::noise(popup->DrawList, popup->Pos, popup->Pos + popup->Size, celosia::style::window::noise, style.PopupRounding);
         popup->DrawList->PopClipRect();
 
-        changed = color_picker("##body", col, alpha);
+        changed = color_picker("##body", col, alpha, saturation_min, value_min);
         const ImU32 rgba = ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], col[3]));
         if (alpha)
             ImGui::Text("#%02X%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF, rgba >> 24);

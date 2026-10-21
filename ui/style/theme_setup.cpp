@@ -46,7 +46,21 @@ void celosia::style::themes::update() {
 	apply();
 }
 
+void celosia::style::keep_in_limits() {
+	window::glass_blur = ImClamp(window::glass_blur, limits::glass_blur_min * scale, limits::glass_blur_max * scale);
+	window::glass_opacity = ImClamp(window::glass_opacity, limits::glass_opacity_min, 1.f);
+	window::noise = ImClamp(window::noise, 0.f, limits::noise_max);
+
+	ImVec4& color = general::main_color.Value;
+	float h, s, v;
+	ImGui::ColorConvertRGBtoHSV(color.x, color.y, color.z, h, s, v);
+	if (s < limits::saturation_min || v < limits::value_min) // a color already in limits isn't round tripped, it stays exactly as set
+		ImGui::ColorConvertHSVtoRGB(h, ImMax(s, limits::saturation_min), ImMax(v, limits::value_min), color.x, color.y, color.z);
+	color.w = 1.f; // never see-through, the titles and checkmarks would fade into what's behind them
+}
+
 void celosia::style::apply() {
+	keep_in_limits();
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.FrameRounding = (float)general::rounding;
 	style.FramePadding = frame::size_padding;

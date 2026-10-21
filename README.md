@@ -54,7 +54,7 @@ The demo window is `render::main_window()` in `ui/render/main_window.cpp`, with 
 * **noise**: the film grain on or off
 * **theme**: dark or light
 
-tab1 has buttons and checkboxes, tab2 has a combo, the color picker (it changes the main color everywhere), a slider for how strong the frosted glass blurs, one for how see-through the window is over the OS blur, and an image.
+tab1 has buttons and checkboxes, tab2 has a combo, the color picker (it changes the main color everywhere), a slider for how strong the frosted glass blurs, one for how see-through the window is over the OS blur, and an image. The picker and the sliders only go as far as `style::limits`, see Effects.
 
 ## Using it
 `main.cpp` is the whole loop:
@@ -105,7 +105,9 @@ Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui
 * `background`: blobs of color drifting over a base color, the window background when `style::window::background` is `shader`
 * `noise`: film grain that lightens and darkens pixels at random, static or changing 24 times a second. `style::window::noise` sets how strong it is over the window background, the panels and the combo popup (0 turns it off)
 
-`style::window::background` picks between the OS blurring the desktop behind the window (`blur`, Windows and KDE Plasma) and the shader background (`shader`, the default where the OS can't blur). The shader background also makes rounded window corners work (`style::general::rounding_window`). With KWin's blur the blurred area follows the rounding too. The blur effect only sees what the UI itself drew, not the desktop behind the window. How strongly the OS blurs is up to the OS, `style::window::glass_opacity` sets how much the window's background and panels cover it (0 leaves the blurred desktop bare, 1 is the theme's own alpha).
+`style::window::background` picks between the OS blurring the desktop behind the window (`blur`, Windows and KDE Plasma) and the shader background (`shader`, the default where the OS can't blur). The shader background also makes rounded window corners work (`style::general::rounding_window`). With KWin's blur the blurred area follows the rounding too. The blur effect only sees what the UI itself drew, not the desktop behind the window. How strongly the OS blurs is up to the OS, `style::window::glass_opacity` sets how much the window's background and panels cover it (1 is the theme's own alpha).
+
+`style::limits` sets how far the values a user can change may go: how grey and how dark the main color, how little and how much glass blur, how little glass opacity and how much noise. Past those the window stops working: a black or grey accent hides the groupbox titles, checkmarks and logo, bare glass loses the text against a bright desktop (or a dark one with the light theme), and too little blur shows the text behind a popup through its own. `style::keep_in_limits()` (called by `style::apply()` every frame) brings the values back into them whatever set them, and keeps the main color opaque. `widgets::color_edit()` and `color_picker()` take a saturation and value minimum, their square then only spans the colors above them.
 
 Debug builds report graphics API misuse: on Windows the D3D11 debug layer's messages are printed to the console (needs the "Graphics Tools" optional Windows feature), and for Vulkan run with `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation` (the `vulkan-validationlayers` package on Linux).
 
