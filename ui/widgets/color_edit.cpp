@@ -23,10 +23,10 @@ static void gradient_rect(ImDrawList* drawlist, const ImRect& rect, ImVec2 p0, I
 
 static bool drag_area(const char* id, const ImRect& rect, ImVec2* position) { // position is 0 to 1 across the rect while it's held
     const ImGuiID item = celosia::core::id(id);
-    if (!celosia::core::add(rect, item))
+    if (!celosia::core::add(rect, item, celosia::core::item_no_focus))
         return false;
     bool hovered, held;
-    celosia::core::button(rect, item, &hovered, &held);
+    celosia::core::button(rect, item, &hovered, &held, celosia::core::item_no_focus);
     if (!held)
         return false;
     const ImVec2 mouse = celosia::input::mouse_pos();

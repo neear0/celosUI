@@ -26,9 +26,28 @@ struct t_popup {
 	ImGuiID id;
 	int open_frame;
 	int begin_frame = -1;
+	ImGuiID opener = 0;    // the item it was opened from, the keyboard goes back to it when it closes
+	bool keyboard = false; // opened with the keyboard, which then goes into it
 };
 static std::vector<t_popup> popups; // open ones, the top one last
 static int popup_depth = 0;         // popups being drawn
+
+struct t_focusable {
+	ImGuiID id;
+	ImRect rect;
+	t_surface* surface;
+	int level; // the popup level it's in, 0 outside of popups
+};
+static std::vector<t_focusable> focusables; // this frame's items the keyboard can go to, in the order they were drawn
+static ImGuiID focus_id = 0;       // the item the keyboard is on
+static int focus_level = 0;        // the popup level it's in
+static bool focus_visible = false; // a key put it there, the ring shows
+static ImGuiID focus_default = 0;  // default_focus() this frame
+static int focus_default_level = 0;
+static ImGuiID activate_id = 0;    // enter or space was pressed on it, its button() is pressed this frame
+static ImGuiID pressed_id = 0;     // what button() said was pressed this frame
+static bool pressed_by_key = false;
+static std::array<bool, 4> arrows_taken{}; // focus_key() took them this frame, they don't move the keyboard
 
 celosia::core::t_surface::t_surface() : drawlist(&shared) {}
 
@@ -88,9 +107,155 @@ void celosia::core::new_frame() {
 			if (s->kind != t_surface::window && s->scroll_max > 0.f)
 				wheel_target = s->id;
 
-	if (!popups.empty() && input::key_pressed(keys::escape))
-		close_popups((int)popups.size() - 1);
+	focusables.clear();
+	focus_default = 0;
+	pressed_id = 0;
+	arrows_taken.fill(false);
 	roots.clear();
+}
+
+static int find_focusable(ImGuiID id) {
+	for (int i = 0; i < (int)focusables.size(); i++)
+		if (focusables[i].id == id)
+			return i;
+	return -1;
+}
+
+static int step(int from, int level, int direction) { // the next (1) or previous (-1) item in the level, around the end. from -1: the first or last
+	const int count = (int)focusables.size();
+	for (int k = 1; k <= count; k++) {
+		const int i = from < 0 ? (direction > 0 ? k - 1 : count - k) : ((from + direction * k) % count + count) % count;
+		if (focusables[i].level == level)
+			return i;
+	}
+	return -1;
+}
+
+static float box_gap(float min_a, float max_a, float min_b, float max_b) { // from a to b on one axis, 0 when they overlap on it
+	return min_b > max_a ? min_b - max_a : min_a > max_b ? max_b - min_a : 0.f;
+}
+
+static int nearest(int from, int arrow) { // the closest item that way, by the gap between them and then between their centers
+	const t_focusable& current = focusables[from];
+	const ImVec2 center = current.rect.GetCenter();
+	int best = -1;
+	float best_gap = FLT_MAX, best_centers = FLT_MAX;
+	for (int i = 0; i < (int)focusables.size(); i++) {
+		const t_focusable& f = focusables[i];
+		if (i == from || f.level != current.level)
+			continue;
+		if (f.surface != current.surface && !f.rect.Overlaps(f.surface->clip)) // in another surface only what shows, in its own it scrolls into view
+			continue;
+		// which way it is: along the gap between the boxes, or between the centers when they overlap
+		ImVec2 d(box_gap(current.rect.Min.x, current.rect.Max.x, f.rect.Min.x, f.rect.Max.x), box_gap(current.rect.Min.y, current.rect.Max.y, f.rect.Min.y, f.rect.Max.y));
+		const float gap = ImFabs(d.x) + ImFabs(d.y);
+		const ImVec2 c = f.rect.GetCenter() - center;
+		const float centers = ImFabs(c.x) + ImFabs(c.y);
+		if (d.x == 0.f && d.y == 0.f)
+			d = c;
+		const int way = ImFabs(d.x) > ImFabs(d.y) ? (d.x > 0.f ? celosia::keys::right : celosia::keys::left) : (d.y > 0.f ? celosia::keys::down : celosia::keys::up);
+		if (way != arrow || (d.x == 0.f && d.y == 0.f))
+			continue;
+		if (gap < best_gap || (gap == best_gap && centers < best_centers)) {
+			best_gap = gap;
+			best_centers = centers;
+			best = i;
+		}
+	}
+	return best;
+}
+
+static void scroll_into_view(const t_focusable& f) { // with a little room around it
+	t_surface* s = f.surface;
+	if (s->kind == t_surface::window)
+		return;
+	const float room = celosia::style::general::spacing.y + 3.f * celosia::style::scale;
+	float delta = 0.f;
+	if (f.rect.Min.y - room < s->clip.Min.y)
+		delta = f.rect.Min.y - room - s->clip.Min.y;
+	else if (f.rect.Max.y + room > s->clip.Max.y)
+		delta = f.rect.Max.y + room - s->clip.Max.y;
+	if (delta != 0.f)
+		s->scroll_target = ImClamp(s->scroll + delta, 0.f, s->scroll_max);
+}
+
+static void navigate() {
+	using namespace celosia;
+	activate_id = 0;
+	int current = focus_id ? find_focusable(focus_id) : -1;
+	if (current < 0) // its item is gone
+		focus_id = 0;
+	else
+		focus_level = focusables[current].level;
+
+	const bool window_focused = input::focused();
+	if (window_focused && input::key_pressed(keys::escape, false)) { // out of the popup, back to what opened it
+		if (!popups.empty())
+			core::close_popups((int)popups.size() - 1);
+		else
+			focus_visible = false;
+		return;
+	}
+	if (!core::keyboard_nav || !window_focused) {
+		focus_visible = false;
+		return;
+	}
+
+	const int level = (int)popups.size();
+	int next = -1;
+	if (level > 0 && popups.back().keyboard && focus_level != level) { // a popup opened with the keyboard starts on its default item, or its first
+		const int fallback = focus_default && focus_default_level == level ? find_focusable(focus_default) : -1;
+		next = fallback >= 0 ? fallback : step(-1, level, 1);
+	}
+	const bool here = current >= 0 && focusables[current].level == level;
+	const bool modifier = input::key_down(keys::control) || input::key_down(keys::alt);
+	if (next < 0 && input::key_pressed(keys::tab) && !modifier) // the first press only shows where it is
+		next = here && !focus_visible ? current : step(here ? current : -1, level, input::key_down(keys::shift) ? -1 : 1);
+	for (int arrow = keys::left; next < 0 && arrow <= keys::down; arrow++)
+		if (input::key_pressed(arrow) && !arrows_taken[arrow - keys::left]) {
+			const int found = here && focus_visible ? nearest(current, arrow) : -1;
+			next = !here ? step(-1, level, 1) : found >= 0 ? found : current;
+		}
+	if (next >= 0) {
+		focus_id = focusables[next].id;
+		focus_level = level;
+		focus_visible = true;
+		scroll_into_view(focusables[next]);
+		current = next;
+	}
+
+	if (focus_visible && current >= 0 && focusables[current].level == level && (input::key_pressed(keys::enter, false) || input::key_pressed(keys::space, false)))
+		activate_id = focus_id;
+}
+
+static void draw_ring() { // around the item the keyboard is on, sliding from the last one, fading in and out
+	using namespace celosia;
+	static ImRect ring;
+	static float alpha = 0.f;
+	const int i = focus_id ? find_focusable(focus_id) : -1;
+	const bool show = core::keyboard_nav && focus_visible && i >= 0;
+	alpha = animations::functions::calc_smooth(alpha, show ? 1.f : 0.f, animations::color_speed);
+	if (i < 0 || alpha < 0.01f || !focusables[i].surface->shown)
+		return;
+
+	const t_focusable& f = focusables[i];
+	const float margin = 3.f * style::scale, thickness = 2.f * style::scale;
+	ImRect goal = f.rect;
+	goal.Expand(margin);
+	if (alpha < 0.05f) // coming in, it starts where it goes
+		ring = goal;
+	const float speed = 18.f;
+	ring = ImRect(animations::functions::calc_smooth(ring.Min.x, goal.Min.x, speed), animations::functions::calc_smooth(ring.Min.y, goal.Min.y, speed),
+		animations::functions::calc_smooth(ring.Max.x, goal.Max.x, speed), animations::functions::calc_smooth(ring.Max.y, goal.Max.y, speed));
+
+	ImDrawList* drawlist = &f.surface->drawlist; // over everything in its surface, a little past its edges
+	ImRect clip = f.surface->clip;
+	clip.Expand(margin + thickness);
+	ImVec4 color = style::general::accent.Value;
+	color.w *= alpha;
+	drawlist->PushClipRect(clip.Min, clip.Max);
+	drawlist->AddRect(ring.Min, ring.Max, ImColor(color), (float)style::general::rounding + margin, 0, thickness);
+	drawlist->PopClipRect();
 }
 
 static void add_to_draw_data(t_surface* s) {
@@ -103,6 +268,9 @@ void celosia::core::end_frame() {
 	// a click on no item holds nothing, so what the mouse passes over until it's let go doesn't light up (dragging the titlebar)
 	if (input::mouse_clicked(input::left) && active_id == 0 && hovered_id == 0)
 		active_id = void_id;
+
+	if (input::mouse_clicked(input::left) || input::mouse_clicked(input::right)) // the mouse took over, the ring goes
+		focus_visible = false;
 
 	// a click away from the popups closes them, the ones under the one it landed in stay
 	if (!popups.empty() && (input::mouse_clicked(input::left) || input::mouse_clicked(input::right))) {
@@ -120,6 +288,8 @@ void celosia::core::end_frame() {
 			close_popups(i);
 			break;
 		}
+	navigate();
+	draw_ring();
 
 	data.Clear();
 	data.Valid = true;
@@ -212,9 +382,11 @@ void celosia::core::layout(const ImVec2& size, float text_baseline) {
 
 void celosia::core::layout(const ImRect& bb, float text_baseline) { layout(bb.GetSize(), text_baseline); }
 
-bool celosia::core::add(const ImRect& bb, ImGuiID id) {
+bool celosia::core::add(const ImRect& bb, ImGuiID id, int flags) {
 	if (id != 0 && id == active_id)
 		active_alive = true;
+	if (id != 0 && !(flags & item_no_focus)) // clipped ones too, the keyboard scrolls to them
+		focusables.push_back({ id, bb, stack.back(), popup_depth });
 	// clipped away it's left out, unless it's held: a slider dragged out of view keeps following the mouse
 	return bb.Overlaps(stack.back()->clip) || (id != 0 && id == active_id);
 }
@@ -234,12 +406,14 @@ bool celosia::core::hoverable(const ImRect& bb, ImGuiID id) {
 	return true;
 }
 
-bool celosia::core::button(const ImRect& bb, ImGuiID id, bool* out_hovered, bool* out_held) {
+bool celosia::core::button(const ImRect& bb, ImGuiID id, bool* out_hovered, bool* out_held, int flags) {
 	const bool is_hovered = hoverable(bb, id);
 	if (is_hovered && input::mouse_clicked(input::left)) {
 		active_id = id;
 		active_alive = true;
 		active_frame = frame_count;
+		if (!(flags & item_no_focus)) // the keyboard carries on from here
+			focus_id = id;
 	}
 	bool is_held = false, pressed = false;
 	if (active_id == id) {
@@ -250,9 +424,30 @@ bool celosia::core::button(const ImRect& bb, ImGuiID id, bool* out_hovered, bool
 			active_id = 0;
 		}
 	}
+	if (id == activate_id)
+		pressed = true;
+	if (pressed) {
+		pressed_id = id;
+		pressed_by_key = id == activate_id;
+	}
 	if (out_hovered) *out_hovered = is_hovered;
 	if (out_held) *out_held = is_held;
 	return pressed;
+}
+
+bool celosia::core::focused(ImGuiID id) { return keyboard_nav && focus_visible && focus_id == id; }
+
+bool celosia::core::focus_key(ImGuiID id, int key) {
+	if (!focused(id) || !input::focused() || !input::key_pressed(key))
+		return false;
+	if (key >= keys::left && key <= keys::down)
+		arrows_taken[key - keys::left] = true;
+	return true;
+}
+
+void celosia::core::default_focus(ImGuiID id) {
+	focus_default = id;
+	focus_default_level = popup_depth;
 }
 
 ImGuiID celosia::core::active() { return active_id == void_id ? 0 : active_id; }
@@ -339,11 +534,20 @@ void celosia::core::open_popup(ImGuiID id) {
 	if ((int)popups.size() > popup_depth && popups[popup_depth].id == id)
 		return; // already open
 	popups.resize(popup_depth); // a popup opened at a level replaces the ones that were open there and over it
-	popups.push_back({ id, frame_count });
+	popups.push_back({ id, frame_count, -1, pressed_id ? pressed_id : focus_id, pressed_id && pressed_by_key });
 }
 
 bool celosia::core::popup_open(ImGuiID id) { return (int)popups.size() > popup_depth && popups[popup_depth].id == id; }
-void celosia::core::close_popups(int level) { if (level < (int)popups.size()) popups.resize(ImMax(level, 0)); }
+void celosia::core::close_popups(int level) {
+	level = ImMax(level, 0);
+	if (level >= (int)popups.size())
+		return;
+	if (focus_level > level) { // the keyboard was in what closes, it goes back to what opened it
+		focus_id = popups[level].opener;
+		focus_level = level;
+	}
+	popups.resize(level);
+}
 void celosia::core::close_popup() { close_popups(popup_depth - 1); }
 int celosia::core::popup_level() { return popup_depth; }
 

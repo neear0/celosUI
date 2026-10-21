@@ -190,7 +190,7 @@ namespace celosia {
 		bool mouse_released(int button); // went up this frame
 		float wheel();                   // notches this frame
 		bool key_down(int key);
-		bool key_pressed(int key);       // went down this frame, or repeated
+		bool key_pressed(int key, bool repeat = true); // went down this frame, or repeated unless repeat is false
 		bool focused();
 	}
 

@@ -15,7 +15,7 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
     const ImRect frame(pos, pos + ImVec2(core::item_width(), core::frame_height()));
     const ImRect total(pos, frame.Max + ImVec2(label_size.x > 0.f ? inner.x + label_size.x : 0.f, 0.f));
     core::layout(total, padding.y);
-    if (!core::add(total, id))
+    if (!core::add(total, id, core::item_no_focus)) // the segments take the keyboard
         return false;
 
     ImDrawList* drawlist = core::drawlist();

@@ -39,7 +39,7 @@ static void widgets_tab() {
 
 static void appearance_tab() {
     using namespace celosia;
-    render::groupbox::begin("Style", "Theme, accent, titles and grain");
+    render::groupbox::begin("Style", "Theme, accent, titles, grain and the keyboard");
     const char* themes[] = { "Dark", "Light" };
     int theme = style::themes::active.name == style::themes::light.name ? 1 : 0;
     if (widgets::segmented("Theme", &theme, themes, IM_ARRAYSIZE(themes)))
@@ -58,6 +58,8 @@ static void appearance_tab() {
     bool grain = style::window::noise > 0.f;
     if (widgets::toggle("Film grain", &grain))
         style::window::noise = grain ? style::presets::noise : 0.f;
+    core::same_line(style::frame::size_padding.x * 2.f);
+    widgets::toggle("Keyboard navigation", &core::keyboard_nav); // tab, the arrows, enter, space and escape, see core.h
     render::groupbox::end();
 
     render::groupbox::begin("Glass", "What shows through the window");

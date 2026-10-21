@@ -20,7 +20,7 @@ bool celosia::widgets::swatches(const char* label, float col[4], const ImColor* 
     const float row = size * count + gap * (count - 1);
     const ImRect total(pos, pos + ImVec2(row + (label_size.x > 0.f ? gap + label_size.x : 0.f), size));
     core::layout(total, style::frame::size_padding.y);
-    if (!core::add(total, id))
+    if (!core::add(total, id, core::item_no_focus)) // the swatches take the keyboard
         return false;
 
     ImDrawList* drawlist = core::drawlist();

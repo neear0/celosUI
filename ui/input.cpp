@@ -16,7 +16,7 @@ static std::vector<t_event> events;
 static ImVec2 mouse(-FLT_MAX, -FLT_MAX);
 static std::array<bool, celosia::input::button_count> buttons_down{}, buttons_clicked{}, buttons_released{};
 static float wheel_notches = 0.f;
-static std::array<bool, 256> keys_down{}, keys_pressed{};
+static std::array<bool, 256> keys_down{}, keys_pressed{}, keys_pressed_first{}; // first: not a repeat
 static bool has_focus = false;
 
 void celosia::input::add_mouse_pos(ImVec2 pos) { events.push_back({ t_event::mouse_pos, pos, 0, false, 0.f }); }
@@ -34,6 +34,7 @@ void celosia::input::new_frame() {
     buttons_clicked.fill(false);
     buttons_released.fill(false);
     keys_pressed.fill(false);
+    keys_pressed_first.fill(false);
     wheel_notches = 0.f;
 
     bool button_changed = false, moved = false, wheeled = false;
@@ -63,8 +64,10 @@ void celosia::input::new_frame() {
             wheeled = true;
         }
         else if (e.kind == t_event::key) {
-            if (e.down)
+            if (e.down) {
                 keys_pressed[e.code] = true; // a repeat as well
+                keys_pressed_first[e.code] |= !keys_down[e.code];
+            }
             keys_down[e.code] = e.down;
         }
         else if (e.kind == t_event::focus) {
@@ -85,5 +88,5 @@ bool celosia::input::mouse_clicked(int button) { return button >= 0 && button < 
 bool celosia::input::mouse_released(int button) { return button >= 0 && button < button_count && buttons_released[button]; }
 float celosia::input::wheel() { return wheel_notches; }
 bool celosia::input::key_down(int key) { return keys_down[key & 0xFF]; }
-bool celosia::input::key_pressed(int key) { return keys_pressed[key & 0xFF]; }
+bool celosia::input::key_pressed(int key, bool repeat) { return (repeat ? keys_pressed : keys_pressed_first)[key & 0xFF]; }
 bool celosia::input::focused() { return has_focus; }

@@ -30,6 +30,13 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     bool hovered, held;
     core::button(frame, id, &hovered, &held);
     bool changed = false;
+    // the keyboard steps it by a hundredth of its range, a tenth with shift
+    const float key_step = (max - min) * (input::key_down(keys::shift) ? 0.1f : 0.01f);
+    const float keyed = ImClamp(*v - (core::focus_key(id, keys::left) ? key_step : 0.f) + (core::focus_key(id, keys::right) ? key_step : 0.f), ImMin(min, max), ImMax(min, max));
+    if (keyed != *v) {
+        *v = keyed;
+        changed = true;
+    }
     if (held && track_max > track_min) { // the value follows the cursor while the slider is held, also outside of it
         const float value = ImLerp(min, max, ImSaturate((input::mouse_pos().x - track_min) / (track_max - track_min)));
         if (value != *v) {

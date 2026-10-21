@@ -5,9 +5,9 @@
 // with new_frame(), ui::end() finishes it with end_frame() and hands draw_data() to the platform.
 // positions are in units of ui::size from the window's top left, like the draw lists
 namespace celosia::core {
-	void new_frame();        // after input::new_frame(): what the mouse is over, the keyboard's escape for popups
+	void new_frame();        // after input::new_frame(): what the mouse is over
 	int frame();             // counts up with new_frame()
-	void end_frame();        // popups clicked away from close, the draw lists go into draw_data()
+	void end_frame();        // popups clicked away from close, the keyboard moves, the draw lists go into draw_data()
 	ImDrawData* draw_data(); // this frame's, in the order the surfaces were drawn
 
 	// an item's id is its label hashed with the ids pushed in the surface it's in, "##" and what follows included.
@@ -39,14 +39,24 @@ namespace celosia::core {
 
 	// items. add() says where an item is, false when it can't be seen: it's then neither drawn nor can it be used. id 0 for
 	// one that only shows something. button() is the mouse on an item: hovered while the mouse is over it (and no other item is
-	// held), held from a click on it until the button goes up, true the frame it goes up over it
-	bool add(const ImRect& bb, ImGuiID id);
+	// held), held from a click on it until the button goes up, true the frame it goes up over it, or enter or space was pressed
+	// on it. item_no_focus: the keyboard skips it (a scrollbar, a drag area, a row of choices whose choices take it)
+	enum e_item_flags { item_none = 0, item_no_focus = 1 << 0 };
+	bool add(const ImRect& bb, ImGuiID id, int flags = item_none);
 	bool hoverable(const ImRect& bb, ImGuiID id);
-	bool button(const ImRect& bb, ImGuiID id, bool* hovered = nullptr, bool* held = nullptr);
+	bool button(const ImRect& bb, ImGuiID id, bool* hovered = nullptr, bool* held = nullptr, int flags = item_none);
 	ImGuiID active();       // the item being held, 0 when there's none
 	bool activated(ImGuiID id); // it was clicked this frame
 	void hover(ImGuiID id); // hovered whatever button() said, for one dragged outside of itself (the scrollbar)
 	ImGuiStorage* storage(); // values items keep between frames, by id
+
+	// the keyboard: tab and shift+tab go through the items in the order they're drawn, the arrows to the nearest one that way,
+	// enter and space press the one it's on, escape closes the popup it's in and goes back to what opened it. it scrolls what
+	// it moves to into view, a ring in the accent shows where it is. a click puts it on the item clicked and hides the ring
+	inline bool keyboard_nav = true; // off, the keys do nothing but close popups, the demo's Appearance tab switches it
+	bool focused(ImGuiID id);            // the keyboard is on it, with the ring showing
+	bool focus_key(ImGuiID id, int key); // focused(id) and key was pressed, which then doesn't move the keyboard: a slider takes left and right
+	void default_focus(ImGuiID id);      // where the keyboard starts in a popup opened with it, the combo's picked item
 
 	// surfaces, what widgets.h's window, scroll_area and popup are made of
 	struct t_surface {

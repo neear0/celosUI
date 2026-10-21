@@ -90,6 +90,8 @@ bool celosia::widgets::combo(const char* label, int* current, const char* const 
     for (int i = 0; i < count; i++) {
         core::push_id(i);
         const bool picked = i == *current;
+        if (picked)
+            core::default_focus(core::id(items[i])); // the keyboard starts at the picked item
         if (selectable(items[i], picked) && !picked) {
             *current = i;
             changed = true;

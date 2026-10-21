@@ -62,9 +62,9 @@ void celosia::core::scrollbar(t_surface* s) {
     const float grab_norm = grab_height / track;
 
     const ImGuiID id = ImHashStr("#SCROLLY", 0, s->id);
-    add(frame, id);
+    add(frame, id, item_no_focus);
     bool hovered, held;
-    button(bb, id, &hovered, &held);
+    button(bb, id, &hovered, &held, item_no_focus);
 
     const ImS64 scroll_max = ImMax((ImS64)1, total - visible);
     ImS64 scroll = (ImS64)s->scroll;

@@ -19,6 +19,7 @@ A C++ immediate mode UI framework for Windows (Win32 + DirectX 11) and Linux (GL
 * Borderless, translucent window with the OS blur behind it (Windows, KDE Plasma on Linux) or the shader background
 * Fonts rendered with FreeType, fonts and images compiled into the executable
 * Smooth scrolling
+* Keyboard navigation: tab and shift+tab go through the items, the arrows to the nearest one that way, enter and space press it, escape closes a popup. A ring in the accent slides to the item the keyboard is on, what it moves to scrolls into view, and a slider takes left and right (shift for bigger steps). `core::keyboard_nav` turns it off
 * Scales with the display: `platform::create()` sizes the window, fonts and style to the monitor's DPI (`style::scale`)
 * Input from the window's own events (`celosia::input`, a click too quick for one frame isn't lost) and keys anywhere, also while the window isn't focused (`inputsystem`)
 * DirectX 11 (Windows) and Vulkan (Linux)
@@ -51,7 +52,7 @@ Shaders (`ui/shaders/*.hlsl`, and ImGui's D3D11 shaders next to its backend) are
 The demo window is `render::main_window()` in `ui/render/main_window.cpp`, with the sidebar's tabs in `ui/render/sidebar.cpp`:
 * **Widgets**: buttons, checkboxes, a combo, a slider and a toggle, and an image, in a 2x2 grid of groupboxes
 * **Appearance**: a settings page for the look, presets first and the picker and sliders for going further, all only as far as `style::limits` lets them (see Effects)
-  * Style: the theme (dark or light), the accent (a row of presets and the color picker, it changes the accent everywhere), the groupbox title style (`style::groupbox::title_style`, full or minimal, the theme leaves it as it is) and the film grain
+  * Style: the theme (dark or light), the accent (a row of presets and the color picker, it changes the accent everywhere), the groupbox title style (`style::groupbox::title_style`, full or minimal, the theme leaves it as it is), the film grain and keyboard navigation
   * Glass: the background (the OS blur or the shader background, only where the OS can blur: Windows, and KDE Plasma on Linux), the glass presets (clear, frosted, solid), a slider for how strong the frosted glass blurs and one for how much the window covers the desktop with the OS blur
 
 ## Using it
