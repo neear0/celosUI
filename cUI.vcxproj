@@ -291,10 +291,6 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles></ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="external\imgui\imgui_widgets.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ui\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -358,7 +354,6 @@
     <ClInclude Include="external\imgui\imgui.h" />
     <ClInclude Include="external\imgui\imgui_internal.h" />
     <ClInclude Include="external\imgui\imstb_rectpack.h" />
-    <ClInclude Include="external\imgui\imstb_textedit.h" />
     <ClInclude Include="ui\core\core.h" />
     <ClInclude Include="ui\widgets\widgets.h" />
     <ClInclude Include="ui\render\render.h" />
