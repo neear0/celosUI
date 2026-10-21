@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 // color_edit(): a swatch that opens a frosted popup with color_picker() in it.
 // color_picker(): saturation/value square, hue bar and alpha bar. the gradients are rounded shapes whose vertices get

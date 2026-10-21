@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 // slider_float(): a thin track filled in the accent up to the value, with a knob that grows and glows while it's
 // hovered or dragged, the value at the end of the track and the label after it

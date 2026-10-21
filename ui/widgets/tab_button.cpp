@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 static void tab_style(ImGuiID id, const ImRect bb, const char* label, ImVec2 label_size, ImColor col) {
     const float rounding = (float)celosia::style::general::rounding;

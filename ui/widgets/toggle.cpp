@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 // toggle(): an on/off switch, a rounded track with a knob that slides across, the label after it. off, the track is faint
 // in the text color like a slider's; on, it fills in the accent and the knob takes the text color that stands out on it

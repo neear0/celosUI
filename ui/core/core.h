@@ -1,7 +1,7 @@
 #pragma once
 
 // what the widgets are built on: ids, the mouse over items, the layout of a surface and the surfaces themselves (the
-// window, scroll areas in it and popups over it, see wrappers.h), each with its own draw list. ui::begin() starts a frame
+// window, scroll areas in it and popups over it, see widgets.h), each with its own draw list. ui::begin() starts a frame
 // with new_frame(), ui::end() finishes it with end_frame() and hands draw_data() to the platform.
 // positions are in units of ui::size from the window's top left, like the draw lists
 namespace celosia::core {
@@ -48,7 +48,7 @@ namespace celosia::core {
 	void hover(ImGuiID id); // hovered whatever button() said, for one dragged outside of itself (the scrollbar)
 	ImGuiStorage* storage(); // values items keep between frames, by id
 
-	// surfaces, what wrappers.h's window, scroll_area and popup are made of
+	// surfaces, what widgets.h's window, scroll_area and popup are made of
 	struct t_surface {
 		enum e_kind { window, scroll_area, popup };
 		e_kind kind = window;

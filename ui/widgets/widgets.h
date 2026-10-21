@@ -1,6 +1,6 @@
 #pragma once
 
-// our widgets, built on core (core/core.h), in wrappers/imgui/
+// our widgets, built on core (core/core.h)
 namespace celosia::widgets {
 	// widgets
 	bool button(const char* label, const ImVec2& size = ImVec2(0, 0)); // size 0 fits the text, true when it was clicked

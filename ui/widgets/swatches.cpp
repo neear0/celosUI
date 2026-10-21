@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 // swatches(): a row of round color choices, as tall as a frame, with the label after it. the one col is set to has a ring
 // in the text color, hovered ones glow in their own color like color_edit()'s swatch

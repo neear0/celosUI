@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 // the box's border in the text color, faint, so an unchecked box shows over the os blur and on both themes. checked, the border
 // and the mark ease into the accent, unchecked the mark fades out

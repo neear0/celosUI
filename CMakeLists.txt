@@ -100,21 +100,21 @@ set(celos_ui_sources
     ui/style/presets.cpp
     ui/style/tab_switch.cpp
     ui/style/theme_setup.cpp
-    ui/wrappers/imgui/add_rect_filled_half_rounded.cpp
-    ui/wrappers/imgui/button.cpp
-    ui/wrappers/imgui/checkbox.cpp
-    ui/wrappers/imgui/color_edit.cpp
-    ui/wrappers/imgui/combo.cpp
-    ui/wrappers/imgui/image.cpp
-    ui/wrappers/imgui/segmented.cpp
-    ui/wrappers/imgui/slider.cpp
-    ui/wrappers/imgui/swatches.cpp
-    ui/wrappers/imgui/tab_button.cpp
-    ui/wrappers/imgui/text_item.cpp
-    ui/wrappers/imgui/toggle.cpp
-    ui/wrappers/imgui/functions/render_frame_animated.cpp
-    ui/wrappers/imgui/functions/render_frame_border_animated.cpp
-    ui/wrappers/imgui/functions/render_frame_border_color.cpp
+    ui/widgets/add_rect_filled_half_rounded.cpp
+    ui/widgets/button.cpp
+    ui/widgets/checkbox.cpp
+    ui/widgets/color_edit.cpp
+    ui/widgets/combo.cpp
+    ui/widgets/image.cpp
+    ui/widgets/segmented.cpp
+    ui/widgets/slider.cpp
+    ui/widgets/swatches.cpp
+    ui/widgets/tab_button.cpp
+    ui/widgets/text_item.cpp
+    ui/widgets/toggle.cpp
+    ui/widgets/functions/render_frame_animated.cpp
+    ui/widgets/functions/render_frame_border_animated.cpp
+    ui/widgets/functions/render_frame_border_color.cpp
 )
 
 if(CELOSUI_PLATFORM STREQUAL "win32")

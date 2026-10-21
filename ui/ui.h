@@ -21,7 +21,7 @@
 #include "core/core.h"
 #include "render/render.h"
 #include "debug/debug.h"
-#include "wrappers/wrappers.h"
+#include "widgets/widgets.h"
 
 namespace celosia {
 	namespace initialize {

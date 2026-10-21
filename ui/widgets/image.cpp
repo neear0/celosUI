@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 void celosia::widgets::image(const char* name, ImVec2 size, float rounding) {
     const celosia::resources::images::t_image image = celosia::resources::images::get(name); // a copy, it's a pointer and a size

@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 // combo(): a frame showing the picked item with an arrow, opening a frosted popup under it (above when there's no room
 // below) that lists the items, at most max_items rows of them before it scrolls

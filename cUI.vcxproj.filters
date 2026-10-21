@@ -62,7 +62,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\button.cpp">
+    <ClCompile Include="ui\widgets\button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\style\animations.cpp">
@@ -131,7 +131,7 @@
     <ClCompile Include="ui\render\main_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\functions\render_frame_border_animated.cpp">
+    <ClCompile Include="ui\widgets\functions\render_frame_border_animated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\render\groupbox.cpp">
@@ -143,16 +143,16 @@
     <ClCompile Include="ui\style\tab_switch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\tab_button.cpp">
+    <ClCompile Include="ui\widgets\tab_button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\text_item.cpp">
+    <ClCompile Include="ui\widgets\text_item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\toggle.cpp">
+    <ClCompile Include="ui\widgets\toggle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\add_rect_filled_half_rounded.cpp">
+    <ClCompile Include="ui\widgets\add_rect_filled_half_rounded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\core\core.cpp">
@@ -173,31 +173,31 @@
     <ClCompile Include="ui\style\presets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\functions\render_frame_animated.cpp">
+    <ClCompile Include="ui\widgets\functions\render_frame_animated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\checkbox.cpp">
+    <ClCompile Include="ui\widgets\checkbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\functions\render_frame_border_color.cpp">
+    <ClCompile Include="ui\widgets\functions\render_frame_border_color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\combo.cpp">
+    <ClCompile Include="ui\widgets\combo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\image.cpp">
+    <ClCompile Include="ui\widgets\image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\color_edit.cpp">
+    <ClCompile Include="ui\widgets\color_edit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\slider.cpp">
+    <ClCompile Include="ui\widgets\slider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\segmented.cpp">
+    <ClCompile Include="ui\widgets\segmented.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wrappers\imgui\swatches.cpp">
+    <ClCompile Include="ui\widgets\swatches.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\input.cpp">
@@ -247,7 +247,7 @@
     <ClInclude Include="ui\core\core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ui\wrappers\wrappers.h">
+    <ClInclude Include="ui\widgets\widgets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

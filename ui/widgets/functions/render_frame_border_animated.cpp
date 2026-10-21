@@ -1,4 +1,4 @@
-#include "../../../ui.h"
+#include "../../ui.h"
 
 void celosia::widgets::render_frame_border_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, float rounding) // any component using this will be animated with no need for any further setup
 {

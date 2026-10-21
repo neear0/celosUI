@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 // segmented(): side by side choices sharing one frame as wide as a slider, with the label after it. a pill in the accent
 // slides to the picked one and fades out while nothing is picked (current -1). text over the pill is dark or white,

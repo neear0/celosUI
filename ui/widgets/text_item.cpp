@@ -1,4 +1,4 @@
-#include "../../ui.h"
+#include "../ui.h"
 
 // text(): a line of text as an item, in the current font and the theme's text color
 

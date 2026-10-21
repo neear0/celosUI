@@ -84,7 +84,7 @@ Where things are:
 * `ui/ui.h`: the public namespaces (`platform`, `effects`, `resources`, `animations`, `variables`, ...)
 * `ui/render/`: the window parts (titlebar, sidebar, tabs, groupboxes, panels, text)
 * `ui/core/`: what the widgets are built on (`core.h`): ids, the mouse over items, layout, and the window, scroll areas and popups
-* `ui/wrappers/`: our widgets (`celosia::widgets`, `wrappers.h`), in `imgui/`
+* `ui/widgets/`: our widgets (`celosia::widgets`, `widgets.h`)
 * `ui/style/`: style values, themes, accents and animations
 * `ui/win32/` and `ui/glfw/`: the two platform layers (window, device, textures, effects)
 * `ui/shaders/`: the effect shaders
