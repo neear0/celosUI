@@ -176,7 +176,7 @@ namespace celosia {
 		void add_mouse_button(int button, bool down);
 		void add_wheel(float notches);    // positive is away from the user, scrolling up
 		void add_key(int key, bool down); // celosia::keys code, a key held down comes again as it repeats
-		void add_focus(bool focused);
+		void add_focus(bool focused);     // losing it lets go of the keys and buttons, without them counting as released
 
 		// applies the events since the last frame, ui::begin() calls it. a button that went down and up between two frames
 		// is down for this one and up for the next, a quick click isn't lost

@@ -41,7 +41,12 @@ LRESULT WINAPI celosia_win32::window::wnd_proc(HWND hwnd, UINT msg, WPARAM w_par
             celosia::input::add_key((int)w_param, msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
         break; // alt+f4 and the like still work
     case WM_SETFOCUS: celosia::input::add_focus(true); return 0;
-    case WM_KILLFOCUS: celosia::input::add_focus(false); return 0;
+    case WM_KILLFOCUS:
+        buttons_down = 0; // input lets go of them
+        if (GetCapture() == hwnd)
+            ReleaseCapture();
+        celosia::input::add_focus(false);
+        return 0;
     case WM_SYSCOMMAND:
         if ((w_param & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
             return 0;

@@ -69,8 +69,11 @@ void celosia::input::new_frame() {
         }
         else if (e.kind == t_event::focus) {
             has_focus = e.down;
-            if (!has_focus) // the keys going up while another window has the focus never arrive
+            if (!has_focus) { // what goes up while another window has the focus never arrives. let go of, not released: no click
                 keys_down.fill(false);
+                buttons_down.fill(false);
+                mouse = ImVec2(-FLT_MAX, -FLT_MAX);
+            }
         }
     }
     events.erase(events.begin(), events.begin() + applied);
