@@ -94,9 +94,10 @@ IMGUI_IMPL_API void            ImGui_ImplVulkan_RemoveTexture(VkDescriptorSet de
 IMGUI_IMPL_API bool         ImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data = nullptr);
 
 // celosia: custom fragment shaders on top of ImGui's pipeline (same vertex shader, vertex layout, blending and render pass).
+// Without blend the shader's output replaces what's in the framebuffer, for shaders that blend by themselves.
 // The push constants are shared by both stages, 128 bytes: the first 16 hold the vertex shader's scale and translation,
 // the rest is free for the fragment shader. Bind the pipeline and push from a draw list callback.
-IMGUI_IMPL_API VkPipeline       ImGui_ImplVulkan_CreatePipelineWithFragmentShader(VkShaderModule fragment_shader);
+IMGUI_IMPL_API VkPipeline       ImGui_ImplVulkan_CreatePipelineWithFragmentShader(VkShaderModule fragment_shader, bool blend = true);
 IMGUI_IMPL_API VkPipelineLayout ImGui_ImplVulkan_GetPipelineLayout();
 
 //-------------------------------------------------------------------------

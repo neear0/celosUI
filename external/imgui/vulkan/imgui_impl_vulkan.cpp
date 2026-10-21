@@ -845,7 +845,7 @@ static void ImGui_ImplVulkan_CreateShaderModules(VkDevice device, const VkAlloca
     }
 }
 
-static void ImGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass, VkShaderModule fragment_shader = VK_NULL_HANDLE)
+static void ImGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass, VkShaderModule fragment_shader = VK_NULL_HANDLE, bool blend = true)
 {
     ImGui_ImplVulkan_Data* bd = ImGui_ImplVulkan_GetBackendData();
     ImGui_ImplVulkan_CreateShaderModules(device, allocator);
@@ -906,7 +906,7 @@ static void ImGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationC
     ms_info.rasterizationSamples = (MSAASamples != 0) ? MSAASamples : VK_SAMPLE_COUNT_1_BIT;
 
     VkPipelineColorBlendAttachmentState color_attachment[1] = {};
-    color_attachment[0].blendEnable = VK_TRUE;
+    color_attachment[0].blendEnable = blend ? VK_TRUE : VK_FALSE; // celosia: or the fragment shader's output replaces what's there
     color_attachment[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
     color_attachment[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
     color_attachment[0].colorBlendOp = VK_BLEND_OP_ADD;
@@ -1025,12 +1025,12 @@ bool ImGui_ImplVulkan_CreateDeviceObjects()
 }
 
 // celosia: see imgui_impl_vulkan.h
-VkPipeline ImGui_ImplVulkan_CreatePipelineWithFragmentShader(VkShaderModule fragment_shader)
+VkPipeline ImGui_ImplVulkan_CreatePipelineWithFragmentShader(VkShaderModule fragment_shader, bool blend)
 {
     ImGui_ImplVulkan_Data* bd = ImGui_ImplVulkan_GetBackendData();
     ImGui_ImplVulkan_InitInfo* v = &bd->VulkanInitInfo;
     VkPipeline pipeline = VK_NULL_HANDLE;
-    ImGui_ImplVulkan_CreatePipeline(v->Device, v->Allocator, v->PipelineCache, bd->RenderPass, v->MSAASamples, &pipeline, bd->Subpass, fragment_shader);
+    ImGui_ImplVulkan_CreatePipeline(v->Device, v->Allocator, v->PipelineCache, bd->RenderPass, v->MSAASamples, &pipeline, bd->Subpass, fragment_shader, blend);
     return pipeline;
 }
 

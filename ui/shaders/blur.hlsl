@@ -1,5 +1,7 @@
 // frosted glass: blurs what was drawn before it (a copy of the frame so far, bound as the texture) and tints it
-// color_a tint (alpha = how much of it), params: x rounding, y radius in pixels, zw one over the framebuffer size
+// color_a tint (alpha = how much of it), params: x rounding, y radius in pixels, zw one over the framebuffer size.
+// drawn without blending: blended over the frame, a see-through frame (over the os blur) would keep showing through
+// sharp. the copy has what's under each pixel too, so the shader mixes the glass into it at the edges and fades itself
 
 #include "effect.hlsli"
 
@@ -23,8 +25,9 @@ float4 main(ps_input input) : SV_Target
         weight_sum += weight;
     }
 
+    // the frame holds colors already multiplied by their alpha (ImGui's blending onto a cleared frame does that), the tint goes over them the same way
     float4 blurred = sum / weight_sum;
-    float3 color = lerp(blurred.rgb, effect.color_a.rgb, effect.color_a.a) + dither(input.pos.xy);
-    float alpha = max(blurred.a, effect.color_a.a); // keeps a see-through window see-through
-    return float4(color, alpha * coverage(rounded_rect_distance(input.pos.xy, effect.rect, effect.params.x)) * input.col.a);
+    float4 glass = float4(lerp(blurred.rgb, effect.color_a.rgb, effect.color_a.a) + dither(input.pos.xy), lerp(blurred.a, 1.0, effect.color_a.a));
+    float4 under = source_texture.Load(int3(input.pos.xy, 0)); // what's there now, unblurred
+    return lerp(under, glass, coverage(rounded_rect_distance(input.pos.xy, effect.rect, effect.params.x)) * input.col.a);
 }

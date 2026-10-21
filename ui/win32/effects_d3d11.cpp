@@ -7,11 +7,12 @@
 #include "shaders/noise_dxbc.h"
 
 // d3d11 side of celosia::effects: every effect is a pixel shader that the draw list callback swaps in,
-// ImGui's vertex shader, input layout and blending stay as they are
+// ImGui's vertex shader, input layout and blending stay as they are (except for the blur, which doesn't blend)
 
 static ID3D11PixelShader* shaders[(int)celosia::effects::e_type::count] = {};
 static ID3D11Buffer* constant_buffer = nullptr;
 static ID3D11SamplerState* clamp_sampler = nullptr; // the blur reads near the frame's edges, ImGui's sampler wraps around
+static ID3D11BlendState* no_blend = nullptr;        // the blur works out the final pixel itself, see blur.hlsl
 static ID3D11Texture2D* backdrop = nullptr;           // copy of the back buffer the blur reads from
 static ID3D11ShaderResourceView* backdrop_view = nullptr;
 
@@ -42,6 +43,12 @@ bool celosia_win32::effect_renderer::create() {
     sampler.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
     sampler.MaxLOD = D3D11_FLOAT32_MAX;
     if (FAILED(d3d::device->CreateSamplerState(&sampler, &clamp_sampler)))
+        return false;
+
+    D3D11_BLEND_DESC blend = {};
+    blend.RenderTarget[0].BlendEnable = FALSE;
+    blend.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    if (FAILED(d3d::device->CreateBlendState(&blend, &no_blend)))
         return false;
 
     update_backdrop(); // without it the blur draws a plain panel, see backdrop_texture()
@@ -84,6 +91,7 @@ void celosia_win32::effect_renderer::destroy() {
         if (shader) { shader->Release(); shader = nullptr; }
     if (constant_buffer) { constant_buffer->Release(); constant_buffer = nullptr; }
     if (clamp_sampler) { clamp_sampler->Release(); clamp_sampler = nullptr; }
+    if (no_blend) { no_blend->Release(); no_blend = nullptr; }
     if (backdrop_view) { backdrop_view->Release(); backdrop_view = nullptr; }
     if (backdrop) { backdrop->Release(); backdrop = nullptr; }
 }
@@ -99,7 +107,8 @@ static void bind(const celosia::effects::t_command& effect) {
     ID3D11DeviceContext* context = celosia_win32::d3d::device_context;
     if (effect.type == celosia::effects::e_type::blur) {
         copy_frame();
-        context->PSSetSamplers(0, 1, &clamp_sampler); // ImGui puts its own sampler back when the effect ends
+        context->PSSetSamplers(0, 1, &clamp_sampler); // ImGui puts its own sampler and blending back when the effect ends
+        context->OMSetBlendState(no_blend, nullptr, 0xffffffff);
     }
 
     D3D11_MAPPED_SUBRESOURCE mapped;

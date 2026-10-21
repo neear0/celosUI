@@ -7,8 +7,8 @@
 #include "shaders/background_spirv.h"
 #include "shaders/noise_spirv.h"
 
-// vulkan side of celosia::effects: every effect is a pipeline made from ImGui's own (same vertex shader, layout and blending)
-// with the effect's fragment shader, which the draw list callback binds. the constants go into the push constant range
+// vulkan side of celosia::effects: every effect is a pipeline made from ImGui's own (same vertex shader, layout and blending,
+// except the blur's, which doesn't blend) with the effect's fragment shader, which the draw list callback binds. the constants go into the push constant range
 // the backend shares with fragment shaders, after the 16 bytes ImGui's vertex shader uses.
 // the blur needs what's been drawn so far: copies can't happen inside a render pass, so the pass is ended, the frame
 // is copied into the backdrop image, and drawing resumes in a render pass that keeps what's there.
@@ -52,7 +52,8 @@ bool celosia_glfw::effect_renderer::create() {
         VkShaderModule module;
         if (vkCreateShaderModule(celosia_glfw::vulkan::device, &info, nullptr, &module) != VK_SUCCESS)
             return false;
-        pipelines[i] = ImGui_ImplVulkan_CreatePipelineWithFragmentShader(module);
+        const bool blend = i != (int)celosia::effects::e_type::blur; // the blur works out the final pixel itself, see blur.hlsl
+        pipelines[i] = ImGui_ImplVulkan_CreatePipelineWithFragmentShader(module, blend);
         vkDestroyShaderModule(celosia_glfw::vulkan::device, module, nullptr); // the pipeline doesn't need it anymore
         if (pipelines[i] == VK_NULL_HANDLE)
             return false;
