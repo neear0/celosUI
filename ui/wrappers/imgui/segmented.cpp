@@ -35,9 +35,7 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
     bool changed = false;
     for (int i = 0; i < count; i++) {
         const ImRect rect(ImVec2(frame.Min.x + segment * i, frame.Min.y), ImVec2(frame.Min.x + segment * (i + 1), frame.Max.y));
-        ImGui::PushID(i);
-        const ImGuiID item = window->GetID("##segment");
-        ImGui::PopID();
+        const ImGuiID item = ImHashData(&i, sizeof(i), id); // from the control's id, two controls in one window don't share their segments
         if (!ImGui::ItemAdd(rect, item))
             continue;
         bool hovered, held;

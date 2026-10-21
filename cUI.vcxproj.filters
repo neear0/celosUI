@@ -155,6 +155,9 @@
     <ClCompile Include="ui\wrappers\imgui\tab_button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\wrappers\imgui\toggle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ui\wrappers\imgui\add_rect_filled_half_rounded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

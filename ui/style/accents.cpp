@@ -42,6 +42,6 @@ ImColor celosia::style::themes::readable(ImColor clr, ImColor background, float 
 }
 
 ImColor celosia::style::themes::text_on(ImColor fill) { // dark or white, whichever stands out more from fill
-	const ImColor dark(0.15f, 0.15f, 0.15f), white(1.f, 1.f, 1.f);
-	return contrast(fill, dark) > contrast(fill, white) ? dark : white;
+	const ImColor dark_text(0.15f, 0.15f, 0.15f), white_text(1.f, 1.f, 1.f);
+	return contrast(fill, dark_text) > contrast(fill, white_text) ? dark_text : white_text;
 }

@@ -48,13 +48,11 @@ GLFW is patched after it's downloaded (`external/glfw_patch/argb_visual.cmake`) 
 Shaders (`ui/shaders/*.hlsl`, and ImGui's D3D11 shaders next to its backend) are compiled at build time and embedded as well, nothing is compiled at runtime. Visual Studio and the Windows CMake build use `fxc` from the Windows SDK, the Linux build uses `glslangValidator` from `glslang-tools` (the GLFW build on Windows takes it from the Vulkan SDK).
 
 ## The demo
-The demo window is `render::main_window()` in `ui/render/main_window.cpp`, with the sidebar in `ui/render/sidebar.cpp`. The sidebar has the tabs and buttons that switch:
-* **layout**: the full or minimal groupbox title style (`style::groupbox::title_style`, the theme leaves it as it is)
-* **background**: the OS blur or the shader background (only where the OS can blur: Windows, and KDE Plasma on Linux)
-* **noise**: the film grain on or off
-* **theme**: dark or light
-
-tab1 has buttons and checkboxes, tab2 has a combo, the accent presets with the color picker after them (it changes the main color everywhere), the glass presets (clear, frosted, solid), a slider for how strong the frosted glass blurs, one for how see-through the window is over the OS blur, and an image. The picker and the sliders only go as far as `style::limits`, see Effects.
+The demo window is `render::main_window()` in `ui/render/main_window.cpp`, with the sidebar's tabs in `ui/render/sidebar.cpp`:
+* **Widgets**: buttons, checkboxes, a combo, a slider and a toggle, and an image, in a 2x2 grid of groupboxes
+* **Appearance**: a settings page for the look, presets first and the picker and sliders for going further, all only as far as `style::limits` lets them (see Effects)
+  * Style: the theme (dark or light), the accent (a row of presets and the color picker, it changes the accent everywhere), the groupbox title style (`style::groupbox::title_style`, full or minimal, the theme leaves it as it is) and the film grain
+  * Glass: the background (the OS blur or the shader background, only where the OS can blur: Windows, and KDE Plasma on Linux), the glass presets (clear, frosted, solid), a slider for how strong the frosted glass blurs and one for how much the window covers the desktop with the OS blur
 
 ## Using it
 `main.cpp` is the whole loop:
@@ -109,7 +107,7 @@ Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui
 
 `style::limits` sets how far the values a user can change may go: how grey and how dark the main color, how little and how much glass blur, how little glass opacity and how much noise. Past those the window stops working: a black or grey accent hides the groupbox titles, checkmarks and logo, bare glass loses the text against a bright desktop (or a dark one with the light theme), and too little blur shows the text behind a popup through its own. `style::keep_in_limits()` (called by `style::apply()` every frame) brings the values back into them whatever set them, and keeps the main color opaque. `widgets::color_edit()` and `color_picker()` take a saturation and value minimum, their square then only spans the colors above them.
 
-`style::presets` has the choices a user picks from first, all inside the limits: `accents` (`widgets::swatches()` shows them as a row of round swatches) and `glass` (blur and opacity together, `presets::set_glass()` sets one and `presets::glass_current()` says which one the window is on, -1 once the sliders moved it off them; the demo shows them with `widgets::segmented()`, a row of choices in one frame).
+`style::presets` has the choices a user picks from first, all inside the limits: `accents` (`widgets::swatches()` shows them as a row of round swatches) and `glass` (blur and opacity together, `presets::set_glass()` sets one and `presets::glass_current()` says which one the window is on, -1 once the sliders moved it off them; the demo shows them with `widgets::segmented()`, a row of choices in one frame). `noise` is how strong the film grain is when it's on, the demo switches it with `widgets::toggle()`.
 What the user picks is `style::general::main_color`, what's drawn is `style::general::accent`: the same color, mixed towards white or black where it would blend into the theme's background (`style::limits::accent_contrast_min`, worked out by `style::themes::readable()`), so a yellow turns olive on the light theme and a deep blue lighter on the dark one. The groupbox title text is dark or white, whichever stands out more from the title bar. With the OS blur a theme's `glass_floor` is the least of the desktop its glass covers (`style::window::glass_cover()` goes from it up to 1 as `glass_opacity` does), the light theme's keeps it light over a dark desktop.
 
 Debug builds report graphics API misuse: on Windows the D3D11 debug layer's messages are printed to the console (needs the "Graphics Tools" optional Windows feature), and for Vulkan run with `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation` (the `vulkan-validationlayers` package on Linux).

@@ -54,6 +54,7 @@ namespace celosia::style {
 		inline t_glass glass[] = { { "Clear", 6.f, 0.3f }, { "Frosted", 12.f, 0.4f }, { "Solid", 24.f, 0.85f } };
 		void set_glass(const t_glass& preset);
 		int glass_current(); // the glass preset the window is set to, -1 once the sliders moved it off them all
+		inline float noise = 0.04f; // window::noise when the film grain is on
 	}
 	namespace titlebar {
 		inline float height = 45;

@@ -31,9 +31,7 @@ bool celosia::widgets::swatches(const char* label, float col[4], const ImColor* 
     bool changed = false;
     for (int i = 0; i < count; i++) {
         const ImRect rect(ImVec2(pos.x + (size + gap) * i, pos.y), ImVec2(pos.x + (size + gap) * i + size, pos.y + size));
-        ImGui::PushID(i);
-        const ImGuiID item = window->GetID("##swatch");
-        ImGui::PopID();
+        const ImGuiID item = ImHashData(&i, sizeof(i), id); // from the row's id, two rows in one window don't share their swatches
         if (!ImGui::ItemAdd(rect, item))
             continue;
         bool hovered, held;

@@ -1,8 +1,87 @@
 #include "../ui.h"
 
-// the demo window: the background, titlebar and sidebar, and the open tab's groupboxes
+// the demo window: the background, titlebar and sidebar, and the open tab's groupboxes. Widgets shows what there is,
+// Appearance is a settings page for the look: presets first, the picker and the sliders for going further, all of them
+// only as far as style::limits lets them
 
 static float color[4] = { celosia::style::general::main_color.Value.x, celosia::style::general::main_color.Value.y, celosia::style::general::main_color.Value.z, celosia::style::general::main_color.Value.w };
+
+static void widgets_tab() {
+    using namespace celosia;
+    render::groupbox::begin("Buttons", "", render::groupbox::e_group_layout::four);
+    for (int i = 0; i < 20; i++)
+        if (ImGui::Button(("Button " + std::to_string(i)).c_str()))
+            debug::log("Button " + std::to_string(i) + " has been hit");
+    render::groupbox::end();
+
+    render::groupbox::begin("Checkboxes", "", render::groupbox::e_group_layout::four);
+    for (int i = 0; i < 20; i++)
+        widgets::checkbox_map(("Checkbox " + std::to_string(i)).c_str());
+    render::groupbox::end();
+
+    render::groupbox::begin("Inputs", "", render::groupbox::e_group_layout::four);
+    const char* items[] = { "Item A", "Item B", "Item C" };
+    ImGui::Combo("Combo", &variables::config::ints["demo_combo"], items, IM_ARRAYSIZE(items), IM_ARRAYSIZE(items));
+    widgets::slider_float("Slider", &variables::config::floats["demo_slider"], 0.f, 100.f, "%.0f");
+    widgets::toggle("Toggle", &variables::config::bools["demo_toggle"]);
+    render::groupbox::end();
+
+    render::groupbox::begin("Image", "", render::groupbox::e_group_layout::four);
+    const ImVec2 picture = resources::images::get("test").size; // as big as fits in the groupbox, keeping its aspect
+    const ImVec2 room = ImGui::GetContentRegionAvail() - ImGui::GetStyle().WindowPadding;
+    if (picture.x > 0.f && picture.y > 0.f) {
+        const float fit = ImMin(1.f, ImMin(room.x / picture.x, room.y / picture.y));
+        if (fit > 0.f)
+            widgets::image("test", picture * fit, 8.f * style::scale);
+    }
+    render::groupbox::end();
+}
+
+static void appearance_tab() {
+    using namespace celosia;
+    render::groupbox::begin("Style", "Theme, accent, titles and grain");
+    const char* themes[] = { "Dark", "Light" };
+    int theme = style::themes::active.name == style::themes::light.name ? 1 : 0;
+    if (widgets::segmented("Theme", &theme, themes, IM_ARRAYSIZE(themes)))
+        style::themes::set(theme == 1 ? style::themes::light : style::themes::dark);
+
+    widgets::swatches("##accent", color, style::presets::accents, IM_ARRAYSIZE(style::presets::accents));
+    ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
+    widgets::color_edit("Accent", color, false, style::limits::saturation_min, style::limits::value_min);
+    style::general::main_color = { color[0], color[1], color[2], color[3] };
+
+    const char* titles[] = { "Full", "Minimal" };
+    int title = style::groupbox::title_style == style::groupbox::minimal ? 1 : 0;
+    if (widgets::segmented("Titles", &title, titles, IM_ARRAYSIZE(titles)))
+        style::groupbox::title_style = title == 1 ? style::groupbox::minimal : style::groupbox::full;
+
+    bool grain = style::window::noise > 0.f;
+    if (widgets::toggle("Film grain", &grain))
+        style::window::noise = grain ? style::presets::noise : 0.f;
+    render::groupbox::end();
+
+    render::groupbox::begin("Glass", "What shows through the window");
+    if (platform::blur_supported()) { // otherwise there's only the shader background
+        const char* backgrounds[] = { "Blur", "Shader" };
+        int background = style::window::background == style::window::shader ? 1 : 0;
+        if (widgets::segmented("Background", &background, backgrounds, IM_ARRAYSIZE(backgrounds))) {
+            style::window::background = background == 1 ? style::window::shader : style::window::blur;
+            platform::set_blur(style::window::background == style::window::blur);
+        }
+    }
+
+    const char* glass_names[IM_ARRAYSIZE(style::presets::glass)];
+    for (int i = 0; i < IM_ARRAYSIZE(style::presets::glass); i++)
+        glass_names[i] = style::presets::glass[i].name;
+    int glass = style::presets::glass_current();
+    if (widgets::segmented("Glass", &glass, glass_names, IM_ARRAYSIZE(glass_names)))
+        style::presets::set_glass(style::presets::glass[glass]);
+
+    widgets::slider_float("Glass blur", &style::window::glass_blur, style::limits::glass_blur_min * style::scale, style::limits::glass_blur_max * style::scale, "%.0f px");
+    if (style::window::background == style::window::blur) // the shader background is opaque, there's nothing behind to see
+        widgets::slider_float("Glass opacity", &style::window::glass_opacity, style::limits::glass_opacity_min, 1.f, "%.2f");
+    render::groupbox::end();
+}
 
 void celosia::render::main_window() {
     ImGui::Begin(variables::title.name, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
@@ -27,47 +106,10 @@ void celosia::render::main_window() {
 
     render::tab_content.drawlist = drawlist;
     render::tab_content.vtx_begin = drawlist->VtxBuffer.Size;
-    if (ui::tab_current == "tab1") { // --> visible tab
-        render::groupbox::begin("Groupbox A");
-        for (int i = 0; i < 20; i++)
-            if (ImGui::Button(("group A " + std::to_string(i)).c_str()))
-                debug::log("Button " + std::to_string(i) + " has been hit");
-        render::groupbox::end();
-
-        render::groupbox::begin("Groupbox B", "Checkboxes");
-        for (int i = 0; i < 20; i++)
-            celosia::widgets::checkbox_map(("Checkbox " + std::to_string(i)).c_str());
-        render::groupbox::end();
-    }
-    else {
-        render::groupbox::begin("Groupbox B", "", render::groupbox::e_group_layout::fullscreen); // the only one in this tab
-        const char* test[] = {"Item A", "Item B", "Item C"};
-        ImGui::Combo("test", &variables::config::ints["test_combo"], test, 3, 3);
-
-        // the presets first, then the picker and the sliders for going further, only as far as style::limits lets them
-        celosia::widgets::swatches("##accent", color, style::presets::accents, IM_ARRAYSIZE(style::presets::accents));
-        ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
-        celosia::widgets::color_edit("Accent", color, false, style::limits::saturation_min, style::limits::value_min);
-        style::general::main_color = { color[0], color[1], color[2], color[3] };
-
-        const char* glass_names[IM_ARRAYSIZE(style::presets::glass)];
-        for (int i = 0; i < IM_ARRAYSIZE(style::presets::glass); i++)
-            glass_names[i] = style::presets::glass[i].name;
-        int glass = style::presets::glass_current();
-        if (celosia::widgets::segmented("Glass", &glass, glass_names, IM_ARRAYSIZE(glass_names)))
-            style::presets::set_glass(style::presets::glass[glass]);
-
-        celosia::widgets::slider_float("Glass blur", &style::window::glass_blur, style::limits::glass_blur_min * style::scale, style::limits::glass_blur_max * style::scale, "%.0f px");
-        if (style::window::background == style::window::blur) // the shader background is opaque, there's nothing behind to see
-            celosia::widgets::slider_float("Glass opacity", &style::window::glass_opacity, style::limits::glass_opacity_min, 1.f, "%.2f");
-
-        const ImVec2 picture = resources::images::get("test").size; // as big as fits in what's left of the groupbox, keeping its aspect
-        const float picture_height = ImMin(picture.y, ImGui::GetContentRegionAvail().y - ImGui::GetStyle().WindowPadding.y);
-        if (picture.y > 0.f)
-            celosia::widgets::image("test", ImVec2(picture.x * picture_height / picture.y, picture_height), 8.f * style::scale);
-
-        render::groupbox::end();
-    }
+    if (ui::tab_current == "Widgets") // the tab being drawn, see ui::tab_current
+        widgets_tab();
+    else if (ui::tab_current == "Appearance")
+        appearance_tab();
     render::tab_content.vtx_end = drawlist->VtxBuffer.Size;
 
     ImGui::End();

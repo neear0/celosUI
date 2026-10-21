@@ -325,6 +325,7 @@
     <ClCompile Include="ui\wrappers\imgui\segmented.cpp" />
     <ClCompile Include="ui\wrappers\imgui\swatches.cpp" />
     <ClCompile Include="ui\wrappers\imgui\tab_button.cpp" />
+    <ClCompile Include="ui\wrappers\imgui\toggle.cpp" />
     <ClCompile Include="ui\render\groupbox.cpp" />
     <ClCompile Include="ui\render\panel.cpp" />
     <ClCompile Include="ui\render\sidebar.cpp" />
