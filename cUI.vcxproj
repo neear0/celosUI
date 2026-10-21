@@ -311,6 +311,7 @@
     <ClCompile Include="ui\inputsystem.cpp" />
     <ClCompile Include="ui\render\text.cpp" />
     <ClCompile Include="ui\style\accents.cpp" />
+    <ClCompile Include="ui\style\presets.cpp" />
     <ClCompile Include="ui\wrappers\imgui\add_rect_filled_half_rounded.cpp" />
     <ClCompile Include="ui\wrappers\imgui\checkbox.cpp" />
     <ClCompile Include="ui\wrappers\imgui\combo.cpp" />
@@ -321,6 +322,8 @@
     <ClCompile Include="ui\wrappers\imgui\functions\render_frame_border_color.cpp" />
     <ClCompile Include="ui\wrappers\imgui\scrollbar.cpp" />
     <ClCompile Include="ui\wrappers\imgui\slider.cpp" />
+    <ClCompile Include="ui\wrappers\imgui\segmented.cpp" />
+    <ClCompile Include="ui\wrappers\imgui\swatches.cpp" />
     <ClCompile Include="ui\wrappers\imgui\tab_button.cpp" />
     <ClCompile Include="ui\render\groupbox.cpp" />
     <ClCompile Include="ui\render\panel.cpp" />

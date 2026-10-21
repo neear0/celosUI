@@ -54,9 +54,7 @@ void celosia::render::groupbox::body(ImDrawList* drawlist, const ImVec2 offset, 
 	case style::groupbox::full:
 		effects::gradient(drawlist, offset, ImVec2(offset_max.x, offset.y + height), a, b, (float)style::general::rounding, 0.f, 0.15f); // slowly slides back and forth
 
-		// dark or white text, whichever stands out more from the bar (the middle of its gradient)
-		const ImColor bar = ImLerp(a.Value, b.Value, 0.5f);
-		const float text_color_goal = style::themes::contrast(bar, ImColor(0.15f, 0.15f, 0.15f)) > style::themes::contrast(bar, ImColor(1.f, 1.f, 1.f)) ? 0.15f : 1.f;
+		const float text_color_goal = style::themes::text_on(ImLerp(a.Value, b.Value, 0.5f)).Value.x; // against the middle of the bar's gradient
 
 		const float text_color_fl = animations::set(text_color_key, text_color_goal, 1.f);
 		text_color = ImColor(text_color_fl, text_color_fl, text_color_fl, style::themes::active.text.Value.w);

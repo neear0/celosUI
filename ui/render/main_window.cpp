@@ -40,13 +40,22 @@ void celosia::render::main_window() {
         render::groupbox::end();
     }
     else {
-        render::groupbox::begin("Groupbox B");
+        render::groupbox::begin("Groupbox B", "", render::groupbox::e_group_layout::fullscreen); // the only one in this tab
         const char* test[] = {"Item A", "Item B", "Item C"};
         ImGui::Combo("test", &variables::config::ints["test_combo"], test, 3, 3);
 
-        // only as far as style::limits lets them go
-        celosia::widgets::color_edit("Main Color", color, false, style::limits::saturation_min, style::limits::value_min);
+        // the presets first, then the picker and the sliders for going further, only as far as style::limits lets them
+        celosia::widgets::swatches("##accent", color, style::presets::accents, IM_ARRAYSIZE(style::presets::accents));
+        ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
+        celosia::widgets::color_edit("Accent", color, false, style::limits::saturation_min, style::limits::value_min);
         style::general::main_color = { color[0], color[1], color[2], color[3] };
+
+        const char* glass_names[IM_ARRAYSIZE(style::presets::glass)];
+        for (int i = 0; i < IM_ARRAYSIZE(style::presets::glass); i++)
+            glass_names[i] = style::presets::glass[i].name;
+        int glass = style::presets::glass_current();
+        if (celosia::widgets::segmented("Glass", &glass, glass_names, IM_ARRAYSIZE(glass_names)))
+            style::presets::set_glass(style::presets::glass[glass]);
 
         celosia::widgets::slider_float("Glass blur", &style::window::glass_blur, style::limits::glass_blur_min * style::scale, style::limits::glass_blur_max * style::scale, "%.0f px");
         if (style::window::background == style::window::blur) // the shader background is opaque, there's nothing behind to see

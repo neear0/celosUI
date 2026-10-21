@@ -95,6 +95,7 @@ set(celos_ui_sources
     ui/resources/images.cpp
     ui/style/accents.cpp
     ui/style/animations.cpp
+    ui/style/presets.cpp
     ui/style/tab_switch.cpp
     ui/style/theme_setup.cpp
     ui/wrappers/imgui/add_rect_filled_half_rounded.cpp
@@ -104,7 +105,9 @@ set(celos_ui_sources
     ui/wrappers/imgui/combo.cpp
     ui/wrappers/imgui/image.cpp
     ui/wrappers/imgui/scrollbar.cpp
+    ui/wrappers/imgui/segmented.cpp
     ui/wrappers/imgui/slider.cpp
+    ui/wrappers/imgui/swatches.cpp
     ui/wrappers/imgui/tab_button.cpp
     ui/wrappers/imgui/functions/render_frame_animated.cpp
     ui/wrappers/imgui/functions/render_frame_border_animated.cpp

@@ -210,9 +210,14 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
 
     // Render shape
     const ImU32 frame_col = GetColorU32(ImGuiCol_Button);
-    ImU32 hover_col = GetColorU32(hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
-    if (popup_open) hover_col = celosia::style::general::accent;
-    if (held) hover_col = GetColorU32(ImGuiCol_ButtonActive);
+    const ImVec4 text = celosia::style::themes::active.text.Value;
+    ImVec4 border = ImLerp(GetStyleColorVec4(hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button), text, 0.12f); // outlined like a button
+    border.w = GetStyleColorVec4(ImGuiCol_Button).w;
+    ImVec4 arrow = ImVec4(text.x, text.y, text.z, 0.7f);
+    if (popup_open) border = arrow = celosia::style::general::accent.Value;
+    if (held) border = GetStyleColorVec4(ImGuiCol_ButtonActive);
+    const ImU32 border_col = GetColorU32(border);
+    const ImU32 arrow_col = GetColorU32(arrow);
 
     const float value_x2 = ImMax(bb.Min.x, bb.Max.x - arrow_size);
     RenderNavHighlight(bb, id);
@@ -222,9 +227,9 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     if (!(flags & ImGuiComboFlags_NoArrowButton))
     {
         if (value_x2 + arrow_size - style.FramePadding.x <= bb.Max.x)
-            RenderArrow(window->DrawList, ImVec2(value_x2 + style.FramePadding.y, bb.Min.y + style.FramePadding.y), hover_col, ImGuiDir_Down, 1.0f);
+            RenderArrow(window->DrawList, ImVec2(value_x2 + style.FramePadding.y, bb.Min.y + style.FramePadding.y), arrow_col, ImGuiDir_Down, 1.0f);
     }
-    celosia::widgets::render_frame_border_animated(id, bb.Min, bb.Max, hover_col, style.FrameRounding);
+    celosia::widgets::render_frame_border_animated(id, bb.Min, bb.Max, border_col, style.FrameRounding);
 
     // Custom preview
     if (flags & ImGuiComboFlags_CustomPreview)

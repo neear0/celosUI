@@ -34,6 +34,27 @@ namespace celosia::style {
 		inline float noise_max = 0.1f;
 		inline float accent_contrast_min = 3.f; // between the accent and the theme's background, the least for parts of a ui to be told apart
 	}
+	// ready made choices for the values above, all inside limits: what a user picks from first, the sliders and the
+	// color picker are there for going further
+	namespace presets {
+		inline ImColor accents[] = {
+			{ 189, 122, 255, 255 }, // violet, the default
+			{ 92, 140, 255, 255 },  // blue
+			{ 38, 198, 180, 255 },  // teal
+			{ 110, 200, 90, 255 },  // green
+			{ 255, 176, 64, 255 },  // amber
+			{ 255, 96, 96, 255 },   // coral
+			{ 255, 110, 190, 255 }, // pink
+		};
+		struct t_glass {
+			const char* name;
+			float blur;    // window::glass_blur in pixels at scale 1
+			float opacity; // window::glass_opacity
+		};
+		inline t_glass glass[] = { { "Clear", 6.f, 0.3f }, { "Frosted", 12.f, 0.4f }, { "Solid", 24.f, 0.85f } };
+		void set_glass(const t_glass& preset);
+		int glass_current(); // the glass preset the window is set to, -1 once the sliders moved it off them all
+	}
 	namespace titlebar {
 		inline float height = 45;
 		inline int padding = 2;
@@ -91,6 +112,7 @@ namespace celosia::style {
 		float luminance(ImColor clr);
 		float contrast(ImColor a, ImColor b);
 		ImColor readable(ImColor clr, ImColor background, float contrast_min); // clr mixed towards white or black just enough to reach contrast_min against background
+		ImColor text_on(ImColor fill); // dark or white text, whichever stands out more from fill
 	}
 
 	void keep_in_limits(); // brings the main color, glass and noise back into limits, an opaque main color too. apply() calls it

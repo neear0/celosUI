@@ -12,6 +12,8 @@ namespace celosia::widgets {
 	bool color_edit(const char* label, float col[4], bool alpha = true, float saturation_min = 0.f, float value_min = 0.f); // swatch that opens a color picker popup, true when the color changed
 	bool color_picker(const char* label, float col[4], bool alpha = true, float saturation_min = 0.f, float value_min = 0.f); // saturation/value square, hue bar and alpha bar. the square only spans saturations and values from the mins up
 	bool slider_float(const char* label, float* v, float min, float max, const char* format = "%.1f"); // dragged along a track, true when the value changed. format shows the value
+	bool segmented(const char* label, int* current, const char* const items[], int count); // side by side choices in one frame, the picked one in the accent, current -1 picks none. true when one was clicked
+	bool swatches(const char* label, float col[4], const ImColor* colors, int count); // a row of round color choices, sets col to the clicked one and rings the one col is, true when it changed
 
 	// drawing
 	void add_rect_filled_half_rounded(ImDrawList* drawlist, const ImVec2& min, const ImVec2& max, const ImColor& clr, float rounding);

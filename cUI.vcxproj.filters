@@ -167,6 +167,9 @@
     <ClCompile Include="ui\style\accents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui\style\presets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ui\wrappers\imgui\functions\render_frame_animated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -186,6 +189,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\wrappers\imgui\slider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\wrappers\imgui\segmented.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\wrappers\imgui\swatches.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui\inputsystem.cpp">
