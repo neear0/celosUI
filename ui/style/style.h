@@ -16,6 +16,12 @@ namespace celosia::style {
 		inline ImVec2 padding = {10, 10};
 		inline ImVec2 spacing = {0, 4}; // between items
 		inline ImVec2 inner_spacing = {4, 4}; // inside an item, e.g. between a frame and its label
+		inline float popup_margin = 3.f; // kept between a popup and the window's edges
+	}
+	namespace scrollbar {
+		inline float width = 4.f;
+		inline float rounding = 9.f;  // of the grab
+		inline float grab_min = 12.f; // the shortest the grab gets
 	}
 	namespace window {
 		enum e_background { blur, shader };
@@ -120,6 +126,6 @@ namespace celosia::style {
 	}
 
 	void keep_in_limits(); // brings the main color, glass and noise back into limits, an opaque main color too. apply() calls it
-	void apply(); // writes the active theme, the accent and the sizes above into ImGui's style
-	void set_scale(float new_scale); // scales the sizes above, ui::size and ImGui's style sizes from the current scale to new_scale
+	void apply(); // keeps the values in limits and works out the accent, every frame
+	void set_scale(float new_scale); // scales the sizes above and ui::size from the current scale to new_scale
 }

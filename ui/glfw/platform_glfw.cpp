@@ -123,7 +123,7 @@ ImVec2 celosia::platform::framebuffer_scale() { // the last one known while the 
 }
 
 void celosia::platform::present() {
-    ImDrawData* draw_data = ImGui::GetDrawData();
+    ImDrawData* draw_data = core::draw_data();
     if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f) // minimized
         return;
     celosia_glfw::vulkan::render(draw_data);

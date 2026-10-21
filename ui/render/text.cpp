@@ -4,7 +4,7 @@
 // floors where a line starts, so text lands on whole pixels wherever it's put
 
 static float font_size(ImFont* font) {
-	return font ? font->FontSize : ImGui::GetFontSize();
+	return font ? font->FontSize : celosia::core::font_size();
 }
 
 const char* celosia::render::text::label_end(const char* label) {
@@ -17,7 +17,7 @@ const char* celosia::render::text::label_end(const char* label) {
 ImVec2 celosia::render::text::size(const char* text, const char* text_end, ImFont* font) {
 	if (text == text_end || !*text)
 		return ImVec2(0.f, font_size(font));
-	ImVec2 size = (font ? font : ImGui::GetFont())->CalcTextSizeA(font_size(font), FLT_MAX, 0.f, text, text_end);
+	ImVec2 size = (font ? font : core::font())->CalcTextSizeA(font_size(font), FLT_MAX, 0.f, text, text_end);
 	size.x = IM_TRUNC(size.x + 0.99999f); // rounded up to whole pixels, the room it takes
 	return size;
 }

@@ -1,7 +1,7 @@
 #include "../ui.h"
 
 void celosia::render::titlebar() {
-	ImDrawList* drawlist_window = ImGui::GetWindowDrawList();
+	ImDrawList* drawlist_window = core::drawlist();
 	render::panel(drawlist_window, ImVec2(0, 0), ImVec2(ui::size.x, style::titlebar::height), style::themes::active.background_darker, (float)style::general::rounding_window);
 
 	ImFont* font = resources::fonts::get("title");

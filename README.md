@@ -1,5 +1,5 @@
 # CelosUI
-A C++ UI framework for Windows (Win32 + DirectX 11) and Linux (GLFW + Vulkan). Dear ImGui's immediate mode core does the layout and input underneath; on top of it CelosUI has its own widgets, themes, animations, shader effects, font and image handling, and the window itself.
+A C++ immediate mode UI framework for Windows (Win32 + DirectX 11) and Linux (GLFW + Vulkan). CelosUI has its own core (input, ids, layout, and the window, scroll areas and popups items go on), widgets, themes, animations, shader effects, font and image handling, and the window itself. Dear ImGui's draw lists, font atlas and D3D11 and Vulkan renderers draw it.
 
 | | |
 |---|---|
@@ -9,7 +9,7 @@ A C++ UI framework for Windows (Win32 + DirectX 11) and Linux (GLFW + Vulkan). D
 | Minimal groupbox titles | A blue main color, combo open |
 
 ## Features
-* Everything ImGui has underneath (layout, input, IDs, child windows, the whole widget API)
+* A core of its own (`celosia::core`): ids, the mouse over items, layout, and the surfaces items go on, each with its own draw list
 * Animations that step evenly whatever the frame rate
 * New and improved widgets: buttons, checkboxes, combo, color picker (`widgets::color_edit`), slider (`widgets::slider_float`), images (`widgets::image`), tab buttons, groupboxes
 * Tabs that lay themselves out (`render::tabs`, vertical or horizontal)
@@ -71,7 +71,7 @@ while (celosia::platform::poll()) {
 celosia::platform::destroy();
 ImGui::DestroyContext();
 ```
-Inside the window, the widgets are used like normal ImGui ones:
+Inside the window, a widget is a call that draws it and says what happened to it:
 ```cpp
 render::groupbox::begin("Groupbox B", "Checkboxes"); // stacked two to a tab, or render::groupbox::fullscreen / four (a 2x2 grid) as the 3rd argument
 widgets::checkbox_map("Checkbox 0");             // value lives in variables::config::bools["Checkbox 0"]
@@ -83,7 +83,8 @@ render::groupbox::end();
 Where things are:
 * `ui/ui.h`: the public namespaces (`platform`, `effects`, `resources`, `animations`, `variables`, ...)
 * `ui/render/`: the window parts (titlebar, sidebar, tabs, groupboxes, panels, text)
-* `ui/wrappers/`: our widgets (`celosia::widgets`, `wrappers.h`) and the ImGui widgets we replaced (ButtonEx, Checkbox, Combo, Selectable, Scrollbar), in `imgui/`
+* `ui/core/`: what the widgets are built on (`core.h`): ids, the mouse over items, layout, and the window, scroll areas and popups
+* `ui/wrappers/`: our widgets (`celosia::widgets`, `wrappers.h`), in `imgui/`
 * `ui/style/`: style values, themes, accents and animations
 * `ui/win32/` and `ui/glfw/`: the two platform layers (window, device, textures, effects)
 * `ui/shaders/`: the effect shaders
@@ -93,11 +94,11 @@ Where things are:
 ## Fonts and images
 The fonts and images in `assets/` are compiled into the executable through `ui/resources/font_data.cpp` and `ui/resources/image_data.cpp`, so nothing is loaded from disk. After changing or adding one (the list is at the top of the script), regenerate those files with `cmake -P ui/resources/embed_resources.cmake`.
 
-Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` (pixels at 96 DPI, scaled by `style::scale`, so add fonts after `platform::create()`) and looked up with `resources::fonts::get(name)`, which falls back to the default font. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `widgets::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any ImGui image function.
+Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` (pixels at 96 DPI, scaled by `style::scale`, so add fonts after `platform::create()`) and looked up with `resources::fonts::get(name)`, which falls back to the default font. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `widgets::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any draw list's `AddImage()`.
 
 Text goes through `render::text` (`ui/render/text.cpp`): `size()` measures it with the width rounded up to whole pixels, `draw()` puts it in any draw list in any font, `draw_aligned()` places it in a box and cuts it off where it doesn't fit, and `label_end()` is where a label's shown part ends (what's after "##" only makes its id). `widgets::text()` is a line of text as an item.
 
-Widgets go on surfaces from `ui/wrappers/imgui/windows.cpp`, the only code that knows ImGui's windows are underneath: `window::begin()` is the window the UI fills, `scroll_area::begin()` a region in it that scrolls smoothly when its content doesn't fit, and `popup::begin()` a frosted popup under an anchor (above it when there's no room below), sized to what's in it. ImGui clips a window's contents half its padding in from its edges, the popup's frosted glass goes all the way to them.
+Widgets go on surfaces (`ui/core/surfaces.cpp`): `window::begin()` is the window the UI fills, `scroll_area::begin()` a region in it that scrolls smoothly when its content doesn't fit, and `popup::begin()` a frosted popup under an anchor (above it when there's no room below), sized to what's in it. A click away from a popup or escape closes it. Items are clipped half a surface's padding in from its sides, the popup's frosted glass goes all the way to its edges. Underneath is `celosia::core` (`ui/core/core.h`): `core::id()` hashes a label with the ids pushed in the surface, `core::layout()` takes an item's room at the cursor and moves it to the next line (`core::same_line()` keeps it on this one), `core::add()` says whether the item can be seen and `core::button()` whether it's hovered, held or was clicked. The layout follows the rules ImGui's did, so items are on the same pixels they were when ImGui laid them out.
 
 ## Effects
 Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui.h`). Each shader is written once in HLSL and compiled for both D3D11 and Vulkan.

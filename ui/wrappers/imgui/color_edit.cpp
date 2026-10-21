@@ -22,11 +22,11 @@ static void gradient_rect(ImDrawList* drawlist, const ImRect& rect, ImVec2 p0, I
 }
 
 static bool drag_area(const char* id, const ImRect& rect, ImVec2* position) { // position is 0 to 1 across the rect while it's held
-    const ImGuiID item = ImGui::GetID(id);
-    if (!ImGui::ItemAdd(rect, item))
+    const ImGuiID item = celosia::core::id(id);
+    if (!celosia::core::add(rect, item))
         return false;
     bool hovered, held;
-    ImGui::ButtonBehavior(rect, item, &hovered, &held, ImGuiButtonFlags_NoNavFocus);
+    celosia::core::button(rect, item, &hovered, &held);
     if (!held)
         return false;
     const ImVec2 mouse = celosia::input::mouse_pos();
@@ -43,18 +43,14 @@ static void bar_handle(ImDrawList* drawlist, const ImRect& bar, float t) { // ac
 }
 
 bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha, float saturation_min, float value_min) {
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
-    ImDrawList* drawlist = window->DrawList;
-    ImGuiStorage* storage = ImGui::GetStateStorage();
-    ImGui::PushID(label);
+    ImDrawList* drawlist = core::drawlist();
+    ImGuiStorage* storage = core::storage();
+    core::push_id(label);
 
     // grey has no hue and black no saturation either, the last ones picked are kept for as long as the color is the one they made
     float h, s, v;
     ImGui::ColorConvertRGBtoHSV(col[0], col[1], col[2], h, s, v);
-    const ImGuiID id_hue = ImGui::GetID("##hue_saved"), id_sat = ImGui::GetID("##sat_saved"), id_color = ImGui::GetID("##color_saved");
+    const ImGuiID id_hue = core::id("##hue_saved"), id_sat = core::id("##sat_saved"), id_color = core::id("##color_saved");
     if ((ImU32)storage->GetInt(id_color, 0) == ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], 1.f))) {
         if (s == 0.f || v == 0.f)
             h = storage->GetFloat(id_hue, h);
@@ -64,12 +60,12 @@ bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha,
 
     const float scale = celosia::style::scale;
     const float square = 160.f * scale, bar = 14.f * scale, gap = 8.f * scale;
-    const ImVec2 pos = window->DC.CursorPos;
+    const ImVec2 pos = core::cursor();
     const ImRect sv_rect(pos, pos + ImVec2(square, square));
     const ImRect hue_rect(ImVec2(sv_rect.Max.x + gap, pos.y), ImVec2(sv_rect.Max.x + gap + bar, sv_rect.Max.y));
     const ImRect alpha_rect(ImVec2(hue_rect.Max.x + gap, pos.y), ImVec2(hue_rect.Max.x + gap + bar, sv_rect.Max.y));
     const ImRect total(pos, alpha ? alpha_rect.Max : hue_rect.Max);
-    ImGui::ItemSize(total);
+    core::layout(total);
 
     bool changed = false;
     ImVec2 p;
@@ -125,41 +121,37 @@ bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha,
         bar_handle(drawlist, alpha_rect, 1.f - col[3]);
     }
 
-    ImGui::PopID();
+    core::pop_id();
     return changed;
 }
 
 bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, float saturation_min, float value_min) {
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
     const ImVec2 padding = style::frame::size_padding, inner = style::general::inner_spacing;
     const float rounding = (float)style::general::rounding;
-    const ImGuiID id = window->GetID(label);
+    const ImGuiID id = core::id(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
-    const float size = ImGui::GetFrameHeight();
-    const ImVec2 pos = window->DC.CursorPos;
+    const float size = core::frame_height();
+    const ImVec2 pos = core::cursor();
     const ImRect swatch(pos, pos + ImVec2(size, size));
     const ImRect total(pos, pos + ImVec2(size + (label_size.x > 0.f ? inner.x + label_size.x : 0.f), size));
-    ImGui::ItemSize(total, padding.y);
-    if (!ImGui::ItemAdd(total, id))
+    core::layout(total, padding.y);
+    if (!core::add(total, id))
         return false;
 
     bool hovered, held;
-    const bool pressed = ImGui::ButtonBehavior(total, id, &hovered, &held);
+    const bool pressed = core::button(total, id, &hovered, &held);
 
     const ImVec4 color(col[0], col[1], col[2], alpha ? col[3] : 1.f);
     const float glow = celosia::animations::set(celosia::animations::key("color_edit_glow", id), hovered ? 1.f : 0.f);
     if (glow > 0.01f) // glows in its own color while hovered
-        celosia::effects::glow(window->DrawList, swatch.Min, swatch.Max, ImColor(color.x, color.y, color.z, 0.5f * glow), rounding, 8.f * celosia::style::scale);
-    ImGui::RenderColorRectWithAlphaCheckerboard(window->DrawList, swatch.Min, swatch.Max, ImGui::ColorConvertFloat4ToU32(color), size / 4.f, ImVec2(0, 0), rounding);
-    window->DrawList->AddRect(swatch.Min, swatch.Max, IM_COL32(255, 255, 255, (int)(40 + 60 * glow)), rounding);
+        celosia::effects::glow(core::drawlist(), swatch.Min, swatch.Max, ImColor(color.x, color.y, color.z, 0.5f * glow), rounding, 8.f * celosia::style::scale);
+    ImGui::RenderColorRectWithAlphaCheckerboard(core::drawlist(), swatch.Min, swatch.Max, ImGui::ColorConvertFloat4ToU32(color), size / 4.f, ImVec2(0, 0), rounding);
+    core::drawlist()->AddRect(swatch.Min, swatch.Max, IM_COL32(255, 255, 255, (int)(40 + 60 * glow)), rounding);
     if (label_size.x > 0.f)
-        celosia::render::text::draw(window->DrawList, ImVec2(swatch.Max.x + inner.x, pos.y + (size - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
+        celosia::render::text::draw(core::drawlist(), ImVec2(swatch.Max.x + inner.x, pos.y + (size - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
-    ImGui::PushID(label);
-    const ImGuiID popup_id = window->GetID("##picker");
+    core::push_id(label);
+    const ImGuiID popup_id = core::id("##picker");
     if (pressed)
         popup::open(popup_id);
 
@@ -176,6 +168,6 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, f
         widgets::text(hex);
         popup::end();
     }
-    ImGui::PopID();
+    core::pop_id();
     return changed;
 }

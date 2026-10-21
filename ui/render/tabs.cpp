@@ -6,7 +6,7 @@ int celosia::render::tabs(std::initializer_list<const char*> labels, e_tabs_layo
 	if (ui::tab_active.empty()) // nothing picked yet, the first tab starts open
 		ui::tab_active = ui::tab_current = *labels.begin();
 
-	const float available = ImGui::GetContentRegionAvail().x - style::general::padding.x; // the same gap on the right as on the left
+	const float available = core::available().x - style::general::padding.x; // the same gap on the right as on the left
 	const float gap = style::general::spacing.y;
 	const float count = (float)labels.size();
 	int active = -1, index = 0;
@@ -17,7 +17,7 @@ int celosia::render::tabs(std::initializer_list<const char*> labels, e_tabs_layo
 		else {
 			size = ImVec2(IM_TRUNC((available - gap * (count - 1.f)) / count), 0.f);
 			if (index > 0)
-				ImGui::SameLine(0.f, gap);
+				core::same_line(gap);
 		}
 
 		celosia::widgets::tab_button(label, size);

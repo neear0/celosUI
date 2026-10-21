@@ -1,8 +1,7 @@
 #include "ui.h"
 
 void celosia::initialize::context() {
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
+    ImGui::CreateContext(); // for its font atlas, and the renderers keep their state in it
 
     style::themes::initialize();
     style::themes::set(style::themes::dark, true);
@@ -23,20 +22,6 @@ void celosia::initialize::images() {
     resources::images::add("test", test, test_size);
 }
 
-static void imgui_input() { // ImGui's own items still run on its input, the same as ours
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = celosia::ui::display_size;
-    io.DisplayFramebufferScale = celosia::ui::framebuffer_scale;
-    io.DeltaTime = celosia::ui::delta_time;
-    io.AddFocusEvent(celosia::input::focused());
-    const ImVec2 mouse = celosia::input::mouse_pos();
-    io.AddMousePosEvent(mouse.x, mouse.y);
-    for (int button = 0; button < celosia::input::button_count; button++)
-        io.AddMouseButtonEvent(button, celosia::input::mouse_down(button));
-    if (celosia::input::wheel() != 0.f)
-        io.AddMouseWheelEvent(0.f, celosia::input::wheel());
-}
-
 void celosia::ui::begin() {
     static const std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     const double now = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
@@ -50,13 +35,12 @@ void celosia::ui::begin() {
     input::new_frame();
     style::themes::update();
 
-    platform::new_frame();
-    imgui_input();
-    ImGui::NewFrame();
+    platform::new_frame(); // builds the font atlas the first time, core needs it
+    core::new_frame();
     animations::new_frame();
 }
 
 void celosia::ui::end() {
-    ImGui::Render();
+    core::end_frame();
     platform::present();
 }

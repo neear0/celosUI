@@ -28,7 +28,7 @@ static void widgets_tab() {
 
     render::groupbox::begin("Image", "", render::groupbox::e_group_layout::four);
     const ImVec2 picture = resources::images::get("test").size; // as big as fits in the groupbox, keeping its aspect
-    const ImVec2 room = ImGui::GetContentRegionAvail();
+    const ImVec2 room = core::available();
     if (picture.x > 0.f && picture.y > 0.f) {
         const float fit = ImMin(1.f, ImMin(room.x / picture.x, room.y / picture.y));
         if (fit > 0.f)
@@ -46,7 +46,7 @@ static void appearance_tab() {
         style::themes::set(theme == 1 ? style::themes::light : style::themes::dark);
 
     widgets::swatches("##accent", color, style::presets::accents, IM_ARRAYSIZE(style::presets::accents));
-    ImGui::SameLine(0.f, style::general::inner_spacing.x);
+    core::same_line(style::general::inner_spacing.x);
     widgets::color_edit("Accent", color, false, style::limits::saturation_min, style::limits::value_min);
     style::general::main_color = { color[0], color[1], color[2], color[3] };
 
@@ -84,10 +84,10 @@ static void appearance_tab() {
 }
 
 void celosia::render::main_window() {
-    window::begin(variables::title.name, ImVec2(0, 0), ui::size);
+    const ImVec2 pos(0.f, 0.f);
+    window::begin(variables::title.name, pos, ui::size);
 
-    ImDrawList* drawlist = ImGui::GetWindowDrawList();
-    const ImVec2 pos = ImGui::GetWindowPos();
+    ImDrawList* drawlist = core::drawlist();
     if (style::window::background == style::window::shader) {
         const ImVec4 main = style::general::accent.Value;
         const ImVec4 accent = style::themes::rgb_accent(style::general::accent).Value;

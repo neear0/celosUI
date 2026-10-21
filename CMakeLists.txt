@@ -74,6 +74,8 @@ set(imgui_sources
 
 set(celos_ui_sources
     main.cpp
+    ui/core/core.cpp
+    ui/core/surfaces.cpp
     ui/debug/debug.cpp
     ui/effects/effects.cpp
     ui/functions.cpp
@@ -104,14 +106,12 @@ set(celos_ui_sources
     ui/wrappers/imgui/color_edit.cpp
     ui/wrappers/imgui/combo.cpp
     ui/wrappers/imgui/image.cpp
-    ui/wrappers/imgui/scrollbar.cpp
     ui/wrappers/imgui/segmented.cpp
     ui/wrappers/imgui/slider.cpp
     ui/wrappers/imgui/swatches.cpp
     ui/wrappers/imgui/tab_button.cpp
     ui/wrappers/imgui/text_item.cpp
     ui/wrappers/imgui/toggle.cpp
-    ui/wrappers/imgui/windows.cpp
     ui/wrappers/imgui/functions/render_frame_animated.cpp
     ui/wrappers/imgui/functions/render_frame_border_animated.cpp
     ui/wrappers/imgui/functions/render_frame_border_color.cpp

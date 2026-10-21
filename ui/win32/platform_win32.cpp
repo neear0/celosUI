@@ -58,7 +58,7 @@ void celosia::platform::present() {
     celosia_win32::d3d::device_context->OMSetRenderTargets(1, &celosia_win32::d3d::render_target_view, nullptr);
     celosia_win32::d3d::device_context->ClearRenderTargetView(celosia_win32::d3d::render_target_view, clear_color_with_alpha);
 
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplDX11_RenderDrawData(core::draw_data());
     celosia_win32::d3d::swapchain->Present(1, 0); // with vsync
     celosia_win32::d3d::report_debug_messages();
 }

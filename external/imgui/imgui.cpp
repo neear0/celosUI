@@ -8409,7 +8409,9 @@ void ImGui::UpdateMouseWheel()
             if (do_scroll[ImGuiAxis_Y])
             {
                 LockWheelingWindow(window, wheel.y);
-                celosia::widgets::scroll_wheel(window, wheel.y); // celosia: smooth scrolling, see ui/wrappers/imgui/scrollbar.cpp
+                float max_step = window->InnerRect.GetHeight() * 0.67f;
+                float scroll_step = ImTrunc(ImMin(5 * window->CalcFontSize(), max_step));
+                SetScrollY(window, window->Scroll.y - wheel.y * scroll_step);
                 g.WheelingWindowScrolledFrame = g.FrameCount;
             }
         }

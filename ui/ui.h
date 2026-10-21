@@ -18,6 +18,7 @@
 #include "../external/imgui/misc/freetype/imgui_freetype.h"
 
 #include "style/style.h"
+#include "core/core.h"
 #include "render/render.h"
 #include "debug/debug.h"
 #include "wrappers/wrappers.h"
@@ -39,7 +40,7 @@ namespace celosia {
 			};
 
 			ImFont* add(const std::string& name, const t_font& font); // null when the font couldn't be loaded
-			ImFont* get(const std::string& name); // ImGui's default font when there's none by that name
+			ImFont* get(const std::string& name); // the first one added when there's none by that name
 			inline std::unordered_map<std::string, ImFont*> map;
 		}
 
@@ -114,7 +115,7 @@ namespace celosia {
 			void tab_switch();
 		}
 
-		// items key their animations by their ImGui ID, so items with the same label in different windows don't share one:
+		// items key their animations by their id (core::id()), so items with the same label in different surfaces don't share one:
 		// key("button_glow", id). things that exist once can use a name: key("groupbox_active_spacing")
 		ImGuiID key(std::string_view name, ImGuiID seed = 0);
 		float get(ImGuiID id);              // 0 when there's nothing by that key
@@ -203,7 +204,7 @@ namespace celosia {
 		};
 	}
 
-	namespace effects { // shader effects (shaders/*.hlsl). each one is a draw list callback that swaps in its shader, so it lands in order between ImGui's own draws
+	namespace effects { // shader effects (shaders/*.hlsl). each one is a draw list callback that swaps in its shader, so it lands in order between the draw list's own draws
 		enum class e_type { gradient, glow, blur, background, noise, count };
 
 		struct t_constants { // matches effect_constants in shaders/effect.hlsli
@@ -223,7 +224,7 @@ namespace celosia {
 
 		void new_frame(); // forgets last frame's effects, called by ui::begin()
 
-		// positions, rounding and radius are in ImGui units like the rest of the draw list
+		// positions, rounding and radius are in units of ui::size like the rest of the draw list
 		void gradient(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor a, ImColor b, float rounding = 0.f, float angle = 0.f, float speed = 0.f); // a to b along angle (radians), speed > 0 slides it back and forth
 		void glow(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor color, float rounding = 0.f, float radius = 12.f); // around min-max, nothing inside it, draw it before the item
 		void blur(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColor tint, float rounding = 0.f, float radius = 10.f); // frosted glass over what's already drawn there, tint alpha is how much tint
@@ -232,10 +233,10 @@ namespace celosia {
 	}
 
 	namespace platform { // one implementation per backend: win32/ (Win32 + D3D11) and glfw/ (GLFW + Vulkan)
-		bool create(const char* title, ImVec2 pos, ImVec2 size); // window, renderer and ImGui backends, call after initialize::context(). size is at scale 1, it becomes ui::size times style::scale (the window and the layout), see style::set_scale()
+		bool create(const char* title, ImVec2 pos, ImVec2 size); // window, device and ImGui's renderer, call after initialize::context(). size is at scale 1, it becomes ui::size times style::scale (the window and the layout), see style::set_scale()
 		bool poll();         // handles window events, false once the window has been closed
 		void new_frame();
-		void present();      // renders ImGui's draw data and shows it
+		void present();      // renders core::draw_data() and shows it
 		ImVec2 display_size();      // the window's drawable area in units of ui::size, 0 while it's minimized
 		ImVec2 framebuffer_scale(); // framebuffer pixels per unit
 		void destroy();

@@ -5,21 +5,20 @@
 // whichever stands out more from the accent
 
 bool celosia::widgets::segmented(const char* label, int* current, const char* const items[], int count) {
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems || count <= 0)
+    if (count <= 0)
         return false;
 
     const ImVec2 padding = style::frame::size_padding, inner = style::general::inner_spacing;
-    const ImGuiID id = window->GetID(label);
+    const ImGuiID id = core::id(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
-    const ImVec2 pos = window->DC.CursorPos;
-    const ImRect frame(pos, pos + ImVec2(ImGui::CalcItemWidth(), ImGui::GetFrameHeight()));
+    const ImVec2 pos = core::cursor();
+    const ImRect frame(pos, pos + ImVec2(core::item_width(), core::frame_height()));
     const ImRect total(pos, frame.Max + ImVec2(label_size.x > 0.f ? inner.x + label_size.x : 0.f, 0.f));
-    ImGui::ItemSize(total, padding.y);
-    if (!ImGui::ItemAdd(total, id))
+    core::layout(total, padding.y);
+    if (!core::add(total, id))
         return false;
 
-    ImDrawList* drawlist = window->DrawList;
+    ImDrawList* drawlist = core::drawlist();
     const ImVec4 text = celosia::style::themes::active.text.Value;
     const ImVec4 accent = celosia::style::general::accent.Value;
     const float segment = frame.GetWidth() / (float)count;
@@ -30,20 +29,19 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
     const ImVec4 fill = style::themes::active.idle.Value;
     ImVec4 border = ImLerp(fill, text, 0.12f);
     border.w = fill.w;
-    drawlist->AddRectFilled(frame.Min, frame.Max, ImGui::GetColorU32(fill), rounding);
-    drawlist->AddRect(frame.Min, frame.Max, ImGui::GetColorU32(border), rounding, 0, celosia::style::frame::border_size);
+    drawlist->AddRectFilled(frame.Min, frame.Max, ImColor(fill), rounding);
+    drawlist->AddRect(frame.Min, frame.Max, ImColor(border), rounding, 0, celosia::style::frame::border_size);
 
     bool changed = false;
     for (int i = 0; i < count; i++) {
         const ImRect rect(ImVec2(frame.Min.x + segment * i, frame.Min.y), ImVec2(frame.Min.x + segment * (i + 1), frame.Max.y));
         const ImGuiID item = ImHashData(&i, sizeof(i), id); // from the control's id, two controls in one window don't share their segments
-        if (!ImGui::ItemAdd(rect, item))
+        if (!core::add(rect, item))
             continue;
         bool hovered, held;
-        if (ImGui::ButtonBehavior(rect, item, &hovered, &held) && *current != i) {
+        if (core::button(rect, item, &hovered, &held) && *current != i) {
             *current = i;
             changed = true;
-            ImGui::MarkItemEdited(id);
         }
         const float hover = celosia::animations::set(celosia::animations::key("segmented_hover", item), hovered && *current != i ? 1.f : 0.f, celosia::animations::color_speed);
         if (hover > 0.01f)
@@ -72,11 +70,11 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
         const ImVec2 size = celosia::render::text::size(items[i]);
         const ImVec2 at(x + (segment - size.x) * 0.5f, frame.GetCenter().y - size.y * 0.5f);
         drawlist->PushClipRect(ImVec2(x, frame.Min.y), ImVec2(x + segment, frame.Max.y), true);
-        celosia::render::text::draw(drawlist, at, ImGui::GetColorU32(ImLerp(text, on_accent, covered)), items[i]);
+        celosia::render::text::draw(drawlist, at, ImColor(ImLerp(text, on_accent, covered)), items[i]);
         drawlist->PopClipRect();
     }
     if (label_size.x > 0.f)
-        celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x + inner.x, frame.GetCenter().y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
+        celosia::render::text::draw(core::drawlist(), ImVec2(frame.Max.x + inner.x, frame.GetCenter().y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return changed;
 }

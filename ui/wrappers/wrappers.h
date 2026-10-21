@@ -1,14 +1,12 @@
 #pragma once
 
-// our widgets, built on ImGui's item and input handling, in wrappers/imgui/. the scrollbar keeps ImGui's name and declaration
-// (Scrollbar, ScrollbarEx), ImGui's windows call it
+// our widgets, built on core (core/core.h), in wrappers/imgui/
 namespace celosia::widgets {
 	// widgets
 	bool button(const char* label, const ImVec2& size = ImVec2(0, 0)); // size 0 fits the text, true when it was clicked
 	bool checkbox(const char* label, bool* v); // a box with a check mark that eases in and out, true when it was flipped
 	bool combo(const char* label, int* current, const char* const items[], int count, int max_items = -1); // a frame opening a popup to pick one of items from, max_items rows before it scrolls (-1 is 8). true when the pick changed
 	bool tab_button(const char* label, const ImVec2& size = ImVec2(0, 0)); // render::tabs() lays these out, size 0 is the sidebar's width and the text's height
-	bool tab_button_ex(const char* label, const ImVec2& size, ImGuiButtonFlags flags);
 	bool checkbox_map(const char* label); // checkbox() on variables::config::bools[label]
 	void image(const char* name, ImVec2 size = ImVec2(0, 0), float rounding = 0.f); // a resources::images image as an item, size 0 is its own size
 	bool color_edit(const char* label, float col[4], bool alpha = true, float saturation_min = 0.f, float value_min = 0.f); // swatch that opens a color picker popup, true when the color changed
@@ -26,18 +24,15 @@ namespace celosia::widgets {
 	void render_frame_border_color(ImVec2 p_min, ImVec2 p_max, ImColor clr, float rounding = 0.0f);
 	void render_frame_border_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, float rounding = 0.0f);
 	void render_frame_animated(ImGuiID id, ImVec2 p_min, ImVec2 p_max, ImColor fill_col, float rounding = 0.0f);
-
-	// smooth scrolling, imgui/scrollbar.cpp
-	void scroll_wheel(ImGuiWindow* window, float wheel); // called by ImGui::UpdateMouseWheel, sets where the window scrolls to
 }
 
-// the surfaces widgets go on, in wrappers/imgui/windows.cpp: the only code that knows ImGui's windows are underneath
+// the surfaces widgets go on, core's surfaces (core/surfaces.cpp)
 namespace celosia::window {
 	void begin(const char* name, ImVec2 pos, ImVec2 size); // the window the ui fills: no title bar, can't be moved or resized by itself
 	void end();
 }
 namespace celosia::scroll_area {
-	void begin(ImGuiID id, ImVec2 size); // a region inside the window that scrolls when its content doesn't fit, smoothly (see widgets::scroll_wheel)
+	void begin(ImGuiID id, ImVec2 size); // a region at the cursor that scrolls smoothly when its content doesn't fit
 	void begin(const char* name, ImVec2 size);
 	void end();
 }

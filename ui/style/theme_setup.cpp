@@ -75,42 +75,6 @@ void celosia::style::keep_in_limits() {
 void celosia::style::apply() {
 	keep_in_limits();
 	general::accent = themes::readable(general::main_color, themes::active.background, limits::accent_contrast_min); // follows the theme as it eases
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.FrameRounding = (float)general::rounding;
-	style.FramePadding = frame::size_padding;
-	style.WindowRounding = (float)general::rounding_window;
-	style.PopupRounding = (float)general::rounding_popup;
-	style.WindowPadding = ImVec2(0, 0);
-	style.WindowBorderSize = style.ChildBorderSize = style.PopupBorderSize = 0.f; // the borders are see-through anyway, and ImGui clips a window's contents that far in from its edges
-	style.ScrollbarSize = 4.f * scale;
-	style.ItemSpacing = general::spacing;
-	style.ItemInnerSpacing = general::inner_spacing;
-
-	const themes::t_theme& theme = themes::active;
-	ImVec4* c = style.Colors;
-	c[ImGuiCol_Text] = theme.text;
-	c[ImGuiCol_WindowBg] = window::background_color();
-
-	c[ImGuiCol_FrameBg] = theme.idle;
-	c[ImGuiCol_FrameBgHovered] = theme.hovered;
-	c[ImGuiCol_FrameBgActive] = theme.held;
-
-	c[ImGuiCol_Button] = theme.idle;
-	c[ImGuiCol_ButtonHovered] = theme.hovered;
-	c[ImGuiCol_ButtonActive] = theme.held;
-
-	c[ImGuiCol_HeaderHovered] = theme.hovered;
-	c[ImGuiCol_Header] = general::accent;
-	c[ImGuiCol_HeaderActive] = themes::rgb_intensity(general::accent, 0.5f);
-
-	c[ImGuiCol_CheckMark] = theme.idle;
-	c[ImGuiCol_ScrollbarBg] = theme.background_darker;
-	c[ImGuiCol_ScrollbarGrab] = theme.idle;
-	c[ImGuiCol_Border] = theme.frame_border;
-
-	c[ImGuiCol_TitleBg] = theme.idle;
-	c[ImGuiCol_TitleBgActive] = theme.idle;
-	c[ImGuiCol_TitleBgCollapsed] = theme.idle;
 }
 
 void celosia::style::set_scale(float new_scale) {
@@ -126,6 +90,10 @@ void celosia::style::set_scale(float new_scale) {
 	general::padding *= factor;
 	general::spacing *= factor;
 	general::inner_spacing = ImTrunc(general::inner_spacing * factor);
+	general::popup_margin = ImTrunc(general::popup_margin * factor);
+	scrollbar::width *= factor;
+	scrollbar::rounding = ImTrunc(scrollbar::rounding * factor);
+	scrollbar::grab_min = ImTrunc(scrollbar::grab_min * factor);
 	window::glass_blur *= factor;
 	titlebar::height *= factor;
 	scale_int(titlebar::padding);
@@ -136,7 +104,5 @@ void celosia::style::set_scale(float new_scale) {
 	groupbox::height *= factor;
 	scale_int(groupbox::padding);
 	ui::size = ImVec2(IM_ROUND(ui::size.x * factor), IM_ROUND(ui::size.y * factor));
-
-	ImGui::GetStyle().ScaleAllSizes(factor); // the ones apply() doesn't set, like ItemInnerSpacing and GrabMinSize
 	apply();
 }

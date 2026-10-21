@@ -19,39 +19,32 @@ static void render_check_mark_animated(ImGuiID id, bool active, bool hovered, bo
 }
 
 bool celosia::widgets::checkbox(const char* label, bool* v) {
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
     const ImVec2 padding = style::frame::size_padding, inner = style::general::inner_spacing;
-    const ImGuiID id = window->GetID(label);
+    const ImGuiID id = core::id(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
 
-    const float square_sz = IM_TRUNC(ImGui::GetFontSize() * 1.15f); // follows the text size, not the frame padding
+    const float square_sz = IM_TRUNC(core::font_size() * 1.15f); // follows the text size, not the frame padding
     const float row_height = ImMax(square_sz, label_size.y); // the box and the label are centered on the row
-    const ImVec2 pos = window->DC.CursorPos;
+    const ImVec2 pos = core::cursor();
     const ImRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? inner.x + label_size.x : 0.0f), row_height + padding.y));
-    ImGui::ItemSize(total_bb, padding.y);
-    if (!ImGui::ItemAdd(total_bb, id))
+    core::layout(total_bb, padding.y);
+    if (!core::add(total_bb, id))
         return false;
 
     bool hovered, held;
-    const bool pressed = ImGui::ButtonBehavior(total_bb, id, &hovered, &held);
-    if (pressed) {
+    const bool pressed = core::button(total_bb, id, &hovered, &held);
+    if (pressed)
         *v = !*v;
-        ImGui::MarkItemEdited(id);
-    }
 
     const ImVec2 check_pos(pos.x, pos.y + IM_TRUNC((row_height - square_sz) * 0.5f));
     const ImRect check_bb(check_pos, check_pos + ImVec2(square_sz, square_sz));
-    ImGui::RenderNavHighlight(total_bb, id);
 
     const float pad = ImMax(1.0f, IM_TRUNC(square_sz / 6.0f));
-    render_check_mark_animated(id, *v, hovered, held, window->DrawList, check_bb, pad, square_sz);
+    render_check_mark_animated(id, *v, hovered, held, core::drawlist(), check_bb, pad, square_sz);
 
     ImVec2 label_pos = ImVec2(check_bb.Max.x + inner.x, pos.y + IM_TRUNC((row_height - label_size.y) * 0.5f));
     if (label_size.x > 0.0f)
-        celosia::render::text::draw(window->DrawList, label_pos, celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
+        celosia::render::text::draw(core::drawlist(), label_pos, celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return pressed;
 }

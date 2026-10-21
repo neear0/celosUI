@@ -4,18 +4,14 @@
 // hovered or dragged, the value at the end of the track and the label after it
 
 bool celosia::widgets::slider_float(const char* label, float* v, float min, float max, const char* format) {
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
     const ImVec2 padding = style::frame::size_padding, inner = style::general::inner_spacing;
-    const ImGuiID id = window->GetID(label);
+    const ImGuiID id = core::id(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
-    const ImVec2 pos = window->DC.CursorPos;
-    const ImRect frame(pos, pos + ImVec2(ImGui::CalcItemWidth(), ImGui::GetFrameHeight())); // as wide and tall as a combo
+    const ImVec2 pos = core::cursor();
+    const ImRect frame(pos, pos + ImVec2(core::item_width(), core::frame_height())); // as wide and tall as a combo
     const ImRect total(pos, frame.Max + ImVec2(label_size.x > 0.f ? inner.x + label_size.x : 0.f, 0.f));
-    ImGui::ItemSize(total, padding.y);
-    if (!ImGui::ItemAdd(total, id))
+    core::layout(total, padding.y);
+    if (!core::add(total, id))
         return false;
 
     // the track leaves room for the widest value, so it doesn't change length while the value's text does
@@ -32,18 +28,17 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     const float track_max = ImMax(track_min, frame.Max.x - value_width - inner.x * 2.f - knob_radius);
 
     bool hovered, held;
-    ImGui::ButtonBehavior(frame, id, &hovered, &held, ImGuiButtonFlags_NoNavFocus);
+    core::button(frame, id, &hovered, &held);
     bool changed = false;
     if (held && track_max > track_min) { // the value follows the cursor while the slider is held, also outside of it
         const float value = ImLerp(min, max, ImSaturate((input::mouse_pos().x - track_min) / (track_max - track_min)));
         if (value != *v) {
             *v = value;
             changed = true;
-            ImGui::MarkItemEdited(id);
         }
     }
 
-    ImDrawList* drawlist = window->DrawList;
+    ImDrawList* drawlist = core::drawlist();
     const ImVec4 main = celosia::style::general::accent.Value;
     const ImVec4 text = celosia::style::themes::active.text.Value;
     const float t = max > min ? ImSaturate((*v - min) / (max - min)) : 0.f;
@@ -63,9 +58,9 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     drawlist->AddCircle(knob, radius, ImColor(text.x, text.y, text.z, 0.9f), 0, 2.f * scale);
 
     const ImVec2 value_size = celosia::render::text::size(value_text);
-    celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x - value_size.x, knob.y - value_size.y * 0.5f), celosia::style::themes::active.text, value_text);
+    celosia::render::text::draw(core::drawlist(), ImVec2(frame.Max.x - value_size.x, knob.y - value_size.y * 0.5f), celosia::style::themes::active.text, value_text);
     if (label_size.x > 0.f)
-        celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x + inner.x, knob.y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
+        celosia::render::text::draw(core::drawlist(), ImVec2(frame.Max.x + inner.x, knob.y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return changed;
 }

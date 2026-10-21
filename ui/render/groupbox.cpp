@@ -80,18 +80,18 @@ void celosia::render::groupbox::body(ImDrawList* drawlist, const ImVec2 offset, 
 }
 
 void celosia::render::groupbox::begin(const char* title, const char* description, e_group_layout layout) {
-	ImDrawList* drawlist_window = ImGui::GetWindowDrawList();
+	ImDrawList* drawlist_window = core::drawlist();
 	ImVec2 offset, offset_max, offset_size;
 	rect(layout, &offset, &offset_max, &offset_size);
 	const float height = title_height(description);
 
 	body(drawlist_window, offset, offset_max, title, description);
-	ImGui::SetCursorPos(ImVec2(offset.x + style::frame::size_padding.x, offset.y + style::frame::size_padding.y + height));
-	ImGui::PushID(ui::tab_current.c_str()); // the child window is per tab, titles can repeat in other tabs without sharing it (its scroll)
-	const ImGuiID child = ImGui::GetID(title);
-	ImGui::PopID();
+	core::set_cursor(ImVec2(offset.x + style::frame::size_padding.x, offset.y + style::frame::size_padding.y + height));
+	core::push_id(ui::tab_current.c_str()); // the scroll area is per tab, titles can repeat in other tabs without sharing it (its scroll)
+	const ImGuiID child = core::id(title);
+	core::pop_id();
 	scroll_area::begin(child, ImVec2(offset_size.x - style::frame::size_padding.x, offset_size.y - height - (2 * style::frame::size_padding.y)));
-	tab_content.children.push_back(ImGui::GetWindowDrawList());
+	tab_content.children.push_back(core::drawlist());
 }
 
 void celosia::render::groupbox::end() {
