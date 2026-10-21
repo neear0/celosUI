@@ -10,10 +10,12 @@ namespace celosia::style {
 		inline ImColor accent = main_color; // main_color as it's drawn: lighter or darker where the theme needs it to stand out, apply() works it out
 		inline int rounding = 4;
 		inline int rounding_window = 0;
+		inline int rounding_popup = 0;
 		inline float scroll_speed = 15.f;
 		inline float scroll_multiplier = 2.f;
 		inline ImVec2 padding = {10, 10};
-		inline ImVec2 spacing = {0, 4};
+		inline ImVec2 spacing = {0, 4}; // between items
+		inline ImVec2 inner_spacing = {4, 4}; // inside an item, e.g. between a frame and its label
 	}
 	namespace window {
 		enum e_background { blur, shader };
@@ -22,6 +24,7 @@ namespace celosia::style {
 		inline float glass_blur = 12.f; // radius in pixels of the frosted glass (effects::blur): the popups, and the panels over the shader background
 		inline float glass_opacity = 0.4f; // with the blur background: how much the window's background and panels cover the blurred desktop, see glass_cover()
 		float glass_cover(); // glass_opacity from the active theme's glass_floor up to 1, what the window's background and panels are multiplied by
+		ImColor background_color(); // the active theme's background as the window draws it, see-through by glass_cover() over the os blur
 	}
 	// how far the values above that a user can change may go: far enough to make the window their own, not so far it falls
 	// apart. keep_in_limits() holds them to these whatever set them, the demo's sliders and color picker only reach this far

@@ -28,7 +28,7 @@ static void widgets_tab() {
 
     render::groupbox::begin("Image", "", render::groupbox::e_group_layout::four);
     const ImVec2 picture = resources::images::get("test").size; // as big as fits in the groupbox, keeping its aspect
-    const ImVec2 room = ImGui::GetContentRegionAvail() - ImGui::GetStyle().WindowPadding;
+    const ImVec2 room = ImGui::GetContentRegionAvail();
     if (picture.x > 0.f && picture.y > 0.f) {
         const float fit = ImMin(1.f, ImMin(room.x / picture.x, room.y / picture.y));
         if (fit > 0.f)
@@ -46,7 +46,7 @@ static void appearance_tab() {
         style::themes::set(theme == 1 ? style::themes::light : style::themes::dark);
 
     widgets::swatches("##accent", color, style::presets::accents, IM_ARRAYSIZE(style::presets::accents));
-    ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
+    ImGui::SameLine(0.f, style::general::inner_spacing.x);
     widgets::color_edit("Accent", color, false, style::limits::saturation_min, style::limits::value_min);
     style::general::main_color = { color[0], color[1], color[2], color[3] };
 

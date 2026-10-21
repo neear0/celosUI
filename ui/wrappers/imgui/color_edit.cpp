@@ -47,7 +47,6 @@ bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha,
     if (window->SkipItems)
         return false;
 
-    const ImGuiStyle& style = ImGui::GetStyle();
     ImDrawList* drawlist = window->DrawList;
     ImGuiStorage* storage = ImGui::GetStateStorage();
     ImGui::PushID(label);
@@ -94,7 +93,7 @@ bool celosia::widgets::color_picker(const char* label, float col[4], bool alpha,
         storage->SetInt(id_color, (int)ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], 1.f)));
     }
 
-    const float rounding = style.FrameRounding;
+    const float rounding = (float)celosia::style::general::rounding;
     ImVec4 hue_color(0, 0, 0, 1);
     ImGui::ColorConvertHSVtoRGB(h, 1.f, 1.f, hue_color.x, hue_color.y, hue_color.z);
     const ImVec4 opaque(col[0], col[1], col[2], 1.f);
@@ -135,14 +134,15 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, f
     if (window->SkipItems)
         return false;
 
-    const ImGuiStyle& style = ImGui::GetStyle();
+    const ImVec2 padding = style::frame::size_padding, inner = style::general::inner_spacing;
+    const float rounding = (float)style::general::rounding;
     const ImGuiID id = window->GetID(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const float size = ImGui::GetFrameHeight();
     const ImVec2 pos = window->DC.CursorPos;
     const ImRect swatch(pos, pos + ImVec2(size, size));
-    const ImRect total(pos, pos + ImVec2(size + (label_size.x > 0.f ? style.ItemInnerSpacing.x + label_size.x : 0.f), size));
-    ImGui::ItemSize(total, style.FramePadding.y);
+    const ImRect total(pos, pos + ImVec2(size + (label_size.x > 0.f ? inner.x + label_size.x : 0.f), size));
+    ImGui::ItemSize(total, padding.y);
     if (!ImGui::ItemAdd(total, id))
         return false;
 
@@ -152,11 +152,11 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, f
     const ImVec4 color(col[0], col[1], col[2], alpha ? col[3] : 1.f);
     const float glow = celosia::animations::set(celosia::animations::key("color_edit_glow", id), hovered ? 1.f : 0.f);
     if (glow > 0.01f) // glows in its own color while hovered
-        celosia::effects::glow(window->DrawList, swatch.Min, swatch.Max, ImColor(color.x, color.y, color.z, 0.5f * glow), style.FrameRounding, 8.f * celosia::style::scale);
-    ImGui::RenderColorRectWithAlphaCheckerboard(window->DrawList, swatch.Min, swatch.Max, ImGui::ColorConvertFloat4ToU32(color), size / 4.f, ImVec2(0, 0), style.FrameRounding);
-    window->DrawList->AddRect(swatch.Min, swatch.Max, IM_COL32(255, 255, 255, (int)(40 + 60 * glow)), style.FrameRounding);
+        celosia::effects::glow(window->DrawList, swatch.Min, swatch.Max, ImColor(color.x, color.y, color.z, 0.5f * glow), rounding, 8.f * celosia::style::scale);
+    ImGui::RenderColorRectWithAlphaCheckerboard(window->DrawList, swatch.Min, swatch.Max, ImGui::ColorConvertFloat4ToU32(color), size / 4.f, ImVec2(0, 0), rounding);
+    window->DrawList->AddRect(swatch.Min, swatch.Max, IM_COL32(255, 255, 255, (int)(40 + 60 * glow)), rounding);
     if (label_size.x > 0.f)
-        celosia::render::text::draw(window->DrawList, ImVec2(swatch.Max.x + style.ItemInnerSpacing.x, pos.y + (size - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
+        celosia::render::text::draw(window->DrawList, ImVec2(swatch.Max.x + inner.x, pos.y + (size - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     ImGui::PushID(label);
     const ImGuiID popup_id = window->GetID("##picker");
@@ -164,7 +164,7 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, f
         popup::open(popup_id);
 
     bool changed = false;
-    const ImRect anchor(swatch.Min, swatch.Max + ImVec2(0.f, style.ItemSpacing.y + 4.f * celosia::style::scale)); // a little gap under the swatch
+    const ImRect anchor(swatch.Min, swatch.Max + ImVec2(0.f, style::general::spacing.y + 4.f * celosia::style::scale)); // a little gap under the swatch
     if (popup::begin(popup_id, anchor, celosia::style::general::padding)) {
         changed = color_picker("##body", col, alpha, saturation_min, value_min);
         const ImU32 rgba = ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], col[3]));

@@ -52,6 +52,13 @@ float celosia::style::window::glass_cover() {
 	return ImLerp(themes::active.glass_floor, 1.f, glass_opacity);
 }
 
+ImColor celosia::style::window::background_color() {
+	ImColor color = themes::active.background;
+	if (background == blur) // the theme's alpha alone hides most of the blurred desktop
+		color.Value.w *= glass_cover();
+	return color;
+}
+
 void celosia::style::keep_in_limits() {
 	window::glass_blur = ImClamp(window::glass_blur, limits::glass_blur_min * scale, limits::glass_blur_max * scale);
 	window::glass_opacity = ImClamp(window::glass_opacity, limits::glass_opacity_min, 1.f);
@@ -72,17 +79,17 @@ void celosia::style::apply() {
 	style.FrameRounding = (float)general::rounding;
 	style.FramePadding = frame::size_padding;
 	style.WindowRounding = (float)general::rounding_window;
+	style.PopupRounding = (float)general::rounding_popup;
 	style.WindowPadding = ImVec2(0, 0);
 	style.WindowBorderSize = style.ChildBorderSize = style.PopupBorderSize = 0.f; // the borders are see-through anyway, and ImGui clips a window's contents that far in from its edges
 	style.ScrollbarSize = 4.f * scale;
 	style.ItemSpacing = general::spacing;
+	style.ItemInnerSpacing = general::inner_spacing;
 
 	const themes::t_theme& theme = themes::active;
 	ImVec4* c = style.Colors;
 	c[ImGuiCol_Text] = theme.text;
-	c[ImGuiCol_WindowBg] = theme.background;
-	if (window::background == window::blur) // the theme's alpha alone hides most of the blurred desktop
-		c[ImGuiCol_WindowBg].w *= window::glass_cover();
+	c[ImGuiCol_WindowBg] = window::background_color();
 
 	c[ImGuiCol_FrameBg] = theme.idle;
 	c[ImGuiCol_FrameBgHovered] = theme.hovered;
@@ -115,8 +122,10 @@ void celosia::style::set_scale(float new_scale) {
 
 	scale_int(general::rounding);
 	scale_int(general::rounding_window);
+	scale_int(general::rounding_popup);
 	general::padding *= factor;
 	general::spacing *= factor;
+	general::inner_spacing = ImTrunc(general::inner_spacing * factor);
 	window::glass_blur *= factor;
 	titlebar::height *= factor;
 	scale_int(titlebar::padding);

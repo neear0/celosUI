@@ -8,14 +8,14 @@ bool celosia::widgets::toggle(const char* label, bool* v) {
     if (window->SkipItems)
         return false;
 
-    const ImGuiStyle& style = ImGui::GetStyle();
+    const ImVec2 padding = style::frame::size_padding, inner = style::general::inner_spacing;
     const ImGuiID id = window->GetID(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const float frame_height = ImGui::GetFrameHeight();
     const float height = IM_TRUNC(frame_height * 0.6f), width = IM_TRUNC(height * 1.8f);
     const ImVec2 pos = window->DC.CursorPos;
-    const ImRect total(pos, pos + ImVec2(width + (label_size.x > 0.f ? style.ItemInnerSpacing.x + label_size.x : 0.f), frame_height));
-    ImGui::ItemSize(total, style.FramePadding.y);
+    const ImRect total(pos, pos + ImVec2(width + (label_size.x > 0.f ? inner.x + label_size.x : 0.f), frame_height));
+    ImGui::ItemSize(total, padding.y);
     if (!ImGui::ItemAdd(total, id))
         return false;
 
@@ -46,7 +46,7 @@ bool celosia::widgets::toggle(const char* label, bool* v) {
     drawlist->AddCircleFilled(knob, knob_radius * (held ? 0.85f : 1.f), ImGui::GetColorU32(knob_color));
 
     if (label_size.x > 0.f)
-        celosia::render::text::draw(window->DrawList, ImVec2(track.Max.x + style.ItemInnerSpacing.x, pos.y + (frame_height - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
+        celosia::render::text::draw(window->DrawList, ImVec2(track.Max.x + inner.x, pos.y + (frame_height - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return pressed;
 }

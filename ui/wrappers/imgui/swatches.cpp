@@ -13,15 +13,14 @@ bool celosia::widgets::swatches(const char* label, float col[4], const ImColor* 
     if (window->SkipItems || count <= 0)
         return false;
 
-    const ImGuiStyle& style = ImGui::GetStyle();
     const ImGuiID id = window->GetID(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const float size = ImGui::GetFrameHeight();
-    const float gap = style.ItemInnerSpacing.x;
+    const float gap = style::general::inner_spacing.x;
     const ImVec2 pos = window->DC.CursorPos;
     const float row = size * count + gap * (count - 1);
     const ImRect total(pos, pos + ImVec2(row + (label_size.x > 0.f ? gap + label_size.x : 0.f), size));
-    ImGui::ItemSize(total, style.FramePadding.y);
+    ImGui::ItemSize(total, style::frame::size_padding.y);
     if (!ImGui::ItemAdd(total, id))
         return false;
 

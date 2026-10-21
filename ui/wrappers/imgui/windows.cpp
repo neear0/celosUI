@@ -64,7 +64,7 @@ bool celosia::popup::begin(ImGuiID id, const ImRect& anchor, ImVec2 padding, flo
     // frosted glass over whatever is behind the popup. ImGui clips a window's contents half its padding in from its edges,
     // the glass goes all the way to them
     ImGuiWindow* popup = ImGui::GetCurrentWindow();
-    const float rounding = ImGui::GetStyle().PopupRounding;
+    const float rounding = (float)style::general::rounding_popup;
     ImColor tint = style::themes::active.background_darker;
     tint.Value.w = 0.6f;
     popup->DrawList->PushClipRect(popup->Pos, popup->Pos + popup->Size);

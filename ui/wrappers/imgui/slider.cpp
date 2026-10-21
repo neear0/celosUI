@@ -8,13 +8,13 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     if (window->SkipItems)
         return false;
 
-    const ImGuiStyle& style = ImGui::GetStyle();
+    const ImVec2 padding = style::frame::size_padding, inner = style::general::inner_spacing;
     const ImGuiID id = window->GetID(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const ImVec2 pos = window->DC.CursorPos;
     const ImRect frame(pos, pos + ImVec2(ImGui::CalcItemWidth(), ImGui::GetFrameHeight())); // as wide and tall as a combo
-    const ImRect total(pos, frame.Max + ImVec2(label_size.x > 0.f ? style.ItemInnerSpacing.x + label_size.x : 0.f, 0.f));
-    ImGui::ItemSize(total, style.FramePadding.y);
+    const ImRect total(pos, frame.Max + ImVec2(label_size.x > 0.f ? inner.x + label_size.x : 0.f, 0.f));
+    ImGui::ItemSize(total, padding.y);
     if (!ImGui::ItemAdd(total, id))
         return false;
 
@@ -29,7 +29,7 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     const float scale = celosia::style::scale;
     const float knob_radius = 7.f * scale; // while held, smaller otherwise
     const float track_min = frame.Min.x + knob_radius;
-    const float track_max = ImMax(track_min, frame.Max.x - value_width - style.ItemInnerSpacing.x * 2.f - knob_radius);
+    const float track_max = ImMax(track_min, frame.Max.x - value_width - inner.x * 2.f - knob_radius);
 
     bool hovered, held;
     ImGui::ButtonBehavior(frame, id, &hovered, &held, ImGuiButtonFlags_NoNavFocus);
@@ -65,7 +65,7 @@ bool celosia::widgets::slider_float(const char* label, float* v, float min, floa
     const ImVec2 value_size = celosia::render::text::size(value_text);
     celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x - value_size.x, knob.y - value_size.y * 0.5f), celosia::style::themes::active.text, value_text);
     if (label_size.x > 0.f)
-        celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x + style.ItemInnerSpacing.x, knob.y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
+        celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x + inner.x, knob.y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return changed;
 }

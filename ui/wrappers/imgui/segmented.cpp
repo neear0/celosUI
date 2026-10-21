@@ -9,13 +9,13 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
     if (window->SkipItems || count <= 0)
         return false;
 
-    const ImGuiStyle& style = ImGui::GetStyle();
+    const ImVec2 padding = style::frame::size_padding, inner = style::general::inner_spacing;
     const ImGuiID id = window->GetID(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
     const ImVec2 pos = window->DC.CursorPos;
     const ImRect frame(pos, pos + ImVec2(ImGui::CalcItemWidth(), ImGui::GetFrameHeight()));
-    const ImRect total(pos, frame.Max + ImVec2(label_size.x > 0.f ? style.ItemInnerSpacing.x + label_size.x : 0.f, 0.f));
-    ImGui::ItemSize(total, style.FramePadding.y);
+    const ImRect total(pos, frame.Max + ImVec2(label_size.x > 0.f ? inner.x + label_size.x : 0.f, 0.f));
+    ImGui::ItemSize(total, padding.y);
     if (!ImGui::ItemAdd(total, id))
         return false;
 
@@ -24,13 +24,14 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
     const ImVec4 accent = celosia::style::general::accent.Value;
     const float segment = frame.GetWidth() / (float)count;
     const float scale = celosia::style::scale;
+    const float rounding = (float)style::general::rounding;
 
     // the frame like a button's: the idle color with an outline a little towards the text color
-    const ImVec4 fill = ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
+    const ImVec4 fill = style::themes::active.idle.Value;
     ImVec4 border = ImLerp(fill, text, 0.12f);
     border.w = fill.w;
-    drawlist->AddRectFilled(frame.Min, frame.Max, ImGui::GetColorU32(fill), style.FrameRounding);
-    drawlist->AddRect(frame.Min, frame.Max, ImGui::GetColorU32(border), style.FrameRounding, 0, celosia::style::frame::border_size);
+    drawlist->AddRectFilled(frame.Min, frame.Max, ImGui::GetColorU32(fill), rounding);
+    drawlist->AddRect(frame.Min, frame.Max, ImGui::GetColorU32(border), rounding, 0, celosia::style::frame::border_size);
 
     bool changed = false;
     for (int i = 0; i < count; i++) {
@@ -46,7 +47,7 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
         }
         const float hover = celosia::animations::set(celosia::animations::key("segmented_hover", item), hovered && *current != i ? 1.f : 0.f, celosia::animations::color_speed);
         if (hover > 0.01f)
-            drawlist->AddRectFilled(rect.Min, rect.Max, ImColor(text.x, text.y, text.z, 0.08f * hover), style.FrameRounding);
+            drawlist->AddRectFilled(rect.Min, rect.Max, ImColor(text.x, text.y, text.z, 0.08f * hover), rounding);
     }
 
     // the pill keeps its place while nothing is picked, so it fades out where it was. a hidden one appears where it's
@@ -60,8 +61,8 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
     const float inset = 3.f * scale;
     if (pill_alpha > 0.01f) {
         const ImVec2 pill_min(frame.Min.x + pill_x + inset, frame.Min.y + inset), pill_max(frame.Min.x + pill_x + segment - inset, frame.Max.y - inset);
-        celosia::effects::glow(drawlist, pill_min, pill_max, ImColor(accent.x, accent.y, accent.z, 0.35f * pill_alpha), style.FrameRounding, 6.f * scale);
-        drawlist->AddRectFilled(pill_min, pill_max, ImColor(accent.x, accent.y, accent.z, pill_alpha), ImMax(style.FrameRounding - inset * 0.5f, 0.f));
+        celosia::effects::glow(drawlist, pill_min, pill_max, ImColor(accent.x, accent.y, accent.z, 0.35f * pill_alpha), rounding, 6.f * scale);
+        drawlist->AddRectFilled(pill_min, pill_max, ImColor(accent.x, accent.y, accent.z, pill_alpha), ImMax(rounding - inset * 0.5f, 0.f));
     }
 
     const ImVec4 on_accent = celosia::style::themes::text_on(accent).Value;
@@ -75,7 +76,7 @@ bool celosia::widgets::segmented(const char* label, int* current, const char* co
         drawlist->PopClipRect();
     }
     if (label_size.x > 0.f)
-        celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x + style.ItemInnerSpacing.x, frame.GetCenter().y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
+        celosia::render::text::draw(window->DrawList, ImVec2(frame.Max.x + inner.x, frame.GetCenter().y - label_size.y * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     return changed;
 }
