@@ -109,6 +109,8 @@ Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui
 
 `style::limits` sets how far the values a user can change may go: how grey and how dark the main color, how little and how much glass blur, how little glass opacity and how much noise. Past those the window stops working: a black or grey accent hides the groupbox titles, checkmarks and logo, bare glass loses the text against a bright desktop (or a dark one with the light theme), and too little blur shows the text behind a popup through its own. `style::keep_in_limits()` (called by `style::apply()` every frame) brings the values back into them whatever set them, and keeps the main color opaque. `widgets::color_edit()` and `color_picker()` take a saturation and value minimum, their square then only spans the colors above them.
 
+What the user picks is `style::general::main_color`, what's drawn is `style::general::accent`: the same color, mixed towards white or black where it would blend into the theme's background (`style::limits::accent_contrast_min`, worked out by `style::themes::readable()`), so a yellow turns olive on the light theme and a deep blue lighter on the dark one. The groupbox title text is dark or white, whichever stands out more from the title bar. With the OS blur a theme's `glass_floor` is the least of the desktop its glass covers (`style::window::glass_cover()` goes from it up to 1 as `glass_opacity` does), the light theme's keeps it light over a dark desktop.
+
 Debug builds report graphics API misuse: on Windows the D3D11 debug layer's messages are printed to the console (needs the "Graphics Tools" optional Windows feature), and for Vulkan run with `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation` (the `vulkan-validationlayers` package on Linux).
 
 ## Using it in other software
@@ -125,7 +127,6 @@ Release builds also turn on Control Flow Guard (`/guard:cf`) and CET shadow stac
 
 ## Known issues
 * Rounding a window that uses the Windows blur gives weird looking edges, use the shader background for rounded windows (see Effects)
-* With the OS blur over a dark desktop, buttons are hard to see, they're drawn in the dark frame color
 * On X11 without a compositor the window isn't see-through, the parts that should be (like rounded corners) are black
 * The UI keeps the scale of the monitor it opened on, moved to a monitor with a different scale it isn't resized
 

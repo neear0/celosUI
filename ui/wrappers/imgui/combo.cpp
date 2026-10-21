@@ -211,7 +211,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     // Render shape
     const ImU32 frame_col = GetColorU32(ImGuiCol_Button);
     ImU32 hover_col = GetColorU32(hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
-    if (popup_open) hover_col = celosia::style::general::main_color;
+    if (popup_open) hover_col = celosia::style::general::accent;
     if (held) hover_col = GetColorU32(ImGuiCol_ButtonActive);
 
     const float value_x2 = ImMax(bb.Min.x, bb.Max.x - arrow_size);

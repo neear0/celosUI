@@ -13,8 +13,8 @@ void celosia::render::main_window() {
     const ImVec2 pos = ImGui::GetWindowPos();
     drawlist->PushClipRect(pos, pos + celosia::ui::size); // ImGui clips a window's contents one pixel in from its edges, the background, titlebar and sidebar go all the way
     if (style::window::background == style::window::shader) {
-        const ImVec4 main = style::general::main_color.Value;
-        const ImVec4 accent = style::themes::rgb_accent(style::general::main_color).Value;
+        const ImVec4 main = style::general::accent.Value;
+        const ImVec4 accent = style::themes::rgb_accent(style::general::accent).Value;
         ImVec4 base = style::themes::active.background.Value;
         base.w = 1.f; // the window is opaque with the shader background, only the rounded corners let the desktop through
         effects::background(drawlist, pos, pos + celosia::ui::size,

@@ -6,7 +6,8 @@ namespace celosia::style {
 	inline float scale = 1.f;
 
 	namespace general {
-		inline ImColor main_color = { 189, 122, 255,255 };
+		inline ImColor main_color = { 189, 122, 255,255 }; // the one the user picks
+		inline ImColor accent = main_color; // main_color as it's drawn: lighter or darker where the theme needs it to stand out, apply() works it out
 		inline int rounding = 4;
 		inline int rounding_window = 0;
 		inline float scroll_speed = 15.f;
@@ -19,7 +20,8 @@ namespace celosia::style {
 		inline e_background background = blur; // blur: the os blurs the desktop behind the window (windows, kwin on x11), shader: effects::background with glass panels
 		inline float noise = 0.04f; // film grain (effects::noise) over the background and panels, how strong it is, 0 turns it off
 		inline float glass_blur = 12.f; // radius in pixels of the frosted glass (effects::blur): the popups, and the panels over the shader background
-		inline float glass_opacity = 0.4f; // with the blur background: how much the window's background and panels cover the blurred desktop, 0 would leave it bare
+		inline float glass_opacity = 0.4f; // with the blur background: how much the window's background and panels cover the blurred desktop, see glass_cover()
+		float glass_cover(); // glass_opacity from the active theme's glass_floor up to 1, what the window's background and panels are multiplied by
 	}
 	// how far the values above that a user can change may go: far enough to make the window their own, not so far it falls
 	// apart. keep_in_limits() holds them to these whatever set them, the demo's sliders and color picker only reach this far
@@ -30,6 +32,7 @@ namespace celosia::style {
 		inline float glass_blur_max = 32.f;
 		inline float glass_opacity_min = 0.3f; // less and the text is lost against a bright desktop, or a dark one with the light theme
 		inline float noise_max = 0.1f;
+		inline float accent_contrast_min = 3.f; // between the accent and the theme's background, the least for parts of a ui to be told apart
 	}
 	namespace titlebar {
 		inline float height = 45;
@@ -69,6 +72,8 @@ namespace celosia::style {
 			ImColor active;
 
 			ImColor text;
+
+			float glass_floor = 0.f; // with the blur background: the least window::glass_cover() goes, a light theme over a dark desktop is grey otherwise
 		};
 
 		inline t_theme dark;
@@ -83,9 +88,12 @@ namespace celosia::style {
 
 		ImColor rgb_accent(ImColor clr);
 		ImColor rgb_intensity(ImColor clr, float percentage);
+		float luminance(ImColor clr);
+		float contrast(ImColor a, ImColor b);
+		ImColor readable(ImColor clr, ImColor background, float contrast_min); // clr mixed towards white or black just enough to reach contrast_min against background
 	}
 
 	void keep_in_limits(); // brings the main color, glass and noise back into limits, an opaque main color too. apply() calls it
-	void apply(); // writes the active theme and the sizes above into ImGui's style
+	void apply(); // writes the active theme, the accent and the sizes above into ImGui's style
 	void set_scale(float new_scale); // scales the sizes above, ui::size and ImGui's style sizes from the current scale to new_scale
 }

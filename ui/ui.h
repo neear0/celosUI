@@ -70,7 +70,7 @@ namespace celosia {
 	namespace variables {
 		struct t_title {
 			const char* name;   // in the text color
-			const char* accent; // right after it, in the main color
+			const char* accent; // right after it, in the accent
 		};
 		inline t_title title = { "celos", "UI" }; // shown in the titlebar
 		

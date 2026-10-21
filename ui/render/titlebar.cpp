@@ -17,7 +17,7 @@ void celosia::render::titlebar() {
 
 	drawlist_window->AddText(
 		ImVec2(style::frame::size_padding.x + title_size.x, y_center),
-		style::general::main_color,
+		style::general::accent,
 		variables::title.accent
 	);
 

@@ -4,7 +4,9 @@ static void style1(ImGuiID id, const ImRect bb, const char* label, ImVec2 label_
     ImVec4 fill = ImLerp(col.Value, celosia::style::themes::active.background_darker.Value, 0.25f); // a bit towards the panel color, darker than the border on dark themes and lighter on light ones
     fill.w = col.Value.w;
     celosia::widgets::render_frame_animated(id, bb.Min, bb.Max, fill, style.FrameRounding);
-    celosia::widgets::render_frame_border_animated(id, bb.Min, bb.Max, col, style.FrameRounding);
+    ImVec4 border = ImLerp(col.Value, celosia::style::themes::active.text.Value, 0.12f); // a little towards the text color, so the button shows over a dark desktop through the os blur
+    border.w = col.Value.w;
+    celosia::widgets::render_frame_border_animated(id, bb.Min, bb.Max, border, style.FrameRounding);
     ImGui::RenderTextClipped(ImVec2(bb.Min.x + style.FramePadding.x, bb.Min.y + style.FramePadding.y), ImVec2(bb.Max.x - style.FramePadding.x, bb.Max.y - style.FramePadding.y), label, NULL, &label_size, style.ButtonTextAlign, &bb);
 }
 
@@ -33,8 +35,8 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags
     bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
     const float glow = celosia::animations::set(celosia::animations::key("button_glow", id), hovered ? 1.f : 0.f);
-    if (glow > 0.01f) { // hovered buttons glow faintly in the main color
-        const ImVec4 main = celosia::style::general::main_color.Value;
+    if (glow > 0.01f) { // hovered buttons glow faintly in the accent
+        const ImVec4 main = celosia::style::general::accent.Value;
         celosia::effects::glow(window->DrawList, bb.Min, bb.Max, ImColor(main.x, main.y, main.z, 0.35f * glow), style.FrameRounding, 8.f * celosia::style::scale);
     }
 

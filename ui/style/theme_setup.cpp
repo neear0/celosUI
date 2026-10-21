@@ -24,6 +24,7 @@ void celosia::style::themes::initialize() {
 	light.active = ImColor(235, 235, 240, 255);
 	light.frame_border = ImColor(0, 0, 0, 0);
 	light.frame_fill = ImColor(236, 236, 240, 255);
+	light.glass_floor = 0.6f;
 }
 
 void celosia::style::themes::set(const t_theme& theme, bool instant) {
@@ -43,7 +44,12 @@ void celosia::style::themes::update() {
 		const ImVec4 from = (active.*color).Value, to = (target.*color).Value;
 		(active.*color).Value = ImLerp(from, to, t);
 	}
+	active.glass_floor = ImLerp(active.glass_floor, target.glass_floor, t);
 	apply();
+}
+
+float celosia::style::window::glass_cover() {
+	return ImLerp(themes::active.glass_floor, 1.f, glass_opacity);
 }
 
 void celosia::style::keep_in_limits() {
@@ -61,6 +67,7 @@ void celosia::style::keep_in_limits() {
 
 void celosia::style::apply() {
 	keep_in_limits();
+	general::accent = themes::readable(general::main_color, themes::active.background, limits::accent_contrast_min); // follows the theme as it eases
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.FrameRounding = (float)general::rounding;
 	style.FramePadding = frame::size_padding;
@@ -74,7 +81,7 @@ void celosia::style::apply() {
 	c[ImGuiCol_Text] = theme.text;
 	c[ImGuiCol_WindowBg] = theme.background;
 	if (window::background == window::blur) // the theme's alpha alone hides most of the blurred desktop
-		c[ImGuiCol_WindowBg].w *= window::glass_opacity;
+		c[ImGuiCol_WindowBg].w *= window::glass_cover();
 
 	c[ImGuiCol_FrameBg] = theme.idle;
 	c[ImGuiCol_FrameBgHovered] = theme.hovered;
@@ -85,8 +92,8 @@ void celosia::style::apply() {
 	c[ImGuiCol_ButtonActive] = theme.held;
 
 	c[ImGuiCol_HeaderHovered] = theme.hovered;
-	c[ImGuiCol_Header] = general::main_color;
-	c[ImGuiCol_HeaderActive] = themes::rgb_intensity(general::main_color, 0.5f);
+	c[ImGuiCol_Header] = general::accent;
+	c[ImGuiCol_HeaderActive] = themes::rgb_intensity(general::accent, 0.5f);
 
 	c[ImGuiCol_CheckMark] = theme.idle;
 	c[ImGuiCol_ScrollbarBg] = theme.background_darker;

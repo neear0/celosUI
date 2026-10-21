@@ -6,7 +6,7 @@ void celosia::render::panel(ImDrawList* drawlist, ImVec2 min, ImVec2 max, ImColo
 		effects::blur(drawlist, min, max, color, rounding, style::window::glass_blur);
 	}
 	else { // over the os blur, as see-through as the window's background
-		color.Value.w *= style::window::glass_opacity;
+		color.Value.w *= style::window::glass_cover();
 		drawlist->AddRectFilled(min, max, color, rounding);
 	}
 	effects::noise(drawlist, min, max, style::window::noise, rounding); // grain on the panel as well, with the shader background the blur would smooth the window's away

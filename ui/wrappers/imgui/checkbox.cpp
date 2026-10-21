@@ -1,11 +1,11 @@
 #include "../../ui.h"
 
 // the box's border in the text color, faint, so an unchecked box shows over the os blur and on both themes. checked, the border
-// and the mark ease into the main color, unchecked the mark fades out
+// and the mark ease into the accent, unchecked the mark fades out
 static void render_check_mark_animated(ImGuiID id, bool active, bool hovered, bool held, ImDrawList* drawlist, ImRect check_bb, float pad, float square_sz) {
     const ImVec4 text = celosia::style::themes::active.text.Value;
     ImVec4 border = ImVec4(text.x, text.y, text.z, held ? 0.3f : hovered ? 0.45f : 0.25f);
-    ImVec4 mark = celosia::style::general::main_color.Value;
+    ImVec4 mark = celosia::style::general::accent.Value;
     if (active)
         border = mark;
     else
