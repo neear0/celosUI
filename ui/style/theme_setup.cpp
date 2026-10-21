@@ -73,6 +73,7 @@ void celosia::style::apply() {
 	style.FramePadding = frame::size_padding;
 	style.WindowRounding = (float)general::rounding_window;
 	style.WindowPadding = ImVec2(0, 0);
+	style.WindowBorderSize = style.ChildBorderSize = style.PopupBorderSize = 0.f; // the borders are see-through anyway, and ImGui clips a window's contents that far in from its edges
 	style.ScrollbarSize = 4.f * scale;
 	style.ItemSpacing = general::spacing;
 

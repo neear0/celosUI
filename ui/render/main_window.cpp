@@ -90,7 +90,6 @@ void celosia::render::main_window() {
 
     ImDrawList* drawlist = ImGui::GetWindowDrawList();
     const ImVec2 pos = ImGui::GetWindowPos();
-    drawlist->PushClipRect(pos, pos + celosia::ui::size); // ImGui clips a window's contents one pixel in from its edges, the background, titlebar and sidebar go all the way
     if (style::window::background == style::window::shader) {
         const ImVec4 main = style::general::accent.Value;
         const ImVec4 accent = style::themes::rgb_accent(style::general::accent).Value;
@@ -102,7 +101,6 @@ void celosia::render::main_window() {
     effects::noise(drawlist, pos, pos + celosia::ui::size, style::window::noise, (float)style::general::rounding_window);
     render::titlebar();
     render::sidebar();
-    drawlist->PopClipRect();
 
     render::tab_content.drawlist = drawlist;
     render::tab_content.vtx_begin = drawlist->VtxBuffer.Size;
