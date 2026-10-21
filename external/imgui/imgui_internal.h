@@ -2385,9 +2385,6 @@ namespace ImGui
     // Menus
 
     // Combos
-    IMGUI_API bool          BeginComboPopup(ImGuiID popup_id, const ImRect& bb, ImGuiComboFlags flags);
-    IMGUI_API bool          BeginComboPreview();
-    IMGUI_API void          EndComboPreview();
 
     // Gamepad/Keyboard Navigation
     IMGUI_API void          NavInitWindow(ImGuiWindow* window, bool force_reinit);
@@ -2545,7 +2542,6 @@ namespace ImGui
     IMGUI_API void          RenderRectFilledWithHole(ImDrawList* draw_list, const ImRect& outer, const ImRect& inner, ImU32 col, float rounding);
 
     // Widgets
-    IMGUI_API bool          ButtonEx(const char* label, const ImVec2& size_arg = ImVec2(0, 0), ImGuiButtonFlags flags = 0);
 
     // Widgets: Window Decorations
     IMGUI_API bool          CloseButton(ImGuiID id, const ImVec2& pos);

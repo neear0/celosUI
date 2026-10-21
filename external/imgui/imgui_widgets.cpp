@@ -391,22 +391,6 @@ bool ImGui::ButtonBehavior(const ImRect& bb, ImGuiID id, bool* out_hovered, bool
     return pressed;
 }
 
-bool ImGui::Button(const char* label, const ImVec2& size_arg)
-{
-    return ButtonEx(label, size_arg, ImGuiButtonFlags_None);
-}
-
-// Small buttons fits within text without additional vertical spacing.
-bool ImGui::SmallButton(const char* label)
-{
-    ImGuiContext& g = *GImGui;
-    float backup_padding_y = g.Style.FramePadding.y;
-    g.Style.FramePadding.y = 0.0f;
-    bool pressed = ButtonEx(label, ImVec2(0, 0), ImGuiButtonFlags_AlignTextBaseLine);
-    g.Style.FramePadding.y = backup_padding_y;
-    return pressed;
-}
-
 // Button to close a window
 bool ImGui::CloseButton(ImGuiID id, const ImVec2& pos)
 {

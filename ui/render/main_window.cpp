@@ -10,7 +10,7 @@ static void widgets_tab() {
     using namespace celosia;
     render::groupbox::begin("Buttons", "", render::groupbox::e_group_layout::four);
     for (int i = 0; i < 20; i++)
-        if (ImGui::Button(("Button " + std::to_string(i)).c_str()))
+        if (widgets::button(("Button " + std::to_string(i)).c_str()))
             debug::log("Button " + std::to_string(i) + " has been hit");
     render::groupbox::end();
 
@@ -21,7 +21,7 @@ static void widgets_tab() {
 
     render::groupbox::begin("Inputs", "", render::groupbox::e_group_layout::four);
     const char* items[] = { "Item A", "Item B", "Item C" };
-    ImGui::Combo("Combo", &variables::config::ints["demo_combo"], items, IM_ARRAYSIZE(items), IM_ARRAYSIZE(items));
+    widgets::combo("Combo", &variables::config::ints["demo_combo"], items, IM_ARRAYSIZE(items), IM_ARRAYSIZE(items));
     widgets::slider_float("Slider", &variables::config::floats["demo_slider"], 0.f, 100.f, "%.0f");
     widgets::toggle("Toggle", &variables::config::bools["demo_toggle"]);
     render::groupbox::end();

@@ -18,9 +18,8 @@ static void render_check_mark_animated(ImGuiID id, bool active, bool hovered, bo
     celosia::widgets::render_frame_border_color(check_bb.Min, check_bb.Max, border_animated, (float)celosia::style::general::rounding);
 }
 
-bool ImGui::Checkbox(const char* label, bool* v)
-{
-    ImGuiWindow* window = GetCurrentWindow();
+bool celosia::widgets::checkbox(const char* label, bool* v) {
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
 
@@ -33,24 +32,20 @@ bool ImGui::Checkbox(const char* label, bool* v)
     const float row_height = ImMax(square_sz, label_size.y); // the box and the label are centered on the row
     const ImVec2 pos = window->DC.CursorPos;
     const ImRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), row_height + style.FramePadding.y));
-    ItemSize(total_bb, style.FramePadding.y);
-    if (!ItemAdd(total_bb, id))
-    {
-        IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
+    ImGui::ItemSize(total_bb, style.FramePadding.y);
+    if (!ImGui::ItemAdd(total_bb, id))
         return false;
-    }
 
     bool hovered, held;
-    bool pressed = ButtonBehavior(total_bb, id, &hovered, &held);
-    if (pressed)
-    {
-        *v = !(*v);
-        MarkItemEdited(id);
+    const bool pressed = ImGui::ButtonBehavior(total_bb, id, &hovered, &held);
+    if (pressed) {
+        *v = !*v;
+        ImGui::MarkItemEdited(id);
     }
 
     const ImVec2 check_pos(pos.x, pos.y + IM_TRUNC((row_height - square_sz) * 0.5f));
     const ImRect check_bb(check_pos, check_pos + ImVec2(square_sz, square_sz));
-    RenderNavHighlight(total_bb, id);
+    ImGui::RenderNavHighlight(total_bb, id);
 
     const float pad = ImMax(1.0f, IM_TRUNC(square_sz / 6.0f));
     render_check_mark_animated(id, *v, hovered, held, window->DrawList, check_bb, pad, square_sz);
@@ -59,8 +54,7 @@ bool ImGui::Checkbox(const char* label, bool* v)
     if (label_size.x > 0.0f)
         celosia::render::text::draw(window->DrawList, label_pos, celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
-    IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
     return pressed;
 }
 
-bool celosia::widgets::checkbox_map(const char* label) { return ImGui::Checkbox(label, &celosia::variables::config::bools[label]); }
+bool celosia::widgets::checkbox_map(const char* label) { return checkbox(label, &celosia::variables::config::bools[label]); }

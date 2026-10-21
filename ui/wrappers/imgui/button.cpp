@@ -10,9 +10,8 @@ static void style1(ImGuiID id, const ImRect bb, const char* label, ImVec2 label_
     celosia::render::text::draw_aligned(ImGui::GetWindowDrawList(), bb.Min + style.FramePadding, bb.Max - style.FramePadding, style.ButtonTextAlign, celosia::style::themes::active.text, label, celosia::render::text::label_end(label), &label_size, &bb);
 }
 
-bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags flags) // replaces ImGui's (removed from imgui_widgets.cpp), Button() and SmallButton() call it
-{
-    ImGuiWindow* window = GetCurrentWindow();
+bool celosia::widgets::button(const char* label, const ImVec2& size_arg) {
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
 
@@ -21,18 +20,16 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags
     const ImGuiID id = window->GetID(label);
     const ImVec2 label_size = celosia::render::text::size(label, celosia::render::text::label_end(label));
 
-    ImVec2 pos = window->DC.CursorPos;
-    if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && style.FramePadding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
-        pos.y += window->DC.CurrLineTextBaseOffset - style.FramePadding.y;
-    ImVec2 size = CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+    const ImVec2 pos = window->DC.CursorPos;
+    const ImVec2 size = ImGui::CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
 
     const ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
-    ItemSize(size, style.FramePadding.y);
-    if (!ItemAdd(bb, id))
+    ImGui::ItemSize(size, style.FramePadding.y);
+    if (!ImGui::ItemAdd(bb, id))
         return false;
 
     bool hovered, held;
-    bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
+    const bool pressed = ImGui::ButtonBehavior(bb, id, &hovered, &held);
 
     const float glow = celosia::animations::set(celosia::animations::key("button_glow", id), hovered ? 1.f : 0.f);
     if (glow > 0.01f) { // hovered buttons glow faintly in the accent
@@ -40,10 +37,9 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags
         celosia::effects::glow(window->DrawList, bb.Min, bb.Max, ImColor(main.x, main.y, main.z, 0.35f * glow), style.FrameRounding, 8.f * celosia::style::scale);
     }
 
-    const ImColor col = GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
-    RenderNavHighlight(bb, id);
+    const ImColor col = ImGui::GetColorU32((held && hovered) ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+    ImGui::RenderNavHighlight(bb, id);
     style1(id, bb, label, label_size, style, col);
 
-    IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags);
     return pressed;
 }
