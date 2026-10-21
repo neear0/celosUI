@@ -159,22 +159,13 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, f
         celosia::render::text::draw(window->DrawList, ImVec2(swatch.Max.x + style.ItemInnerSpacing.x, pos.y + (size - label_size.y) * 0.5f), celosia::style::themes::active.text, label, celosia::render::text::label_end(label));
 
     ImGui::PushID(label);
+    const ImGuiID popup_id = window->GetID("##picker");
     if (pressed)
-        ImGui::OpenPopup("##picker");
+        popup::open(popup_id);
 
     bool changed = false;
-    ImGui::SetNextWindowPos(ImVec2(swatch.Min.x, swatch.Max.y + style.ItemSpacing.y + 4.f * celosia::style::scale));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, celosia::style::general::padding);
-    ImGui::PushStyleColor(ImGuiCol_PopupBg, IM_COL32(0, 0, 0, 0)); // the blur below is the background
-    if (ImGui::BeginPopup("##picker")) {
-        ImGuiWindow* popup = ImGui::GetCurrentWindow(); // frosted glass, like the combo's popup
-        ImColor tint = celosia::style::themes::active.background_darker;
-        tint.Value.w = 0.6f;
-        popup->DrawList->PushClipRect(popup->Pos, popup->Pos + popup->Size);
-        celosia::effects::blur(popup->DrawList, popup->Pos, popup->Pos + popup->Size, tint, style.PopupRounding, celosia::style::window::glass_blur);
-        celosia::effects::noise(popup->DrawList, popup->Pos, popup->Pos + popup->Size, celosia::style::window::noise, style.PopupRounding);
-        popup->DrawList->PopClipRect();
-
+    const ImRect anchor(swatch.Min, swatch.Max + ImVec2(0.f, style.ItemSpacing.y + 4.f * celosia::style::scale)); // a little gap under the swatch
+    if (popup::begin(popup_id, anchor, celosia::style::general::padding)) {
         changed = color_picker("##body", col, alpha, saturation_min, value_min);
         const ImU32 rgba = ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], col[3]));
         char hex[16];
@@ -183,10 +174,8 @@ bool celosia::widgets::color_edit(const char* label, float col[4], bool alpha, f
         else
             ImFormatString(hex, IM_ARRAYSIZE(hex), "#%02X%02X%02X", rgba & 0xFF, (rgba >> 8) & 0xFF, (rgba >> 16) & 0xFF);
         widgets::text(hex);
-        ImGui::EndPopup();
+        popup::end();
     }
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar();
     ImGui::PopID();
     return changed;
 }

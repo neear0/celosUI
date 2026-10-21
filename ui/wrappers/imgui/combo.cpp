@@ -50,46 +50,8 @@ static bool selectable(const char* label, bool selected) { // an item in the pop
     celosia::render::text::draw_aligned(window->DrawList, text_min, text_max, style.SelectableTextAlign, celosia::style::themes::active.text, label, celosia::render::text::label_end(label), &label_size, &bb);
 
     if (pressed && (window->Flags & ImGuiWindowFlags_Popup))
-        ImGui::CloseCurrentPopup();
+        celosia::popup::close_current();
     return pressed;
-}
-
-static bool begin_popup(ImGuiID popup_id, const ImRect& frame, int max_items) { // the popup's window, true while it's open
-    ImGuiContext& g = *GImGui;
-    if (!ImGui::IsPopupOpen(popup_id, ImGuiPopupFlags_None))
-        return false;
-
-    ImGui::SetNextWindowSizeConstraints(ImVec2(frame.GetWidth(), 0.f), ImVec2(FLT_MAX, popup_height(max_items))); // at least as wide as the frame
-
-    char name[16];
-    ImFormatString(name, IM_ARRAYSIZE(name), "##Combo_%02d", g.BeginPopupStack.Size); // one window per popup depth, reused
-    if (ImGuiWindow* popup_window = ImGui::FindWindowByName(name))
-        if (popup_window->WasActive) { // placed from the size it's about to have: below the frame, or above it when it doesn't fit
-            const ImVec2 size_expected = ImGui::CalcWindowNextAutoFitSize(popup_window);
-            popup_window->AutoPosLastDirection = ImGuiDir_Down;
-            const ImRect r_outer = ImGui::GetPopupAllowedExtentRect(popup_window);
-            ImGui::SetNextWindowPos(ImGui::FindBestWindowPosForPopupEx(frame.GetBL(), size_expected, &popup_window->AutoPosLastDirection, r_outer, frame, ImGuiPopupPositionPolicy_ComboBox));
-        }
-
-    const ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_Popup | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove;
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(g.Style.FramePadding.x, g.Style.WindowPadding.y)); // the items' text lines up with the frame's
-    ImGui::PushStyleColor(ImGuiCol_PopupBg, IM_COL32(0, 0, 0, 0)); // the blur below is the background, Begin() would draw an opaque one first
-    const bool open = ImGui::Begin(name, nullptr, window_flags);
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar();
-    if (!open) {
-        ImGui::EndPopup();
-        return false;
-    }
-
-    ImGuiWindow* popup = ImGui::GetCurrentWindow(); // frosted glass over whatever is behind the popup
-    ImColor tint = celosia::style::themes::active.background_darker;
-    tint.Value.w = 0.6f;
-    popup->DrawList->PushClipRect(popup->Pos, popup->Pos + popup->Size);
-    celosia::effects::blur(popup->DrawList, popup->Pos, popup->Pos + popup->Size, tint, g.Style.PopupRounding, celosia::style::window::glass_blur);
-    celosia::effects::noise(popup->DrawList, popup->Pos, popup->Pos + popup->Size, celosia::style::window::noise, g.Style.PopupRounding);
-    popup->DrawList->PopClipRect();
-    return true;
 }
 
 bool celosia::widgets::combo(const char* label, int* current, const char* const items[], int count, int max_items) {
@@ -110,9 +72,9 @@ bool celosia::widgets::combo(const char* label, int* current, const char* const 
     bool hovered, held;
     const bool pressed = ImGui::ButtonBehavior(frame, id, &hovered, &held);
     const ImGuiID popup_id = ImHashStr("##ComboPopup", 0, id);
-    bool popup_open = ImGui::IsPopupOpen(popup_id, ImGuiPopupFlags_None);
+    bool popup_open = popup::is_open(popup_id);
     if (pressed && !popup_open) {
-        ImGui::OpenPopupEx(popup_id, ImGuiPopupFlags_None);
+        popup::open(popup_id);
         popup_open = true;
     }
 
@@ -136,7 +98,8 @@ bool celosia::widgets::combo(const char* label, int* current, const char* const 
     if (label_size.x > 0.f)
         render::text::draw(window->DrawList, ImVec2(frame.Max.x + style.ItemInnerSpacing.x, frame.Min.y + style.FramePadding.y), style::themes::active.text, label, render::text::label_end(label));
 
-    if (!popup_open || !begin_popup(popup_id, frame, max_items > 0 ? max_items : 8))
+    // at least as wide as the frame, with the items' text lined up with the frame's
+    if (!popup_open || !popup::begin(popup_id, frame, ImVec2(style.FramePadding.x, style.WindowPadding.y), frame.GetWidth(), popup_height(max_items > 0 ? max_items : 8)))
         return false;
 
     bool changed = false;
@@ -151,7 +114,7 @@ bool celosia::widgets::combo(const char* label, int* current, const char* const 
             ImGui::SetItemDefaultFocus(); // the keyboard starts at the picked item
         ImGui::PopID();
     }
-    ImGui::EndPopup();
+    popup::end();
 
     if (changed)
         ImGui::MarkItemEdited(id);

@@ -84,9 +84,7 @@ static void appearance_tab() {
 }
 
 void celosia::render::main_window() {
-    ImGui::Begin(variables::title.name, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
-    ImGui::SetWindowSize(celosia::ui::size);
-    ImGui::SetWindowPos(ImVec2(0, 0));
+    window::begin(variables::title.name, ImVec2(0, 0), ui::size);
 
     ImDrawList* drawlist = ImGui::GetWindowDrawList();
     const ImVec2 pos = ImGui::GetWindowPos();
@@ -110,5 +108,5 @@ void celosia::render::main_window() {
         appearance_tab();
     render::tab_content.vtx_end = drawlist->VtxBuffer.Size;
 
-    ImGui::End();
+    window::end();
 }

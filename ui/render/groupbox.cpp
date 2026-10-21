@@ -90,11 +90,11 @@ void celosia::render::groupbox::begin(const char* title, const char* description
 	ImGui::PushID(ui::tab_current.c_str()); // the child window is per tab, titles can repeat in other tabs without sharing it (its scroll)
 	const ImGuiID child = ImGui::GetID(title);
 	ImGui::PopID();
-	ImGui::BeginChild(child, ImVec2(offset_size.x - style::frame::size_padding.x, offset_size.y - height - (2 * style::frame::size_padding.y)));
+	scroll_area::begin(child, ImVec2(offset_size.x - style::frame::size_padding.x, offset_size.y - height - (2 * style::frame::size_padding.y)));
 	tab_content.children.push_back(ImGui::GetWindowDrawList());
 }
 
 void celosia::render::groupbox::end() {
 	index += 1;
-	ImGui::EndChild();
+	scroll_area::end();
 }

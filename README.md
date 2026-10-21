@@ -97,6 +97,8 @@ Each font is added with `resources::fonts::add(name, { data, size, pixels, hinti
 
 Text goes through `render::text` (`ui/render/text.cpp`): `size()` measures it with the width rounded up to whole pixels, `draw()` puts it in any draw list in any font, `draw_aligned()` places it in a box and cuts it off where it doesn't fit, and `label_end()` is where a label's shown part ends (what's after "##" only makes its id). `widgets::text()` is a line of text as an item.
 
+Widgets go on surfaces from `ui/wrappers/imgui/windows.cpp`, the only code that knows ImGui's windows are underneath: `window::begin()` is the window the UI fills, `scroll_area::begin()` a region in it that scrolls smoothly when its content doesn't fit, and `popup::begin()` a frosted popup under an anchor (above it when there's no room below), sized to what's in it. ImGui clips a window's contents half its padding in from its edges, the popup's frosted glass goes all the way to them.
+
 ## Effects
 Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui.h`). Each shader is written once in HLSL and compiled for both D3D11 and Vulkan.
 * `gradient`: two color gradient with exact rounded corners, optionally sliding back and forth (groupbox titles)
@@ -132,6 +134,5 @@ Release builds also turn on Control Flow Guard (`/guard:cf`) and CET shadow stac
 * The UI keeps the scale of the monitor it opened on, moved to a monitor with a different scale it isn't resized
 
 ## TODO
-* redo the clip rect workarounds: ImGui clips a window's contents one pixel in from its edges, so the window background, the combo popup and the color picker popup push their own clip rect to draw up to the edge
 
 To find todos in the code, search all files for "CTODO". This keeps them apart from ImGui's own todos.

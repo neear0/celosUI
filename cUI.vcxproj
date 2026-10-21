@@ -323,6 +323,7 @@
     <ClCompile Include="ui\wrappers\imgui\tab_button.cpp" />
     <ClCompile Include="ui\wrappers\imgui\text_item.cpp" />
     <ClCompile Include="ui\wrappers\imgui\toggle.cpp" />
+    <ClCompile Include="ui\wrappers\imgui\windows.cpp" />
     <ClCompile Include="ui\render\groupbox.cpp" />
     <ClCompile Include="ui\render\panel.cpp" />
     <ClCompile Include="ui\render\sidebar.cpp" />

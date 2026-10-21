@@ -30,3 +30,23 @@ namespace celosia::widgets {
 	// smooth scrolling, imgui/scrollbar.cpp
 	void scroll_wheel(ImGuiWindow* window, float wheel); // called by ImGui::UpdateMouseWheel, sets where the window scrolls to
 }
+
+// the surfaces widgets go on, in wrappers/imgui/windows.cpp: the only code that knows ImGui's windows are underneath
+namespace celosia::window {
+	void begin(const char* name, ImVec2 pos, ImVec2 size); // the window the ui fills: no title bar, can't be moved or resized by itself
+	void end();
+}
+namespace celosia::scroll_area {
+	void begin(ImGuiID id, ImVec2 size); // a region inside the window that scrolls when its content doesn't fit, smoothly (see widgets::scroll_wheel)
+	void begin(const char* name, ImVec2 size);
+	void end();
+}
+namespace celosia::popup {
+	void open(ImGuiID id);
+	bool is_open(ImGuiID id);
+	// while popup id is open: a frosted window over the ui under anchor (above it when there's no room below), padding
+	// inside it, at least min_width wide and at most max_height tall, sized to what's in it. end() only when it returns true
+	bool begin(ImGuiID id, const ImRect& anchor, ImVec2 padding, float min_width = 0.f, float max_height = FLT_MAX);
+	void end();
+	void close_current(); // the popup being drawn, e.g. once one of its items was picked
+}

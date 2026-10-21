@@ -110,6 +110,7 @@ set(celos_ui_sources
     ui/wrappers/imgui/tab_button.cpp
     ui/wrappers/imgui/text_item.cpp
     ui/wrappers/imgui/toggle.cpp
+    ui/wrappers/imgui/windows.cpp
     ui/wrappers/imgui/functions/render_frame_animated.cpp
     ui/wrappers/imgui/functions/render_frame_border_animated.cpp
     ui/wrappers/imgui/functions/render_frame_border_color.cpp
