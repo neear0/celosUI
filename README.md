@@ -95,6 +95,8 @@ The fonts and images in `assets/` are compiled into the executable through `ui/r
 
 Each font is added with `resources::fonts::add(name, { data, size, pixels, hinting })` (pixels at 96 DPI, scaled by `style::scale`, so add fonts after `platform::create()`) and looked up with `resources::fonts::get(name)`, which falls back to the default font. Images are PNGs, decoded with [stb_image](https://github.com/nothings/stb) (`external/stb/`, built for PNG only and without file access) and uploaded as textures by `resources::images::add(name, data, size)` once the window exists. `widgets::image(name, size, rounding)` draws one as an item, `resources::images::get(name).texture` works with any ImGui image function.
 
+Text goes through `render::text` (`ui/render/text.cpp`): `size()` measures it with the width rounded up to whole pixels, `draw()` puts it in any draw list in any font, `draw_aligned()` places it in a box and cuts it off where it doesn't fit, and `label_end()` is where a label's shown part ends (what's after "##" only makes its id). `widgets::text()` is a line of text as an item.
+
 ## Effects
 Shader effects that draw into any ImGui draw list, in `celosia::effects` (`ui/ui.h`). Each shader is written once in HLSL and compiled for both D3D11 and Vulkan.
 * `gradient`: two color gradient with exact rounded corners, optionally sliding back and forth (groupbox titles)
