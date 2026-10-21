@@ -226,9 +226,6 @@
     <ClInclude Include="external\imgui\imstb_textedit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui\imstb_truetype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ui\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>

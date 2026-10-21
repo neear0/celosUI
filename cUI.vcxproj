@@ -364,7 +364,6 @@
     <ClInclude Include="external\imgui\imgui_internal.h" />
     <ClInclude Include="external\imgui\imstb_rectpack.h" />
     <ClInclude Include="external\imgui\imstb_textedit.h" />
-    <ClInclude Include="external\imgui\imstb_truetype.h" />
     <ClInclude Include="external\imgui\win32\imgui_impl_win32.h" />
     <ClInclude Include="ui\wrappers\wrappers.h" />
     <ClInclude Include="ui\render\render.h" />
